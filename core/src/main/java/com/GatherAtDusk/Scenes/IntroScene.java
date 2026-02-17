@@ -67,21 +67,22 @@ public class IntroScene extends ScreenAdapter {
 
     @Override
     public void render(float delta) { 
-        // Sky color
+        // sky color
         Gdx.gl.glClearColor(0.4f, 0.7f, 1f, 1); // color blue
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        world.step(1 / 60f, 6, 2);
+        
+        //CHECK HERE IF COLLISIONS OR OVERLAP IS INCONSISTENT
+        world.step(1 / 60f, 6, 2); //(timeStep, velocityIterations, positionIterations) renders at 60 fps, how good collisons, how good overlapping
         camera.update();
 
-        //making color to ground
+        //ground color
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled); //fills in color for ground
         shapeRenderer.setColor(0.2f, 0.8f, 0.2f, 1); //color green
-        shapeRenderer.rect(0, 0, GROUND_WIDTH_SIZE / PPM, GROUND_HEIGHT_SIZE *3/2 / PPM);
+        shapeRenderer.rect(0, 0, GROUND_WIDTH_SIZE / PPM, GROUND_HEIGHT_SIZE *3/2 / PPM); // Collision block is 2/3 shape of ground color right now
         shapeRenderer.end();
 
-        //Box2D debug
+        //box2d debug
         debugRenderer.render(world, camera.combined);
     }
 

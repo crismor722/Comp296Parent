@@ -37,25 +37,25 @@ public class TitleScreen extends ScreenAdapter {
 
         font = new BitmapFont();
         font.getData().setScale(2f);
-        
-        stage = new Stage(new ScreenViewport());
-        Gdx.input.setInputProcessor(stage);
+        // add cursor hover effect for nice effects future me please
+        stage = new Stage(new ScreenViewport()); //creating a stage is just easier for handling UI elements, maybe change later
+        Gdx.input.setInputProcessor(stage); //allows user to click on button
 
 
-        NewFileButton newFileButton = new NewFileButton(sceneManager);
+        NewFileButton newFileButton = new NewFileButton(sceneManager); //needs to send sceneManger for the button to call checkpoint
 
         newFileButton.setPosition(
-                Gdx.graphics.getWidth() / 2f - newFileButton.getWidth() / 2f,
+                Gdx.graphics.getWidth() / 2f - newFileButton.getWidth() / 2f, //(center of the screen) - (center of button) = button in center of screen
                 Gdx.graphics.getHeight() / 2f - newFileButton.getHeight() / 2f
         );
 
-        stage.addActor(newFileButton);
+        stage.addActor(newFileButton); //need to add button as an actor so it can do its thing
     }
 
     @Override
     public void render(float delta) {
-        // Clear screen with dark background
-        Gdx.gl.glClearColor(0.1f, 0.1f, 0.2f, 1);
+    	//background
+        Gdx.gl.glClearColor(0.1f, 0.1f, 0.2f, 1); //dark blue
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         camera.update();
@@ -69,8 +69,8 @@ public class TitleScreen extends ScreenAdapter {
         stage.act(delta);
         stage.draw();
 
-        // Input: Press Enter to start
-       // if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+        
+        // if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             // Ask SceneManager which scene to load based on the last checkpoint
             //int checkpoint = sceneManager.getLastCheckpoint();
             //sceneManager.goToSceneForCheckpoint(0); //zero sets it to intro scene
@@ -81,6 +81,6 @@ public class TitleScreen extends ScreenAdapter {
     public void dispose() {
         font.dispose();
         stage.dispose();
-        // batch is shared; don't dispose
+        // don't dispose batch
     }
 }
