@@ -28,7 +28,7 @@ public class NewFileButton extends TextButton {
 
         addListener(new ClickListener() {
             @Override
-            public void clicked(InputEvent event, float x, float y) {
+            public void clicked(InputEvent event, float curserLocationX, float curserLocationY) { //when clicked, the location of the cursor is sent, this is default
                 sceneManager.goToSceneForCheckpoint(0); //CHANGE LATER
             }
         });
