@@ -36,10 +36,10 @@ public class TitleScreen extends ScreenAdapter {
         camera.setToOrtho(false, CAM_WIDTH, CAM_HEIGHT);
 
         font = new BitmapFont();
-        font.getData().setScale(2f);
+        font.getData().setScale(2f); // doubling default font size
         // add cursor hover effect for nice effects future me please
         stage = new Stage(new ScreenViewport()); //creating a stage is just easier for handling UI elements, maybe change later
-        Gdx.input.setInputProcessor(stage); //allows user to click on button
+        Gdx.input.setInputProcessor(stage); //allows user to click on button or more specifically the stage
 
 
         NewFileButton newFileButton = new NewFileButton(sceneManager); //needs to send sceneManger for the button to call checkpoint
@@ -47,9 +47,10 @@ public class TitleScreen extends ScreenAdapter {
         newFileButton.setPosition(
                 Gdx.graphics.getWidth() / 2f - newFileButton.getWidth() / 2f, //(center of the screen) - (center of button) = button in center of screen
                 Gdx.graphics.getHeight() / 2f - newFileButton.getHeight() / 2f
+                // note: this is also a test for graphics.getWidth and getHeight to make sure it works
         );
 
-        stage.addActor(newFileButton); //need to add button as an actor so it can do its thing
+        stage.addActor(newFileButton); //need to add button as an actor so the button can do its thing
     }
 
     @Override
@@ -76,9 +77,10 @@ public class TitleScreen extends ScreenAdapter {
             //sceneManager.goToSceneForCheckpoint(0); //zero sets it to intro scene
         //}
     }
-
+    
+    //ADD DISPOSING WHEN SWITCHING TO SCENE
     @Override
-    public void dispose() {
+    public void dispose() { //dispose when switching to different scene
         font.dispose();
         stage.dispose();
         // don't dispose batch

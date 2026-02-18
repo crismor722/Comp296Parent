@@ -62,7 +62,7 @@ public class IntroScene extends ScreenAdapter {
         fixtureDef.friction = FRICTION;
 
         groundBody.createFixture(fixtureDef); //creating shape 
-        groundShape.dispose();
+        groundShape.dispose(); //groundShape is saved in fixtureDef so it is not needed to be saved in memory
     }
 
     @Override
@@ -87,7 +87,7 @@ public class IntroScene extends ScreenAdapter {
     }
 
     @Override
-    public void dispose() {
+    public void dispose() { //when new scene starts make sure to dispose these elements
         world.dispose();
         debugRenderer.dispose();
         shapeRenderer.dispose();
