@@ -13,8 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 //NOTE: I made these variables vague so it won't be confused with imported objects but just know
-// font is for the button font
-// style is for the button style
+// font is for the button's font
+// style is for the button's style
 // pixmap is for the button's pixmap
 
 public class NewFileButton extends TextButton {
@@ -37,7 +37,7 @@ public class NewFileButton extends TextButton {
     private static TextButtonStyle createStyle() {
 
         Pixmap pixmap = new Pixmap(BUTTON_WIDTH, BUTTON_HEIGHT, Pixmap.Format.RGBA8888); //setting button height and format
-        pixmap.setColor(Color.FOREST); //temp color green and testing to see if color works/looks goos
+        pixmap.setColor(Color.FOREST); //temp color green and testing to see if color works/looks good
         pixmap.fill();
 
         Texture texture = new Texture(pixmap); // sending pixmap to texture
