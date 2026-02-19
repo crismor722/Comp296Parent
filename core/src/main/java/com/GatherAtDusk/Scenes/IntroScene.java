@@ -85,7 +85,7 @@ public class IntroScene extends ScreenAdapter {
     	BodyDef leftWallDef = new BodyDef();
     	leftWallDef.type = BodyDef.BodyType.StaticBody;
     	leftWallDef.position.set(0 - WALL_THICKNESS/2, WORLD_HEIGHT / 2 / PPM);
-    	Body left = world.createBody(leftWallDef);
+    	Body leftWallBody = world.createBody(leftWallDef);
 
     	PolygonShape leftShape = new PolygonShape();
     	leftShape.setAsBox(WALL_THICKNESS / 2, WORLD_HEIGHT / 2 / PPM);
@@ -94,7 +94,7 @@ public class IntroScene extends ScreenAdapter {
     	leftWallFixture.shape = leftShape;
     	leftWallFixture.friction = 0f; // no friction on walls
     	leftWallFixture.restitution = 0f; // optional, prevents bouncing
-    	left.createFixture(leftWallFixture).setUserData(CollisionType.WALL);
+    	leftWallBody.createFixture(leftWallFixture).setUserData(CollisionType.WALL);
 
     	leftShape.dispose();
 
@@ -103,7 +103,7 @@ public class IntroScene extends ScreenAdapter {
         BodyDef rightWallDef = new BodyDef();
         rightWallDef.type = BodyDef.BodyType.StaticBody;
         rightWallDef.position.set(WORLD_WIDTH / PPM + WALL_THICKNESS/2, WORLD_HEIGHT / 2 / PPM);
-        Body right = world.createBody(rightWallDef);
+        Body rightWallBody = world.createBody(rightWallDef);
         
         PolygonShape rightShape = new PolygonShape();
         rightShape.setAsBox(WALL_THICKNESS / 2, WORLD_HEIGHT / 2 / PPM);
@@ -112,7 +112,7 @@ public class IntroScene extends ScreenAdapter {
         rightWallFixture.shape = rightShape;
         rightWallFixture.friction = 0f; // no friction on walls
         rightWallFixture.restitution = 0f; // optional, prevents bouncing
-        right.createFixture(rightWallFixture).setUserData(CollisionType.WALL);
+        rightWallBody.createFixture(rightWallFixture).setUserData(CollisionType.WALL);
         
         rightShape.dispose();
     }
