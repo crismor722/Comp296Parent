@@ -1,4 +1,5 @@
 package com.GatherAtDusk.PlayerStuff;
+import com.GatherAtDusk.ContactListener.CollisionType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
@@ -34,7 +35,7 @@ public class Player {
         playerFixtureDef.friction = 0.2f;
         
         Fixture playerFixture = playerBody.createFixture(playerFixtureDef);
-        playerFixture.setUserData("player");
+        playerFixture.setUserData(CollisionType.PLAYER);
         
         shape.dispose();
 	}
