@@ -1,6 +1,7 @@
 package com.GatherAtDusk.Scenes;
 
 import com.GatherAtDusk.MainGame;
+import com.GatherAtDusk.Blocks.CheckpointBlock;
 import com.GatherAtDusk.ContactListener.*;
 import com.GatherAtDusk.PlayerStuff.Player;
 import com.badlogic.gdx.Gdx;
@@ -19,6 +20,7 @@ public class IntroScene extends ScreenAdapter {
     private World world;
     private Box2DDebugRenderer debugRenderer;
     private Player player;
+    private CheckpointBlock checkpoint1;
     
     private static final int HGRAVITY = 0;
     private static final float VGRAVITY = -9.8f; //LibGDX likes floats for decimals
@@ -29,8 +31,8 @@ public class IntroScene extends ScreenAdapter {
     private static final float GROUND_WIDTH_SIZE =  WORLD_WIDTH;
     private static final float GROUND_HEIGHT_SIZE = GROUND_HEIGHT_POSITION;
     private static final float FRICTION = 0.8f; //friction doesn't really have an effect now, maybe find a way to remove later
-    private static final float START_X = WORLD_WIDTH / 2 ; // center of screen in pixels
-    private static final float START_Y = GROUND_HEIGHT_POSITION + 60f / 2; // above ground
+    private float playerStartX = WORLD_WIDTH / 2 ; // center of screen in pixels
+    private float playerStartY = GROUND_HEIGHT_POSITION + 60f / 2; // above ground
     private static final float PPM = (float) 100; // 100 pixels per meter 
     private static final float WALL_THICKNESS = 10f / PPM;
     
@@ -51,12 +53,15 @@ public class IntroScene extends ScreenAdapter {
 
         createGround();
         createBoundaries();
+        createCheckpoints(); //checkpoints need to be before player
         createPlayer();
-        world.setContactListener(new GameContactListener(player)); //set contact listener is built into box2d
+        
+        world.setContactListener(new GameContactListener(player, checkpoint1)); //set contact listener is built into box2d
     }
 
-    private void createPlayer() {
-		player = new Player(world, START_X, START_Y);
+
+	private void createPlayer() {
+		player = new Player(world, playerStartX, playerStartY);
 	}
 
 	private void createGround() { //createGround needs to be in this scene and not in MainGame, MainGame only handles scenes
@@ -116,6 +121,10 @@ public class IntroScene extends ScreenAdapter {
         
         rightShape.dispose();
     }
+    
+    private void createCheckpoints(){
+    	checkpoint1 = new CheckpointBlock(world, 100f/ PPM, 100f/ PPM, 10f/ PPM, 10f/ PPM, 0);
+    }
 
     @Override
     public void render(float delta) { 
@@ -145,6 +154,16 @@ public class IntroScene extends ScreenAdapter {
             //rendering a rect needs to start at bottom left corner of the player this formula does that
             Player.getPlayerWidth() / PPM,
             Player.getPlayerHeight() / PPM
+        );
+        shapeRenderer.end();
+        
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(1f, 1f, 0f, 1); // yellow checkpoint
+        shapeRenderer.rect(
+            checkpoint1.getPosition().x - checkpoint1.getWidth() / 2 / PPM,
+            checkpoint1.getPosition().y - checkpoint1.getHeight() / 2 / PPM,
+            checkpoint1.getWidth() / PPM,
+            checkpoint1.getHeight() / PPM
         );
         shapeRenderer.end();
 

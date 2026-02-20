@@ -16,9 +16,9 @@ public class SceneManager {
     	
     }
 
-    public void goToSceneForCheckpoint(int checkpoint) {
+    public void goToSceneForCheckpoint(int checkpointId) {
        // lastCheckpoint = checkpoint;
-        switch(checkpoint) {
+        switch(checkpointId) {
             case 0:
                 game.setScreen(new IntroScene(game));
                 break;

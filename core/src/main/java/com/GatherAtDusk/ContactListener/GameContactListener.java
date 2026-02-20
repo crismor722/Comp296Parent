@@ -1,26 +1,35 @@
 package com.GatherAtDusk.ContactListener;
 
+import com.GatherAtDusk.Blocks.CheckpointBlock;
 import com.GatherAtDusk.PlayerStuff.Player;
+import com.GatherAtDusk.Blocks.CheckpointBlock;
 import com.badlogic.gdx.physics.box2d.*;
 
 public class GameContactListener implements ContactListener {
 
     private final Player player;
+    private CheckpointBlock checkpointBlock;
 
-    public GameContactListener(Player player) {
+    public GameContactListener(Player player, CheckpointBlock checkpointBlock) {
         this.player = player;
+        this.checkpointBlock = checkpointBlock;
     }
     //note: i made this class this way so all i need to do is to compare what collisions happen, and what to do with it
     //this class detects all collisions and checks what collisionTypes are involved to determine what to do with them
     @Override
   //whenever contact happens, box2d will call this method
     public void beginContact(Contact contact) { 
-    	//need to figure out what contact happened
+    	//need to figure out what contact happened because box2d detects collisions, not collisionTypes
+    	//getFixtureA() is built into box2d
         CollisionType currentCollisionTypeA = getType(contact.getFixtureA()); //contact.getFixture gets one of the fixtures in the contact
         CollisionType currentCollisionTypeB = getType(contact.getFixtureB()); //sets the collision type after collision type is determined from getType
         //after getType runs, now the program knows what collisionType it is
         if (isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.PLAYER, CollisionType.GROUND)) {
             player.setOnGround(true); //sends the data to the player class so the player can check if it is on the ground
+        }
+        
+        if (isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.PLAYER, CollisionType.CHECKPOINT)) {
+        	checkpointBlock.activateSave(player);
         }
     }
 
@@ -41,6 +50,7 @@ public class GameContactListener implements ContactListener {
     private CollisionType getType(Fixture fixture) { 
         Object data = fixture.getUserData(); //collsionType is saved in userData of the object
         //IMPORTANT: userData is being set in player class and in introscene for the ground 
+        //make it an object so "intanceof" can be used
         if (data instanceof CollisionType) { //if data object is an instance of collsionType, send the collisionType, if not, then null 
             return (CollisionType) data;
         } else {

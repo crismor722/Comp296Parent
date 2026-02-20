@@ -1,6 +1,6 @@
 package com.GatherAtDusk.ContactListener;
 
-public enum CollisionType { //box2d has a built in collision types
+public enum CollisionType { //box2d has a built in collision detection
     PLAYER,
     GROUND,
     BOSS,
