@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.GatherAtDusk.MainGame;
 import com.GatherAtDusk.SceneManager;
-import com.GatherAtDusk.Buttons.NewFileButton;
+import com.GatherAtDusk.Buttons.LoadFileButton;
 
 public class TitleScreen extends ScreenAdapter {
 
@@ -42,15 +42,15 @@ public class TitleScreen extends ScreenAdapter {
         Gdx.input.setInputProcessor(stage); //allows user to click on button or more specifically the stage
 
 
-        NewFileButton newFileButton = new NewFileButton(sceneManager); //needs to send sceneManger for the button to call checkpoint
+        LoadFileButton loadFileButton = new LoadFileButton(sceneManager); //needs to send sceneManger for the button to call checkpoint
 
-        newFileButton.setPosition(
-                Gdx.graphics.getWidth() / 2f - newFileButton.getWidth() / 2f, //(center of the screen) - (center of button) = button in center of screen
-                Gdx.graphics.getHeight() / 2f - newFileButton.getHeight() / 2f
+        loadFileButton.setPosition(
+                Gdx.graphics.getWidth() / 2f - loadFileButton.getWidth() / 2f, //(center of the screen) - (center of button) = button in center of screen
+                Gdx.graphics.getHeight() / 2f - loadFileButton.getHeight() / 2f
                 // note: this is also a test for graphics.getWidth and getHeight to make sure it works
         );
 
-        stage.addActor(newFileButton); //need to add button as an actor so the button can do its thing
+        stage.addActor(loadFileButton); //need to add button as an actor so the button can do its thing
     }
 
     @Override

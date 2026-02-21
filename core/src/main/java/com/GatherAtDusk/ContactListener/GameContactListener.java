@@ -8,7 +8,7 @@ import com.badlogic.gdx.utils.Array;
 public class GameContactListener implements ContactListener {
 
     private final Player player;
-    private Array<CheckpointBlock> checkpointBlocks;
+    private Array<CheckpointBlock> checkpointBlocks; //array list makes life easier
 
     public GameContactListener(Player player, Array<CheckpointBlock> checkpointBlocks) {
         this.player = player;
@@ -34,12 +34,12 @@ public class GameContactListener implements ContactListener {
         
         if (isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.PLAYER, CollisionType.CHECKPOINT)) {
             Fixture checkpointFixture = (currentCollisionTypeA == CollisionType.CHECKPOINT) ? fixtureA : fixtureB;
-
-            // Loop through all checkpointBlocks to find which one was touched
+            //the game doesn't know which one is which so i need to tell it with the if statement above^ : if collison type is same as checkpoint, its the checkpoint
+            //loop through all checkpointBlocks to find which one was touched
             for (CheckpointBlock checkpoint : checkpointBlocks) {
                 if (checkpoint.getBody().getFixtureList().contains(checkpointFixture, true)) {
                     checkpoint.activateSave(player);
-                    break; // only activate the one touched
+                    break; // only activate the one touched : side note this one break statement saved me from so much debugging
                 }
             }
         }

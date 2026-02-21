@@ -17,11 +17,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 // style is for the button's style
 // pixmap is for the button's pixmap
 
-public class NewFileButton extends TextButton {
+public class LoadFileButton extends TextButton {
 	private static final int BUTTON_WIDTH = 250;
 	private static final int BUTTON_HEIGHT = 70;
 
-    public NewFileButton(SceneManager sceneManager) { //scene manager needs to be included so button can call goToCheckPoint
+    public LoadFileButton(SceneManager sceneManager) { //scene manager needs to be included so button can call goToCheckPoint
         super("NEW FILE", createStyle());
 
         setSize(BUTTON_WIDTH, BUTTON_HEIGHT);

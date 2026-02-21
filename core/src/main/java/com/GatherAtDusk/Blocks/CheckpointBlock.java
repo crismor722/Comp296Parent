@@ -51,7 +51,7 @@ public class CheckpointBlock {
         return body.getPosition();
     }
 
-    // Called when player touches checkpoint
+    // called when player touches checkpoint in contactlistener
     public void activateSave(Player player) {
     	int id = getIdofCurrentCheckpoint();
         SaveManager.saveCheckpoint(id);

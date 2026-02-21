@@ -135,7 +135,6 @@ public class IntroScene extends ScreenAdapter {
 
     	int checkpointID = SaveManager.loadCheckpoint();
     	Vector2 spawn = new Vector2(playerStartX, playerStartY); // default spawn
-    	// Determine spawn point
     	
 
     	switch (checkpointID) {
