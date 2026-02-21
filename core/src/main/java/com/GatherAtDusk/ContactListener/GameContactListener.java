@@ -2,17 +2,17 @@ package com.GatherAtDusk.ContactListener;
 
 import com.GatherAtDusk.Blocks.CheckpointBlock;
 import com.GatherAtDusk.PlayerStuff.Player;
-import com.GatherAtDusk.Blocks.CheckpointBlock;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
 
 public class GameContactListener implements ContactListener {
 
     private final Player player;
-    private CheckpointBlock checkpointBlock;
+    private Array<CheckpointBlock> checkpointBlocks;
 
-    public GameContactListener(Player player, CheckpointBlock checkpointBlock) {
+    public GameContactListener(Player player, Array<CheckpointBlock> checkpointBlocks) {
         this.player = player;
-        this.checkpointBlock = checkpointBlock;
+        this.checkpointBlocks = checkpointBlocks;
     }
     //note: i made this class this way so all i need to do is to compare what collisions happen, and what to do with it
     //this class detects all collisions and checks what collisionTypes are involved to determine what to do with them
@@ -21,15 +21,27 @@ public class GameContactListener implements ContactListener {
     public void beginContact(Contact contact) { 
     	//need to figure out what contact happened because box2d detects collisions, not collisionTypes
     	//getFixtureA() is built into box2d
-        CollisionType currentCollisionTypeA = getType(contact.getFixtureA()); //contact.getFixture gets one of the fixtures in the contact
-        CollisionType currentCollisionTypeB = getType(contact.getFixtureB()); //sets the collision type after collision type is determined from getType
+    	Fixture fixtureA = contact.getFixtureA(); //contact.getFixture gets one of the fixtures in the contact
+    	Fixture fixtureB = contact.getFixtureB();
+    	
+    	
+        CollisionType currentCollisionTypeA = getType(fixtureA); 
+        CollisionType currentCollisionTypeB = getType(fixtureB); //sets the collision type after collision type is determined from getType
         //after getType runs, now the program knows what collisionType it is
         if (isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.PLAYER, CollisionType.GROUND)) {
             player.setOnGround(true); //sends the data to the player class so the player can check if it is on the ground
         }
         
         if (isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.PLAYER, CollisionType.CHECKPOINT)) {
-        	checkpointBlock.activateSave(player);
+            Fixture checkpointFixture = (currentCollisionTypeA == CollisionType.CHECKPOINT) ? fixtureA : fixtureB;
+
+            // Loop through all checkpointBlocks to find which one was touched
+            for (CheckpointBlock checkpoint : checkpointBlocks) {
+                if (checkpoint.getBody().getFixtureList().contains(checkpointFixture, true)) {
+                    checkpoint.activateSave(player);
+                    break; // only activate the one touched
+                }
+            }
         }
     }
 

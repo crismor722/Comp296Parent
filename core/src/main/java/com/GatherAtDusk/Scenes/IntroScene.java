@@ -4,6 +4,7 @@ import com.GatherAtDusk.MainGame;
 import com.GatherAtDusk.Blocks.CheckpointBlock;
 import com.GatherAtDusk.ContactListener.*;
 import com.GatherAtDusk.PlayerStuff.Player;
+import com.GatherAtDusk.Saving.SaveManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2; // Vector2 makes it so it defines left right up and down like vectors in physics
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
 
 public class IntroScene extends ScreenAdapter {
 	
@@ -21,6 +23,7 @@ public class IntroScene extends ScreenAdapter {
     private Box2DDebugRenderer debugRenderer;
     private Player player;
     private CheckpointBlock checkpoint1;
+    private CheckpointBlock checkpoint2;
     
     private static final int HGRAVITY = 0;
     private static final float VGRAVITY = -9.8f; //LibGDX likes floats for decimals
@@ -35,6 +38,7 @@ public class IntroScene extends ScreenAdapter {
     private float playerStartY = GROUND_HEIGHT_POSITION + 60f / 2; // above ground
     private static final float PPM = (float) 100; // 100 pixels per meter 
     private static final float WALL_THICKNESS = 10f / PPM;
+    private Array<CheckpointBlock> checkpoints = new Array<>();
     
     public IntroScene(MainGame game) {
         this.game = game;
@@ -54,14 +58,14 @@ public class IntroScene extends ScreenAdapter {
         createGround();
         createBoundaries();
         createCheckpoints(); //checkpoints need to be before player
-        createPlayer();
         
-        world.setContactListener(new GameContactListener(player, checkpoint1)); //set contact listener is built into box2d
+        
+        world.setContactListener(new GameContactListener(player, checkpoints)); //set contact listener is built into box2d
     }
 
 
-	private void createPlayer() {
-		player = new Player(world, playerStartX, playerStartY);
+	private void createPlayer(float spawnX, float spawnY) {
+		player = new Player(world, spawnX, spawnY);
 	}
 
 	private void createGround() { //createGround needs to be in this scene and not in MainGame, MainGame only handles scenes
@@ -124,6 +128,29 @@ public class IntroScene extends ScreenAdapter {
     
     private void createCheckpoints(){
     	checkpoint1 = new CheckpointBlock(world, 100f/ PPM, 100f/ PPM, 10f/ PPM, 10f/ PPM, 0);
+    	checkpoint2 = new CheckpointBlock(world, 200f/ PPM, 100f/ PPM, 10f/ PPM, 10f/ PPM, 1);
+    	
+    	checkpoints.add(checkpoint1);
+    	checkpoints.add(checkpoint2);
+
+    	int checkpointID = SaveManager.loadCheckpoint();
+    	Vector2 spawn = new Vector2(playerStartX, playerStartY); // default spawn
+    	// Determine spawn point
+    	
+
+    	switch (checkpointID) {
+        case 0:
+            spawn = checkpoint1.getSpawnPositionPixels(PPM);
+            break;
+        case 1:
+            spawn = checkpoint2.getSpawnPositionPixels(PPM);
+            break;
+        default:
+            spawn.set(playerStartX, playerStartY); // fallback spawn
+    }
+    	float spawnX = spawn.x;
+    	float spawnY = spawn.y;
+    	createPlayer(spawnX, spawnY);
     }
 
     @Override

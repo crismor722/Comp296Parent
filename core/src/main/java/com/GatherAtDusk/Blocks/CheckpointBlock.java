@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.GatherAtDusk.ContactListener.CollisionType;
 import com.GatherAtDusk.PlayerStuff.Player;
-import com.GatherAtDusk.Saving.SaveData;
 import com.GatherAtDusk.Saving.SaveManager;
 
 
@@ -44,7 +43,7 @@ public class CheckpointBlock {
 		return height;
 	}
 
-	public int getIDofCurrentCheckpoint() {
+	public int getIdofCurrentCheckpoint() {
         return checkpointID;
     }
 
@@ -54,9 +53,20 @@ public class CheckpointBlock {
 
     // Called when player touches checkpoint
     public void activateSave(Player player) {
-    	SaveData saveData = SaveManager.load();
-        saveData.checkpointID = this.checkpointID; // public now
-        SaveManager.save(saveData);
-        System.out.println("Checkpoint " + saveData.checkpointID);
+    	int id = getIdofCurrentCheckpoint();
+        SaveManager.saveCheckpoint(id);
+        System.out.println("Checkpoint activated: " + id);
     }
+    
+    public Vector2 getSpawnPositionPixels(float PPM) {
+        return new Vector2(
+            body.getPosition().x * PPM,
+            body.getPosition().y * PPM
+        );
+    }
+
+	public Body getBody() {
+		return body;
+	}
+
 }
