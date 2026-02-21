@@ -38,7 +38,7 @@ public class IntroScene extends ScreenAdapter {
     private float playerStartY = GROUND_HEIGHT_POSITION + 60f / 2; // above ground
     private static final float PPM = (float) 100; // 100 pixels per meter 
     private static final float WALL_THICKNESS = 10f / PPM;
-    private Array<CheckpointBlock> checkpoints = new Array<>();
+    private Array<CheckpointBlock> checkpointsArray = new Array<>();
     
     public IntroScene(MainGame game) {
         this.game = game;
@@ -60,7 +60,7 @@ public class IntroScene extends ScreenAdapter {
         createCheckpoints(); //checkpoints need to be before player
         
         
-        world.setContactListener(new GameContactListener(player, checkpoints)); //set contact listener is built into box2d
+        world.setContactListener(new GameContactListener(player, checkpointsArray)); //set contact listener is built into box2d
     }
 
 
@@ -88,7 +88,7 @@ public class IntroScene extends ScreenAdapter {
     }
     
     private void createBoundaries() {
-        // left, right, top boundaries
+        // left and right boundaries
 
         // left wall
     	BodyDef leftWallDef = new BodyDef();
@@ -130,8 +130,8 @@ public class IntroScene extends ScreenAdapter {
     	checkpoint1 = new CheckpointBlock(world, 100f/ PPM, 100f/ PPM, 10f/ PPM, 10f/ PPM, 0);
     	checkpoint2 = new CheckpointBlock(world, 200f/ PPM, 100f/ PPM, 10f/ PPM, 10f/ PPM, 1);
     	
-    	checkpoints.add(checkpoint1);
-    	checkpoints.add(checkpoint2);
+    	checkpointsArray.add(checkpoint1);
+    	checkpointsArray.add(checkpoint2);
 
     	int checkpointID = SaveManager.loadCheckpoint();
     	Vector2 spawn = new Vector2(playerStartX, playerStartY); // default spawn
@@ -139,7 +139,7 @@ public class IntroScene extends ScreenAdapter {
 
     	switch (checkpointID) {
         case 0:
-            spawn = checkpoint1.getSpawnPositionPixels(PPM);
+            spawn = checkpoint1.getSpawnPositionPixels(PPM); //Quality of life thing im trying out
             break;
         case 1:
             spawn = checkpoint2.getSpawnPositionPixels(PPM);
@@ -149,7 +149,7 @@ public class IntroScene extends ScreenAdapter {
     }
     	float spawnX = spawn.x;
     	float spawnY = spawn.y;
-    	createPlayer(spawnX, spawnY);
+    	createPlayer(spawnX, spawnY); //create player at wherever the checkpoint is
     }
 
     @Override

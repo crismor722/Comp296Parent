@@ -24,6 +24,5 @@ public class SaveManager {
     	int loadId = prefs.getInteger("checkpointID", 1);
         System.out.println("Loaded checkpoint: " + loadId);
         return loadId;
-
     }
 }

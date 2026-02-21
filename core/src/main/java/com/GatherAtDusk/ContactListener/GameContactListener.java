@@ -25,8 +25,8 @@ public class GameContactListener implements ContactListener {
     	Fixture fixtureB = contact.getFixtureB();
     	
     	
-        CollisionType currentCollisionTypeA = getType(fixtureA); 
-        CollisionType currentCollisionTypeB = getType(fixtureB); //sets the collision type after collision type is determined from getType
+        CollisionType currentCollisionTypeA = getCollisionType(fixtureA); 
+        CollisionType currentCollisionTypeB = getCollisionType(fixtureB); //sets the collision type after collision type is determined from getType
         //after getType runs, now the program knows what collisionType it is
         if (isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.PLAYER, CollisionType.GROUND)) {
             player.setOnGround(true); //sends the data to the player class so the player can check if it is on the ground
@@ -36,9 +36,13 @@ public class GameContactListener implements ContactListener {
             Fixture checkpointFixture = (currentCollisionTypeA == CollisionType.CHECKPOINT) ? fixtureA : fixtureB;
             //the game doesn't know which one is which so i need to tell it with the if statement above^ : if collison type is same as checkpoint, its the checkpoint
             //loop through all checkpointBlocks to find which one was touched
-            for (CheckpointBlock checkpoint : checkpointBlocks) {
-                if (checkpoint.getBody().getFixtureList().contains(checkpointFixture, true)) {
-                    checkpoint.activateSave(player);
+            for (CheckpointBlock currentCheckpoint : checkpointBlocks) {
+                if (currentCheckpoint.getBody().getFixtureList().contains(checkpointFixture, true)) { //goes through each checkpoint and matches it to the checkpoint in the collison instance
+                    currentCheckpoint.activateSave(player); 
+                    //long story short, this compares the unique memory reference of all the created checkpoints and compares it to the checkpoint that is involved with the collision
+                    
+                    //getBody of current chkpnt , get the fixtures of it, figures out which fixture is the same in memmory reference and then determines that that checkpoint calls activateSave
+                    //LibGDX arraylists are different then normal arraylists, LibGDX allows me to compare the fixture's unique memory reference to determine which fixture is which
                     break; // only activate the one touched : side note this one break statement saved me from so much debugging
                 }
             }
@@ -47,8 +51,8 @@ public class GameContactListener implements ContactListener {
 
     @Override
     public void endContact(Contact contact) { //whenever two objects stop touching, box2d calls this method
-        CollisionType currentCollisionTypeA = getType(contact.getFixtureA());
-        CollisionType currentCollisionTypeB = getType(contact.getFixtureB());
+        CollisionType currentCollisionTypeA = getCollisionType(contact.getFixtureA());
+        CollisionType currentCollisionTypeB = getCollisionType(contact.getFixtureB());
 
         if (isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.PLAYER, CollisionType.GROUND)) { //box2d can get confused, this helps
             player.setOnGround(false); //setOnground now maybe change to isMakingContact
@@ -59,7 +63,7 @@ public class GameContactListener implements ContactListener {
     @Override public void postSolve(Contact contact, ContactImpulse impulse) {}
 
     //need to check if  collision type is in enum for saftey
-    private CollisionType getType(Fixture fixture) { 
+    private CollisionType getCollisionType(Fixture fixture) { 
         Object data = fixture.getUserData(); //collsionType is saved in userData of the object
         //IMPORTANT: userData is being set in player class and in introscene for the ground 
         //make it an object so "intanceof" can be used
