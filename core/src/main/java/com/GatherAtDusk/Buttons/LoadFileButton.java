@@ -1,12 +1,12 @@
 package com.GatherAtDusk.Buttons;
 
 import com.GatherAtDusk.SceneManager;
+import com.GatherAtDusk.Saving.SaveManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -29,7 +29,7 @@ public class LoadFileButton extends TextButton {
         addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float curserLocationX, float curserLocationY) { //when clicked, the location of the cursor is sent, this is default
-                sceneManager.goToSceneForCheckpoint(0); //CHANGE LATER
+                sceneManager.goToSceneForCheckpoint(SaveManager.loadCheckpoint()); //NOTE: because the method is static, there is no need to initialize it ex. SceneManager = scenemanager
             }
         });
     }

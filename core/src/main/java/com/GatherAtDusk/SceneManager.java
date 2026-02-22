@@ -22,11 +22,11 @@ public class SceneManager {
             case 0:
                 game.setScreen(new IntroScene(game));
                 break;
-            /*case 1:
-                game.setScreen(new GameScene(game, checkpoint));
+            case 1:
+                game.setScreen(new IntroScene(game));
                 break;
-            case 2:
-                game.setScreen(new BossScene(game, checkpoint));
+            /*case 2:
+                game.setScreen(new BossScene(game));
                 break; */
             default:
                 game.setScreen(new IntroScene(game));
