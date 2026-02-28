@@ -1,9 +1,11 @@
 package com.GatherAtDusk.PlayerStuff;
+import com.GatherAtDusk.Blocks.PlayerAttackBlock;
 import com.GatherAtDusk.ContactListener.CollisionType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
 
 
 public class Player {
@@ -12,9 +14,13 @@ public class Player {
 	private static final float PLAYER_WIDTH = 40f;
 	private static final float PLAYER_HEIGHT = 60f;
 	private static final float PPM = (float) 100; // 100 pixels per meter 
+	private World world;
+	private PlayerAttackBlock currentAttack;
+	private Array<PlayerAttackBlock> activeAttacks = new Array<>();
 	
 	
 	public Player(World world, float startX, float startY) {
+		this.world = world;
 		createBody(world, startX, startY);
 	}
 	
@@ -55,10 +61,37 @@ public class Player {
 	public Vector2 getPosition() {
 	    return playerBody.getPosition();
 	}
+	
+	public Body getBody() {
+		return playerBody;
+	}
+	
+	public PlayerAttackBlock getAttackBlock() {
+		return currentAttack;
+	}
+	
+	public void clearCurrentAttack() {
+		currentAttack = null;
+	}
+	
+	
+	public void attack() { //creates the attack block
+		Vector2 playerPos = playerBody.getPosition();
+	    float xOffset = 0.8f;
+	    Vector2 blockPos = new Vector2(playerPos.x + xOffset, playerPos.y);
+
+	    PlayerAttackBlock newAttack = new PlayerAttackBlock(world, blockPos);
+	    activeAttacks.add(newAttack);
+	}
+	
+	public Array<PlayerAttackBlock> getActiveAttacks() {
+	    return activeAttacks;
+	}
 
 	public void update() { //gravity is established in introscene already
 
         float moveSpeed = 3f; //base movespeed
+        
         Vector2 playerVelocity = playerBody.getLinearVelocity();
 
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
@@ -74,6 +107,13 @@ public class Player {
         if (isOnGround && Gdx.input.isKeyJustPressed(Input.Keys.W)) { // player needs to be on ground before they could jump
             playerBody.setLinearVelocity(playerVelocity.x, 5f); // jumps straight up
         }
+        
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            attack();
+        }
+                
     }
+
+	
 			
 }

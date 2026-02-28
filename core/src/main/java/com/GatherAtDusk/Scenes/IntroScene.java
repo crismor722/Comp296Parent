@@ -2,6 +2,7 @@ package com.GatherAtDusk.Scenes;
 
 import com.GatherAtDusk.MainGame;
 import com.GatherAtDusk.Blocks.CheckpointBlock;
+import com.GatherAtDusk.Blocks.PlayerAttackBlock;
 import com.GatherAtDusk.ContactListener.*;
 import com.GatherAtDusk.PlayerStuff.Player;
 import com.GatherAtDusk.Saving.SaveManager;
@@ -39,6 +40,7 @@ public class IntroScene extends ScreenAdapter {
     private static final float PPM = (float) 100; // 100 pixels per meter 
     private static final float WALL_THICKNESS = 10f / PPM;
     private Array<CheckpointBlock> checkpointsArray = new Array<>();
+    private GameContactListener contactListener;
     
     public IntroScene(MainGame game) {
         this.game = game;
@@ -59,8 +61,8 @@ public class IntroScene extends ScreenAdapter {
         createBoundaries();
         createCheckpoints(); //checkpoints need to be before player
         
-        
-        world.setContactListener(new GameContactListener(player, checkpointsArray)); //set contact listener is built into box2d
+        contactListener = new GameContactListener(player, checkpointsArray);
+        world.setContactListener(contactListener); //set contact listener is built into box2d
     }
 
 
@@ -99,11 +101,12 @@ public class IntroScene extends ScreenAdapter {
     	PolygonShape leftShape = new PolygonShape();
     	leftShape.setAsBox(WALL_THICKNESS / 2, WORLD_HEIGHT / 2 / PPM);
 
-    	FixtureDef leftWallFixture = new FixtureDef();
-    	leftWallFixture.shape = leftShape;
-    	leftWallFixture.friction = 0f; // no friction on walls
-    	leftWallFixture.restitution = 0f; // optional, prevents bouncing
-    	leftWallBody.createFixture(leftWallFixture).setUserData(CollisionType.WALL);
+    	FixtureDef leftWallFixtureDef = new FixtureDef();
+    	leftWallFixtureDef.shape = leftShape;
+    	leftWallFixtureDef.friction = 0f; // no friction on walls
+    	leftWallFixtureDef.restitution = 0f; // optional, prevents bouncing
+    	Fixture leftWallFixture = leftWallBody.createFixture(leftWallFixtureDef);
+    	leftWallFixture.setUserData(CollisionType.WALL);
 
     	leftShape.dispose();
 
@@ -117,13 +120,16 @@ public class IntroScene extends ScreenAdapter {
         PolygonShape rightShape = new PolygonShape();
         rightShape.setAsBox(WALL_THICKNESS / 2, WORLD_HEIGHT / 2 / PPM);
         
-        FixtureDef rightWallFixture = new FixtureDef();
-        rightWallFixture.shape = rightShape;
-        rightWallFixture.friction = 0f; // no friction on walls
-        rightWallFixture.restitution = 0f; // optional, prevents bouncing
-        rightWallBody.createFixture(rightWallFixture).setUserData(CollisionType.WALL);
+        FixtureDef rightWallFixtureDef = new FixtureDef();
+        rightWallFixtureDef.shape = rightShape;
+        rightWallFixtureDef.friction = 0f; // no friction on walls
+        rightWallFixtureDef.restitution = 0f; // optional, prevents bouncing
+        Fixture rightWallFixture = rightWallBody.createFixture(rightWallFixtureDef);
+        rightWallFixture.setUserData(CollisionType.WALL);
         
         rightShape.dispose();
+        
+        
     }
     
     private void createCheckpoints(){
@@ -168,8 +174,9 @@ public class IntroScene extends ScreenAdapter {
         shapeRenderer.setColor(0.2f, 0.8f, 0.2f, 1); //color green
         shapeRenderer.rect(0, 0, GROUND_WIDTH_SIZE / PPM, GROUND_HEIGHT_SIZE *3/2 / PPM); // Collision block is 2/3 shape of ground color right now
         shapeRenderer.end();
-         
-        player.update();
+        
+        contactListener.processPendingDestruction(); //need to be called  after world step in order for LibGDX to be happy
+        player.update();  //happens before player rendering and coloring
         
         //player color and rendering
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -183,6 +190,11 @@ public class IntroScene extends ScreenAdapter {
         );
         shapeRenderer.end();
         
+        
+        //NEED TO MAKE THIS LOOP AND COLOR ALL CHECKPOINTS IN ARRAY FUTURE ME PLEASE
+        
+        
+        //checkpoint color and rendering 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(1f, 1f, 0f, 1); // yellow checkpoint
         shapeRenderer.rect(
@@ -192,6 +204,23 @@ public class IntroScene extends ScreenAdapter {
             checkpoint1.getHeight() / PPM
         );
         shapeRenderer.end();
+        
+        
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(1f, 0f, 0f, 1); // red for attacks
+        
+        //sensors don't get color fill so i trick the game with + 0.001f to make it think i am not coloring the sensor
+        for (PlayerAttackBlock attack : player.getActiveAttacks()) {
+        	shapeRenderer.rect(
+        		attack.getPosition().x + 0.001f - PlayerAttackBlock.getBlockWidth() + 0.001f / 2f,
+                attack.getPosition().y + 0.001f- PlayerAttackBlock.getBlockHeight() + 0.001f / 2f,
+                PlayerAttackBlock.getBlockWidth() + 0.001f / PPM,
+                PlayerAttackBlock.getBlockHeight() + 0.001f /PPM
+                );
+        }
+        shapeRenderer.end();
+        
+        
 
         //box2d debug
         debugRenderer.render(world, camera.combined);

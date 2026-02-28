@@ -1,6 +1,7 @@
 package com.GatherAtDusk.ContactListener;
 
 import com.GatherAtDusk.Blocks.CheckpointBlock;
+import com.GatherAtDusk.Blocks.PlayerAttackBlock;
 import com.GatherAtDusk.PlayerStuff.Player;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
@@ -9,11 +10,13 @@ public class GameContactListener implements ContactListener {
 
     private final Player player;
     private Array<CheckpointBlock> checkpointBlocks; //array list makes life easier
+    private Array<PlayerAttackBlock> toDestroy = new Array<>();
 
-    public GameContactListener(Player player, Array<CheckpointBlock> checkpointBlocks) {
+    public GameContactListener(Player player, Array<CheckpointBlock> checkpointBlocks ) {
         this.player = player;
         this.checkpointBlocks = checkpointBlocks;
     }
+    
     //note: i made this class this way so all i need to do is to compare what collisions happen, and what to do with it
     //this class detects all collisions and checks what collisionTypes are involved to determine what to do with them
     @Override
@@ -47,6 +50,15 @@ public class GameContactListener implements ContactListener {
                 }
             }
         }
+        
+        
+        if (isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.PLAYER_ATTACK_BLOCK, CollisionType.WALL)) {
+            Fixture attackFixture =  (currentCollisionTypeA == CollisionType.PLAYER_ATTACK_BLOCK) ? fixtureA : fixtureB;
+
+            PlayerAttackBlock block = (PlayerAttackBlock) attackFixture.getBody().getUserData();
+            toDestroy.add(block);
+        }
+        
     }
 
     @Override
@@ -54,8 +66,8 @@ public class GameContactListener implements ContactListener {
         CollisionType currentCollisionTypeA = getCollisionType(contact.getFixtureA());
         CollisionType currentCollisionTypeB = getCollisionType(contact.getFixtureB());
 
-        if (isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.PLAYER, CollisionType.GROUND)) { //box2d can get confused, this helps
-            player.setOnGround(false); //setOnground now maybe change to isMakingContact
+        if (isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.PLAYER, CollisionType.GROUND)) {
+            player.setOnGround(false); 
         }
     }
 
@@ -84,6 +96,17 @@ public class GameContactListener implements ContactListener {
             return false;
         }
     }
+    
+    public void processPendingDestruction() {
+        for (PlayerAttackBlock block : toDestroy) { //array to destroy blocks
+        	block.destroy();
+        	if (player.getAttackBlock() == block) {
+                player.clearCurrentAttack(); // let player attack again
+            }
+        }
+        toDestroy.clear();
+    }
+    
     
     //notes for future me: this method retrieves player because it call playe.setOnGround
     //getContact is called when box2d detects contact between two objects
