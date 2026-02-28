@@ -71,7 +71,7 @@ public class IntroScene extends ScreenAdapter {
         
         tempDamageBlock();
         
-        contactListener = new GameContactListener(player, checkpointsArray);
+        contactListener = new GameContactListener(game, player, checkpointsArray);
         world.setContactListener(contactListener); //set contact listener is built into box2d
     }
 
@@ -240,6 +240,8 @@ public class IntroScene extends ScreenAdapter {
         shapeRenderer.end();
         
         //temp damage block
+        
+        //NOTE: most likely will need to loop this like player attack block
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(1f, 0f, 0f, 1);
         shapeRenderer.rect(

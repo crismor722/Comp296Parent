@@ -1,5 +1,7 @@
 package com.GatherAtDusk.ContactListener;
 
+import com.GatherAtDusk.MainGame;
+import com.GatherAtDusk.SceneManager;
 import com.GatherAtDusk.Blocks.BossAttackBlock;
 import com.GatherAtDusk.Blocks.CheckpointBlock;
 import com.GatherAtDusk.Blocks.PlayerAttackBlock;
@@ -10,10 +12,14 @@ import com.badlogic.gdx.utils.Array;
 public class GameContactListener implements ContactListener {
 
     private final Player player;
+    private final MainGame game;
+    private final SceneManager sceneManager;
     private Array<CheckpointBlock> checkpointBlocks; //array list makes life easier
     private Array<PlayerAttackBlock> toDestroy = new Array<>();
 
-    public GameContactListener(Player player, Array<CheckpointBlock> checkpointBlocks ) {
+    public GameContactListener(MainGame game, Player player, Array<CheckpointBlock> checkpointBlocks ) {
+    	this.game = game;
+    	this.sceneManager = game.sceneManager;
         this.player = player;
         this.checkpointBlocks = checkpointBlocks;
     }
@@ -65,6 +71,7 @@ public class GameContactListener implements ContactListener {
             
             BossAttackBlock bossBlock = (BossAttackBlock) bossAttackFixture.getBody().getUserData();
             player.takeDamage(bossBlock.getDamage());
+            sceneManager.isGameOver(player.getHealth());
             //toDestroy.add(block);
         }
     }
