@@ -46,8 +46,6 @@ public class PlayerAttackBlock {
 		playerAttackBody.setLinearVelocity(moveSpeed, blockVector.x);
 		
 	}
-	
-	
 
 	public static float getBlockWidth() {
 		return BLOCK_WIDTH;

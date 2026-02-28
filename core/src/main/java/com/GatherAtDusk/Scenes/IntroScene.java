@@ -5,6 +5,7 @@ import com.GatherAtDusk.Blocks.CheckpointBlock;
 import com.GatherAtDusk.Blocks.PlayerAttackBlock;
 import com.GatherAtDusk.ContactListener.*;
 import com.GatherAtDusk.PlayerStuff.Player;
+import com.GatherAtDusk.PlayerStuff.PlayerHealthUI;
 import com.GatherAtDusk.Saving.SaveManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
@@ -41,6 +42,7 @@ public class IntroScene extends ScreenAdapter {
     private static final float WALL_THICKNESS = 10f / PPM;
     private Array<CheckpointBlock> checkpointsArray = new Array<>();
     private GameContactListener contactListener;
+    private PlayerHealthUI playerHealthUI;
     
     public IntroScene(MainGame game) {
         this.game = game;
@@ -60,6 +62,7 @@ public class IntroScene extends ScreenAdapter {
         createGround();
         createBoundaries();
         createCheckpoints(); //checkpoints need to be before player
+        createPlayerHealthUI();
         
         contactListener = new GameContactListener(player, checkpointsArray);
         world.setContactListener(contactListener); //set contact listener is built into box2d
@@ -68,6 +71,10 @@ public class IntroScene extends ScreenAdapter {
 
 	private void createPlayer(float spawnX, float spawnY) {
 		player = new Player(world, spawnX, spawnY);
+	}
+	
+	private void createPlayerHealthUI() {
+		playerHealthUI = new PlayerHealthUI(player);
 	}
 
 	private void createGround() { //createGround needs to be in this scene and not in MainGame, MainGame only handles scenes
@@ -220,8 +227,8 @@ public class IntroScene extends ScreenAdapter {
         }
         shapeRenderer.end();
         
-        
-
+        playerHealthUI.update();
+        playerHealthUI.render(delta);
         //box2d debug
         debugRenderer.render(world, camera.combined);
         

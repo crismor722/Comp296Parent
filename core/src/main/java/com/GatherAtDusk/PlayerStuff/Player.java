@@ -17,13 +17,14 @@ public class Player {
 	private World world;
 	private PlayerAttackBlock currentAttack;
 	private Array<PlayerAttackBlock> activeAttacks = new Array<>();
+	private int health = 100;
 	
 	
 	public Player(World world, float startX, float startY) {
 		this.world = world;
 		createBody(world, startX, startY);
 	}
-	
+
 	private void createBody(World world, float startX, float startY) {
 		BodyDef bodyDef = new BodyDef(); // defining the body of player
         bodyDef.type = BodyDef.BodyType.DynamicBody; //dynamic sprite
@@ -44,6 +45,21 @@ public class Player {
         playerFixture.setUserData(CollisionType.PLAYER);
         
         shape.dispose();
+	}
+	public void setHealth(int health){
+		this.health = health;
+	}
+	
+	public int getHealth() {
+		return health;
+	}
+	
+	public void takeDamage(int damage, float timeInvincible, float delta) {
+		timeInvincible = timeInvincible - delta;
+		
+		if (timeInvincible <= 0f) {
+			health = health - damage;
+		}
 	}
 	
 	public void setOnGround(boolean onGround) {
