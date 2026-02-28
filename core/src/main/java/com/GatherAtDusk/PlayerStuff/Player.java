@@ -54,12 +54,8 @@ public class Player {
 		return health;
 	}
 	
-	public void takeDamage(int damage, float timeInvincible, float delta) {
-		timeInvincible = timeInvincible - delta;
-		
-		if (timeInvincible <= 0f) {
-			health = health - damage;
-		}
+	public void takeDamage(int damage ) {
+		health = health - damage;
 	}
 	
 	public void setOnGround(boolean onGround) {

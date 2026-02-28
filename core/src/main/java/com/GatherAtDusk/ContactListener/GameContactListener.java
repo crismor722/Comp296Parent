@@ -1,5 +1,6 @@
 package com.GatherAtDusk.ContactListener;
 
+import com.GatherAtDusk.Blocks.BossAttackBlock;
 import com.GatherAtDusk.Blocks.CheckpointBlock;
 import com.GatherAtDusk.Blocks.PlayerAttackBlock;
 import com.GatherAtDusk.PlayerStuff.Player;
@@ -53,12 +54,19 @@ public class GameContactListener implements ContactListener {
         
         
         if (isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.PLAYER_ATTACK_BLOCK, CollisionType.WALL)) {
-            Fixture attackFixture =  (currentCollisionTypeA == CollisionType.PLAYER_ATTACK_BLOCK) ? fixtureA : fixtureB;
+            Fixture playerAttackFixture =  (currentCollisionTypeA == CollisionType.PLAYER_ATTACK_BLOCK) ? fixtureA : fixtureB;
 
-            PlayerAttackBlock block = (PlayerAttackBlock) attackFixture.getBody().getUserData();
-            toDestroy.add(block);
+            PlayerAttackBlock playerBlock = (PlayerAttackBlock) playerAttackFixture.getBody().getUserData();
+            toDestroy.add(playerBlock);
         }
         
+        if (isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.PLAYER, CollisionType.BOSS_ATTACK_BLOCK)) {
+            Fixture bossAttackFixture =  (currentCollisionTypeA == CollisionType.BOSS_ATTACK_BLOCK) ? fixtureA : fixtureB;
+            
+            BossAttackBlock bossBlock = (BossAttackBlock) bossAttackFixture.getBody().getUserData();
+            player.takeDamage(bossBlock.getDamage());
+            //toDestroy.add(block);
+        }
     }
 
     @Override

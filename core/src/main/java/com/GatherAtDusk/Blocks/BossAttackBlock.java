@@ -1,21 +1,24 @@
 package com.GatherAtDusk.Blocks;
-
 import com.GatherAtDusk.ContactListener.CollisionType;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 
-public class PlayerAttackBlock {
-	
-	private Body playerAttackBody;
+public class BossAttackBlock {
 	private World world;
+	private Body bossAttackBody;
 	
 	private static final float PPM = (float) 100;
-	private static final float BLOCK_WIDTH = 10f /PPM;
-	private static final float BLOCK_HEIGHT = 6f / PPM;
+	private static final float BLOCK_WIDTH = 30f;
+	private static final float BLOCK_HEIGHT = 15f;
+	private int damage = 10; //default damage
 	private boolean destroyed = false;
 	
-	
-	public PlayerAttackBlock( World world, Vector2 blockPos){
+	public BossAttackBlock(World world, Vector2 blockPos){
 		this.world = world;
 		
 		//the usual create body stuff
@@ -23,8 +26,8 @@ public class PlayerAttackBlock {
         bd.type = BodyDef.BodyType.KinematicBody; //this body type allows it to ignore physics
         bd.position.set(blockPos);
 
-        playerAttackBody = world.createBody(bd);
-        playerAttackBody.setUserData(this); // i may not need this statement
+        bossAttackBody = world.createBody(bd);
+        bossAttackBody.setUserData(this); 
 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(BLOCK_WIDTH/2f / PPM, BLOCK_HEIGHT/ 2f / PPM); 
@@ -33,21 +36,29 @@ public class PlayerAttackBlock {
         fd.shape = shape;
         fd.isSensor = true;
 
-        Fixture playerAttackFix = playerAttackBody.createFixture(fd);
-        playerAttackFix.setUserData(CollisionType.PLAYER_ATTACK_BLOCK);
+        Fixture bossAttackFix = bossAttackBody.createFixture(fd);
+        bossAttackFix.setUserData(CollisionType.BOSS_ATTACK_BLOCK);
         
-        setVelocity();
+        //setVelocity();
         
         shape.dispose();
 	}
 	
-	private void setVelocity() { //pretty much the same thing as setting the player's velocity
+	/*private void setVelocity() { //pretty much the same thing as setting the player's velocity
 		float moveSpeed = 3.5f;
 		Vector2 blockVector = playerAttackBody.getLinearVelocity();
 		playerAttackBody.setLinearVelocity(moveSpeed, blockVector.x);
 		
+	} */
+	
+	public void setDamage(int damage) {
+		this.damage = damage;
 	}
-
+	
+	public int getDamage() {
+		return damage;
+	}
+	
 	public static float getBlockWidth() {
 		return BLOCK_WIDTH;
 	}
@@ -57,16 +68,16 @@ public class PlayerAttackBlock {
 	}
 	
 	public Vector2 getPosition() {
-		return playerAttackBody.getPosition();
+		return bossAttackBody.getPosition();
 	}
 
 	
 	public Body getBody() {
-		return playerAttackBody;
+		return bossAttackBody;
 	}
 	
 	public void destroy() {
-		world.destroyBody(playerAttackBody);
+		world.destroyBody(bossAttackBody);
 		destroyed = true;
 	}
 	
@@ -74,7 +85,4 @@ public class PlayerAttackBlock {
 		return destroyed;
 	}
 	
-	
-	// public void bossTakeDamage()
 }
-

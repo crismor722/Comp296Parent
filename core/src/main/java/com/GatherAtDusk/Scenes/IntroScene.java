@@ -1,6 +1,7 @@
 package com.GatherAtDusk.Scenes;
 
 import com.GatherAtDusk.MainGame;
+import com.GatherAtDusk.Blocks.BossAttackBlock;
 import com.GatherAtDusk.Blocks.CheckpointBlock;
 import com.GatherAtDusk.Blocks.PlayerAttackBlock;
 import com.GatherAtDusk.ContactListener.*;
@@ -44,6 +45,9 @@ public class IntroScene extends ScreenAdapter {
     private GameContactListener contactListener;
     private PlayerHealthUI playerHealthUI;
     
+    private Vector2 tempVector;
+    private BossAttackBlock tempDamageBlock;
+    
     public IntroScene(MainGame game) {
         this.game = game;
     }
@@ -64,10 +68,18 @@ public class IntroScene extends ScreenAdapter {
         createCheckpoints(); //checkpoints need to be before player
         createPlayerHealthUI();
         
+        
+        tempDamageBlock();
+        
         contactListener = new GameContactListener(player, checkpointsArray);
         world.setContactListener(contactListener); //set contact listener is built into box2d
     }
 
+
+	private void tempDamageBlock() {
+		tempVector = new Vector2(800f /2 /PPM, 100f / PPM);
+		tempDamageBlock = new BossAttackBlock(world, tempVector);
+	}
 
 	private void createPlayer(float spawnX, float spawnY) {
 		player = new Player(world, spawnX, spawnY);
@@ -225,6 +237,17 @@ public class IntroScene extends ScreenAdapter {
                 PlayerAttackBlock.getBlockHeight() + 0.001f /PPM
                 );
         }
+        shapeRenderer.end();
+        
+        //temp damage block
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(1f, 0f, 0f, 1);
+        shapeRenderer.rect(
+            tempDamageBlock.getPosition().x - BossAttackBlock.getBlockWidth() /2 / PPM, 
+            tempDamageBlock.getPosition().y - BossAttackBlock.getBlockHeight() /2 / PPM, 
+            BossAttackBlock.getBlockWidth() / PPM,
+            BossAttackBlock.getBlockHeight() / PPM
+        );
         shapeRenderer.end();
         
         playerHealthUI.update();
