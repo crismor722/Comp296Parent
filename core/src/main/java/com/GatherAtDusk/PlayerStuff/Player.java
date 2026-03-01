@@ -89,7 +89,7 @@ public class Player {
 	
 	public void attack() { //creates the attack block
 		Vector2 playerPos = playerBody.getPosition();
-	    float xOffset = 0.8f;
+	    float xOffset = 0.3f;
 	    Vector2 blockPos = new Vector2(playerPos.x + xOffset, playerPos.y);
 
 	    PlayerAttackBlock newAttack = new PlayerAttackBlock(world, blockPos);
