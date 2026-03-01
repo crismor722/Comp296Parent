@@ -1,4 +1,4 @@
-package com.GatherAtDusk.Saving;
+package com.GatherAtDusk.Managers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 

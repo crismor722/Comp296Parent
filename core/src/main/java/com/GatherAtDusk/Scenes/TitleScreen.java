@@ -9,8 +9,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.GatherAtDusk.MainGame;
-import com.GatherAtDusk.SceneManager;
 import com.GatherAtDusk.Buttons.LoadFileButton;
+import com.GatherAtDusk.Managers.SceneManager;
 
 public class TitleScreen extends ScreenAdapter {
 

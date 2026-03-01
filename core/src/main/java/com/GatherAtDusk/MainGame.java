@@ -1,5 +1,6 @@
 package com.GatherAtDusk;
 
+import com.GatherAtDusk.Managers.SceneManager;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 

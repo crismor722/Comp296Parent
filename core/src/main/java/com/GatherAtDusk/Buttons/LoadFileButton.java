@@ -1,7 +1,7 @@
 package com.GatherAtDusk.Buttons;
 
-import com.GatherAtDusk.SceneManager;
-import com.GatherAtDusk.Saving.SaveManager;
+import com.GatherAtDusk.Managers.SaveManager;
+import com.GatherAtDusk.Managers.SceneManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;

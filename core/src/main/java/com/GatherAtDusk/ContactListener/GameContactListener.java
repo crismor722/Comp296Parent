@@ -1,10 +1,10 @@
 package com.GatherAtDusk.ContactListener;
 
 import com.GatherAtDusk.MainGame;
-import com.GatherAtDusk.SceneManager;
 import com.GatherAtDusk.Blocks.BossAttackBlock;
 import com.GatherAtDusk.Blocks.CheckpointBlock;
 import com.GatherAtDusk.Blocks.PlayerAttackBlock;
+import com.GatherAtDusk.Managers.SceneManager;
 import com.GatherAtDusk.PlayerStuff.Player;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
@@ -47,7 +47,8 @@ public class GameContactListener implements ContactListener {
             //the game doesn't know which one is which so i need to tell it with the if statement above^ : if collison type is same as checkpoint, its the checkpoint
             //loop through all checkpointBlocks to find which one was touched
             for (CheckpointBlock currentCheckpoint : checkpointBlocks) {
-                if (currentCheckpoint.getBody().getFixtureList().contains(checkpointFixture, true)) { //goes through each checkpoint and matches it to the checkpoint in the collison instance
+                if (currentCheckpoint.getBody().getFixtureList().contains(checkpointFixture, true)
+                		&& currentCheckpoint.getIdofCurrentCheckpoint() != 2) { //goes through each checkpoint and matches it to the checkpoint in the collison instance
                     currentCheckpoint.activateSave(player); 
                     //long story short, this compares the unique memory reference of all the created checkpoints and compares it to the checkpoint that is involved with the collision
                     
@@ -55,6 +56,12 @@ public class GameContactListener implements ContactListener {
                     //LibGDX arraylists are different then normal arraylists, LibGDX allows me to compare the fixture's unique memory reference to determine which fixture is which
                     break; // only activate the one touched : side note this one break statement saved me from so much debugging
                 }
+                else if (currentCheckpoint.getBody().getFixtureList().contains(checkpointFixture, true)
+                		&& currentCheckpoint.getIdofCurrentCheckpoint() == 2) {
+                	sceneManager.goToSceneForCheckpoint(currentCheckpoint.getIdofCurrentCheckpoint());
+                	break;
+                }
+                
             }
         }
         

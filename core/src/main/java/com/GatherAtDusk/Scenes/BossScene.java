@@ -4,8 +4,8 @@ import com.GatherAtDusk.MainGame;
 import com.GatherAtDusk.Blocks.BossAttackBlock;
 import com.GatherAtDusk.Blocks.CheckpointBlock;
 import com.GatherAtDusk.Blocks.PlayerAttackBlock;
-import com.GatherAtDusk.ContactListener.*;
-import com.GatherAtDusk.Managers.SaveManager;
+import com.GatherAtDusk.ContactListener.CollisionType;
+import com.GatherAtDusk.ContactListener.GameContactListener;
 import com.GatherAtDusk.PlayerStuff.Player;
 import com.GatherAtDusk.PlayerStuff.PlayerHealthUI;
 import com.badlogic.gdx.Gdx;
@@ -13,23 +13,26 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector2; // Vector2 makes it so it defines left right up and down like vectors in physics
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
-public class IntroScene extends ScreenAdapter {
-	
-    private final MainGame game;
+public class BossScene extends ScreenAdapter{
+	private final MainGame game;
     private OrthographicCamera camera;
     private ShapeRenderer shapeRenderer;
     private World world;
     private Box2DDebugRenderer debugRenderer;
     private Player player;
-    private CheckpointBlock checkpoint1;
-    private CheckpointBlock checkpoint2;
-    private CheckpointBlock checkpoint3;
+    private CheckpointBlock checkpoint4;
     
-    private static final int HGRAVITY = 0;
+	private static final int HGRAVITY = 0;
     private static final float VGRAVITY = -9.8f; //LibGDX likes floats for decimals
     private static final float WORLD_WIDTH = 800f;
     private static final float WORLD_HEIGHT = 480f;
@@ -49,11 +52,9 @@ public class IntroScene extends ScreenAdapter {
     private Vector2 tempVector;
     private BossAttackBlock tempDamageBlock;
     
-    public IntroScene(MainGame game) {
-        this.game = game;
+    public BossScene(MainGame game) {
+    	this.game = game;
     }
-
-    @Override
     public void show() {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, WORLD_WIDTH / PPM, WORLD_HEIGHT / PPM);
@@ -75,10 +76,8 @@ public class IntroScene extends ScreenAdapter {
         contactListener = new GameContactListener(game, player, checkpointsArray);
         world.setContactListener(contactListener); //set contact listener is built into box2d
     }
-
-
-	private void tempDamageBlock() {
-		tempVector = new Vector2(800f /2 /PPM, 100f / PPM);
+    private void tempDamageBlock() {
+		tempVector = new Vector2(900f /2 /PPM, 100f / PPM);
 		tempDamageBlock = new BossAttackBlock(world, tempVector);
 	}
 
@@ -148,36 +147,13 @@ public class IntroScene extends ScreenAdapter {
         rightWallFixture.setUserData(CollisionType.WALL);
         
         rightShape.dispose();
-        
-        
     }
     
     private void createCheckpoints(){
-    	checkpoint1 = new CheckpointBlock(world, 100f/ PPM, 100f/ PPM, 10f/ PPM, 10f/ PPM, 0);
-    	checkpoint2 = new CheckpointBlock(world, 200f/ PPM, 100f/ PPM, 10f/ PPM, 10f/ PPM, 1);
-    	checkpoint3 = new CheckpointBlock(world, 600f/ PPM, 100f/ PPM, 10f/ PPM, 10f/ PPM, 2);
+    	checkpoint4 = new CheckpointBlock(world, 100f/ PPM, 600f/ PPM, 10f/ PPM, 10f/ PPM, 3); //this checkpoint is made just to make contactlistenr happy, doesnt do anything
     	
-    	checkpointsArray.add(checkpoint1);
-    	checkpointsArray.add(checkpoint2);
-    	checkpointsArray.add(checkpoint3);
-
-    	int checkpointID = SaveManager.loadCheckpoint();
-    	Vector2 spawn = new Vector2(playerStartX, playerStartY); // default spawn
-    	
-
-    	switch (checkpointID) {
-        case 0:
-            spawn = checkpoint1.getSpawnPositionPixels(PPM); //Quality of life thing im trying out
-            break;
-        case 1:
-            spawn = checkpoint2.getSpawnPositionPixels(PPM);
-            break;
-        default:
-            spawn.set(playerStartX, playerStartY); // fallback spawn
-    }
-    	float spawnX = spawn.x;
-    	float spawnY = spawn.y;
-    	createPlayer(spawnX, spawnY); //create player at wherever the checkpoint is
+    	checkpointsArray.add(checkpoint4);
+    	createPlayer(playerStartX, playerStartY);
     }
 
     @Override
@@ -209,21 +185,6 @@ public class IntroScene extends ScreenAdapter {
             //rendering a rect needs to start at bottom left corner of the player this formula does that
             Player.getPlayerWidth() / PPM,
             Player.getPlayerHeight() / PPM
-        );
-        shapeRenderer.end();
-        
-        
-        //NEED TO MAKE THIS LOOP AND COLOR ALL CHECKPOINTS IN ARRAY FUTURE ME PLEASE
-        
-        
-        //checkpoint color and rendering 
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(1f, 1f, 0f, 1); // yellow checkpoint
-        shapeRenderer.rect(
-            checkpoint1.getPosition().x - checkpoint1.getWidth() / 2 / PPM,
-            checkpoint1.getPosition().y - checkpoint1.getHeight() / 2 / PPM,
-            checkpoint1.getWidth() / PPM,
-            checkpoint1.getHeight() / PPM
         );
         shapeRenderer.end();
         

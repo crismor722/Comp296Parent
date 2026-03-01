@@ -1,8 +1,8 @@
 package com.GatherAtDusk.Scenes;
 
 import com.GatherAtDusk.MainGame;
-import com.GatherAtDusk.SceneManager;
 import com.GatherAtDusk.Buttons.ReturnToTitleButton;
+import com.GatherAtDusk.Managers.SceneManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;

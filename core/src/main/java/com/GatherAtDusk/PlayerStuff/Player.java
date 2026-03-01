@@ -124,8 +124,5 @@ public class Player {
             attack();
         }
                 
-    }
-
-	
-			
+    }		
 }
