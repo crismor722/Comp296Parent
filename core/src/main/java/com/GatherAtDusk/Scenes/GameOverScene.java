@@ -39,7 +39,7 @@ public class GameOverScene extends ScreenAdapter {
         Gdx.input.setInputProcessor(stage); 
 
 
-        ReturnToTitleButton returnTitleButton = new ReturnToTitleButton(sceneManager); //needs to send sceneManger for the button to call checkpoint
+        ReturnToTitleButton returnTitleButton = new ReturnToTitleButton(sceneManager); //needs to send sceneManger for the button to call title screen
 
         returnTitleButton.setPosition(
                 Gdx.graphics.getWidth() / 2f - returnTitleButton.getWidth() / 2f, 

@@ -10,8 +10,11 @@ import com.GatherAtDusk.PlayerStuff.Player;
 import com.GatherAtDusk.PlayerStuff.PlayerHealthUI;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2; // Vector2 makes it so it defines left right up and down like vectors in physics
 import com.badlogic.gdx.physics.box2d.*;
@@ -22,12 +25,15 @@ public class IntroScene extends ScreenAdapter {
     private final MainGame game;
     private OrthographicCamera camera;
     private ShapeRenderer shapeRenderer;
+    private SpriteBatch batch;
     private World world;
     private Box2DDebugRenderer debugRenderer;
     private Player player;
     private CheckpointBlock checkpoint1;
     private CheckpointBlock checkpoint2;
     private CheckpointBlock checkpoint3;
+    private Texture grassTexture; //note: top of grassTexture is 37.5% transparent
+    private Texture groundTexture;
     
     private static final int HGRAVITY = 0;
     private static final float VGRAVITY = -9.8f; //LibGDX likes floats for decimals
@@ -42,6 +48,9 @@ public class IntroScene extends ScreenAdapter {
     private float playerStartY = GROUND_HEIGHT_POSITION + 60f; // above ground
     private static final float PPM = (float) 100; // 100 pixels per meter 
     private static final float WALL_THICKNESS = 10f / PPM;
+    private static final float TILE_SIZE = 16f/ PPM;
+    private static final float TILE_INDEX_X = GROUND_WIDTH_SIZE / (TILE_SIZE *PPM); // 800 /16 = 50
+    		
     private Array<CheckpointBlock> checkpointsArray = new Array<>();
     private GameContactListener contactListener;
     private PlayerHealthUI playerHealthUI;
@@ -58,6 +67,7 @@ public class IntroScene extends ScreenAdapter {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, WORLD_WIDTH / PPM, WORLD_HEIGHT / PPM);
         shapeRenderer = new ShapeRenderer();
+        batch = new SpriteBatch();
 
         //gravity (downward)
         //NOTE: world is not the same as the scene
@@ -68,6 +78,7 @@ public class IntroScene extends ScreenAdapter {
         createBoundaries();
         createCheckpoints(); //checkpoints need to be before player
         createPlayerHealthUI();
+        createTiles();
         
         
         tempDamageBlock();
@@ -88,6 +99,11 @@ public class IntroScene extends ScreenAdapter {
 	
 	private void createPlayerHealthUI() {
 		playerHealthUI = new PlayerHealthUI(player);
+	}
+	
+	private void createTiles() {
+		grassTexture = new Texture("Platform Tileset/grasstop.png");
+		groundTexture = new Texture("Platform Tileset/dirtfull.png");
 	}
 
 	private void createGround() { //createGround needs to be in this scene and not in MainGame, MainGame only handles scenes
@@ -192,10 +208,37 @@ public class IntroScene extends ScreenAdapter {
 
         //ground color and rendering
         shapeRenderer.setProjectionMatrix(camera.combined);
+        batch.setProjectionMatrix(camera.combined);
+        
+        // making a bit more grass
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled); //fills in color for ground
-        shapeRenderer.setColor(0.2f, 0.8f, 0.2f, 1); //color green
-        shapeRenderer.rect(0, 0, GROUND_WIDTH_SIZE / PPM, GROUND_HEIGHT_SIZE *3/2 / PPM); // Collision block is 2/3 shape of ground color right now
+        shapeRenderer.setColor(Color.valueOf("579747")); //color green
+        shapeRenderer.rect(0, 64f/PPM, GROUND_WIDTH_SIZE / PPM, TILE_SIZE ); // Collision block is 2/3 shape of ground color right now
         shapeRenderer.end();
+        
+        //making the ground with png
+        batch.begin();
+
+        for(int i = 0; i < TILE_INDEX_X; i++)
+        {
+            batch.draw(
+                grassTexture,
+                i * TILE_SIZE,
+                TILE_SIZE * 4, // 0.64 meters
+                TILE_SIZE,
+                TILE_SIZE
+            );
+            for(int j = 0; j < 4; j++) {
+        		batch.draw(
+        			groundTexture,
+        			i * TILE_SIZE,
+        			TILE_SIZE * j,
+        			TILE_SIZE,
+        			TILE_SIZE
+        		);
+        	}
+        }
+        batch.end();
         
         contactListener.processPendingDestruction(); //need to be called  after world step in order for LibGDX to be happy
         player.update();  //happens before player rendering and coloring
@@ -212,19 +255,17 @@ public class IntroScene extends ScreenAdapter {
         );
         shapeRenderer.end();
         
-        
-        //NEED TO MAKE THIS LOOP AND COLOR ALL CHECKPOINTS IN ARRAY FUTURE ME PLEASE
-        
-        
         //checkpoint color and rendering 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(1f, 1f, 0f, 1); // yellow checkpoint
-        shapeRenderer.rect(
-            checkpoint1.getPosition().x - checkpoint1.getWidth() / 2 / PPM,
-            checkpoint1.getPosition().y - checkpoint1.getHeight() / 2 / PPM,
-            checkpoint1.getWidth() / PPM,
-            checkpoint1.getHeight() / PPM
-        );
+        for(CheckpointBlock checkpoint : checkpointsArray) {
+        	shapeRenderer.rect(
+        		checkpoint.getPosition().x + 0.001f - checkpoint.getWidth()  + 0.001f / 2 / PPM,
+        		checkpoint.getPosition().y + 0.001f - checkpoint.getHeight()  + 0.001f / 2 / PPM,
+        		checkpoint.getWidth()  + 0.001f/ PPM,
+        		checkpoint.getHeight()  + 0.001f/ PPM
+        	);
+        }
         shapeRenderer.end();
         
         
@@ -258,7 +299,7 @@ public class IntroScene extends ScreenAdapter {
         playerHealthUI.update();
         playerHealthUI.render(delta);
         //box2d debug
-        debugRenderer.render(world, camera.combined);
+        //debugRenderer.render(world, camera.combined);
     }
 
     @Override

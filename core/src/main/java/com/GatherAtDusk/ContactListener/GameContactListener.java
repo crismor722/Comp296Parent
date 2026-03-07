@@ -79,7 +79,7 @@ public class GameContactListener implements ContactListener {
             BossAttackBlock bossBlock = (BossAttackBlock) bossAttackFixture.getBody().getUserData();
             player.takeDamage(bossBlock.getDamage());
             sceneManager.isGameOver(player.getHealth());
-            //toDestroy.add(block);
+            //toDestroyBossBlock.add(block);
         }
     }
 

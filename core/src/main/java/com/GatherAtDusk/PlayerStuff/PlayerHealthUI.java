@@ -20,9 +20,11 @@ public class PlayerHealthUI {
 		
 		Label.LabelStyle style = new Label.LabelStyle();
         style.font = new BitmapFont();
+        style.font.getData().setScale(1.5f);
 
         healthLabel = new Label("HP: 100", style);
-        healthLabel.setPosition(10, Gdx.graphics.getHeight() - 30);
+        healthLabel.setPosition(10, Gdx.graphics.getHeight() - 40);
+        healthLabel.setSize(200, 50);
         stage.addActor(healthLabel);
 	}
 	
