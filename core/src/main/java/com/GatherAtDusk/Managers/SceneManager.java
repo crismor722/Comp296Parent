@@ -37,4 +37,10 @@ public class SceneManager {
     		game.setScreen(new GameOverScene(game));
     	}
     }
+    
+    public void isGameWin(int health) {
+    	if(health <= 0) {
+    		game.setScreen(new EndScene(game));
+    	}
+    }
 }

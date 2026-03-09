@@ -1,0 +1,301 @@
+package com.GatherAtDusk.Scenes;
+
+import com.GatherAtDusk.MainGame;
+import com.GatherAtDusk.Blocks.BossAttackBlock;
+import com.GatherAtDusk.Blocks.PlayerAttackBlock;
+import com.GatherAtDusk.BossStuff.Boss;
+import com.GatherAtDusk.ContactListener.CollisionType;
+import com.GatherAtDusk.ContactListener.GameContactListener;
+import com.GatherAtDusk.PlayerStuff.Player;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
+
+public class EndScene extends ScreenAdapter{
+	
+	private final MainGame game;
+    private OrthographicCamera camera;
+    private ShapeRenderer shapeRenderer;
+    private SpriteBatch batch;
+    private World world;
+    private Box2DDebugRenderer debugRenderer;
+    private Player player;
+    private Boss boss;
+    private Texture grassTexture; //note: top of grassTexture is 37.5% transparent
+    private Texture groundTexture;
+    
+	private static final int HGRAVITY = 0;
+    private static final float VGRAVITY = -9.8f; //LibGDX likes floats for decimals
+    private static final float WORLD_WIDTH = 800f;
+    private static final float WORLD_HEIGHT = 480f;
+    private static final float GROUND_WIDTH_POSITION = WORLD_WIDTH/2;
+    private static final float GROUND_HEIGHT_POSITION= 50F; //height center is the position not size
+    private static final float GROUND_WIDTH_SIZE =  WORLD_WIDTH;
+    private static final float GROUND_HEIGHT_SIZE = GROUND_HEIGHT_POSITION;
+    private static final float FRICTION = 0.8f; //friction doesn't really have an effect now, maybe find a way to remove later
+    private float playerStartX = WORLD_WIDTH / 2 ; // center of screen in pixels
+    private float playerStartY = GROUND_HEIGHT_POSITION + 60f; // above ground
+    private static final float PPM = (float) 100; // 100 pixels per meter 
+    private static final float WALL_THICKNESS = 10f / PPM;
+    private static final float TILE_SIZE = 16f/ PPM;
+    private static final float TILE_INDEX_X = GROUND_WIDTH_SIZE / (TILE_SIZE *PPM); // 800 /16 = 50
+    private GameContactListener contactListener;
+    
+    public EndScene(MainGame game) {
+    	this.game = game;
+    }
+    public void show() {
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false, WORLD_WIDTH / PPM, WORLD_HEIGHT / PPM);
+        shapeRenderer = new ShapeRenderer();
+        batch = new SpriteBatch();
+
+        //gravity (downward)
+        //NOTE: world is not the same as the scene
+        world = new World(new Vector2(HGRAVITY, VGRAVITY), true); //world handles gravity
+        debugRenderer = new Box2DDebugRenderer();
+
+        createGround();
+        createBoundaries();
+        //createBoss(); //boss is needed later
+        createPlayer(playerStartX, playerStartY);
+        createTiles();
+        
+        
+        //contactListener = new GameContactListener(game, player, boss);
+        contactListener = new GameContactListener(game, player);
+        world.setContactListener(contactListener); //set contact listener is built into box2d
+    }
+    private void createBoss() {
+		boss = new Boss(world, 700f, GROUND_HEIGHT_POSITION + 60f);
+	}
+
+	private void createPlayer(float spawnX, float spawnY) {
+		player = new Player(world, spawnX, spawnY);
+	}
+	private void createTiles() {
+		grassTexture = new Texture("Platform Tileset/grasstop.png");
+		groundTexture = new Texture("Platform Tileset/dirtfull.png");
+	}
+
+	private void createGround() { //createGround needs to be in this scene and not in MainGame, MainGame only handles scenes
+    	BodyDef bodyDef = new BodyDef(); //need to set definitions of where the ground will be
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.position.set(GROUND_WIDTH_POSITION/ PPM, GROUND_HEIGHT_POSITION / PPM); //Box2d centers it from middle of the width but 
+        Body groundBody = world.createBody(bodyDef);
+        groundBody.setUserData(this); 
+
+        PolygonShape groundShape = new PolygonShape();
+        groundShape.setAsBox(GROUND_WIDTH_SIZE/2 / PPM, GROUND_HEIGHT_SIZE/2 / PPM); //create the shape of the ground
+        
+        //setting the shape of the ground
+        FixtureDef groundFixtureDef = new FixtureDef();
+        groundFixtureDef.shape = groundShape; //sets the fixtureDef's shape as groundShape
+        groundFixtureDef.friction = FRICTION;
+        
+        Fixture groundFixture = groundBody.createFixture(groundFixtureDef); //creating shape 
+        groundFixture.setUserData(CollisionType.GROUND);
+        groundShape.dispose(); //groundShape is saved in fixtureDef so it is not needed to be saved in memory
+    }
+    
+    private void createBoundaries() {
+        // left and right boundaries
+
+        // left wall
+    	BodyDef leftWallDef = new BodyDef();
+    	leftWallDef.type = BodyDef.BodyType.StaticBody;
+    	leftWallDef.position.set(0 - WALL_THICKNESS/2, WORLD_HEIGHT / 2 / PPM);
+    	Body leftWallBody = world.createBody(leftWallDef);
+
+    	PolygonShape leftShape = new PolygonShape();
+    	leftShape.setAsBox(WALL_THICKNESS / 2, WORLD_HEIGHT / 2 / PPM);
+
+    	FixtureDef leftWallFixtureDef = new FixtureDef();
+    	leftWallFixtureDef.shape = leftShape;
+    	leftWallFixtureDef.friction = 0f; // no friction on walls
+    	leftWallFixtureDef.restitution = 0f; // optional, prevents bouncing
+    	Fixture leftWallFixture = leftWallBody.createFixture(leftWallFixtureDef);
+    	leftWallFixture.setUserData(CollisionType.WALL);
+
+    	leftShape.dispose();
+
+
+        // right wall
+        BodyDef rightWallDef = new BodyDef();
+        rightWallDef.type = BodyDef.BodyType.StaticBody;
+        rightWallDef.position.set(WORLD_WIDTH / PPM + WALL_THICKNESS/2, WORLD_HEIGHT / 2 / PPM);
+        Body rightWallBody = world.createBody(rightWallDef);
+        
+        PolygonShape rightShape = new PolygonShape();
+        rightShape.setAsBox(WALL_THICKNESS / 2, WORLD_HEIGHT / 2 / PPM);
+        
+        FixtureDef rightWallFixtureDef = new FixtureDef();
+        rightWallFixtureDef.shape = rightShape;
+        rightWallFixtureDef.friction = 0f; // no friction on walls
+        rightWallFixtureDef.restitution = 0f; // optional, prevents bouncing
+        Fixture rightWallFixture = rightWallBody.createFixture(rightWallFixtureDef);
+        rightWallFixture.setUserData(CollisionType.WALL);
+        
+        rightShape.dispose();
+    }
+    
+
+    @Override
+    public void render(float delta) { 
+        // sky color
+    	Gdx.gl.glClearColor(0.05f, 0.02f, 0.08f, 1);
+        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        
+        //CHECK HERE IF COLLISIONS OR OVERLAP IS INCONSISTENT
+        world.step(1 / 60f, 8, 2); //(timeStep, velocityIterations, positionIterations) renders at 60 fps, how good collisons, how good overlapping
+        camera.update();
+        renderDuskSky();
+        
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        batch.setProjectionMatrix(camera.combined);
+
+        //ground color and rendering
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled); //fills in color for ground
+        shapeRenderer.setColor(Color.valueOf("579747")); //color green of the png to match
+        shapeRenderer.rect(0, 64f/PPM, GROUND_WIDTH_SIZE / PPM, TILE_SIZE ); // Collision block is 2/3 shape of ground color right now
+        shapeRenderer.end();
+        
+        batch.begin();
+
+        for(int i = 0; i < TILE_INDEX_X; i++)
+        {
+            batch.draw(
+                grassTexture,
+                i * TILE_SIZE,
+                TILE_SIZE * 4, // 0.64 meters
+                TILE_SIZE,
+                TILE_SIZE
+            );
+            for(int j = 0; j < 4; j++) {
+        		batch.draw(
+        			groundTexture,
+        			i * TILE_SIZE,
+        			TILE_SIZE * j,
+        			TILE_SIZE,
+        			TILE_SIZE
+        		);
+        	}
+        }
+        batch.end();
+        
+        contactListener.processPendingDestruction(); //need to be called  after world step in order for LibGDX to be happy
+        player.update();  //happens before player rendering and coloring
+        
+        //player color and rendering
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(1f, 0f, 0f, 1); // red player
+        shapeRenderer.rect(
+            player.getPosition().x - Player.getPlayerWidth() /2 / PPM, //sets start of x render to the left edge of the player body
+            player.getPosition().y - Player.getPlayerHeight() /2 / PPM, //sets start of y render to the bottom of the player body
+            //rendering a rect needs to start at bottom left corner of the player this formula does that
+            Player.getPlayerWidth() / PPM,
+            Player.getPlayerHeight() / PPM
+        );
+        shapeRenderer.end();
+        
+        
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(1f, 0f, 0f, 1); // red for attacks
+        
+        for (PlayerAttackBlock attack : player.getActiveAttacks()) {
+        	if(attack.isDestroyed()){ //this if statement gets rid of the left over color when the block deletes
+        		shapeRenderer.end();
+        		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+                shapeRenderer.setColor(1f, 0f, 0f, 1);
+        	}
+        	else {
+        		shapeRenderer.rect(
+                		attack.getPosition().x - PlayerAttackBlock.getBlockWidth() / 2f,
+                        attack.getPosition().y - PlayerAttackBlock.getBlockHeight() / 2f,
+                        PlayerAttackBlock.getBlockWidth(),
+                        PlayerAttackBlock.getBlockHeight()
+                        );
+        	}
+        }
+        shapeRenderer.end();
+                
+       /* shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(1f, 0f, 0f, 1); // red boss
+        shapeRenderer.rect(
+            boss.getPosition().x - Boss.getBossWidth() /2 / PPM,
+            boss.getPosition().y - Boss.getBossHeight() /2 / PPM, 
+            Boss.getBossWidth() / PPM,
+            Boss.getBossHeight() / PPM
+        );
+        shapeRenderer.end();
+        */
+        //box2d debug
+        debugRenderer.render(world, camera.combined);
+    }
+
+    @Override
+    public void dispose() { //when new scene starts make sure to dispose these elements
+        world.dispose();
+        debugRenderer.dispose();
+        shapeRenderer.dispose();
+    }
+
+	private void renderDuskSky() {
+
+		float worldWidth = WORLD_WIDTH / PPM;
+		float worldHeight = WORLD_HEIGHT / PPM;
+		float groundOffset = GROUND_HEIGHT_POSITION / PPM;
+
+		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+		// dark purple
+		shapeRenderer.setColor(0.2f, 0.1f, 0.35f, 1);
+		shapeRenderer.rect(
+		    0,
+		    groundOffset + (worldHeight - groundOffset) * 3/5, //start at 3/5 of the screen
+		    worldWidth,
+		    (worldHeight - groundOffset) * 2/5 //172 pixels
+		);
+
+		// purple
+		shapeRenderer.setColor(0.45f, 0.2f, 0.5f, 1);
+		shapeRenderer.rect(
+		    0,
+		    groundOffset + (worldHeight - groundOffset) * 2/5,
+		    worldWidth,
+		    (worldHeight - groundOffset) * 1/5 //86 pixels 
+		);
+
+		// orange
+		shapeRenderer.setColor(0.9f, 0.45f, 0.25f, 1);
+		shapeRenderer.rect(
+		    0,
+		    groundOffset + (worldHeight - groundOffset) * 1/5,
+		    worldWidth,
+		    (worldHeight - groundOffset) * 1/5
+		);
+
+		// brighter orange
+		shapeRenderer.setColor(1f, 0.6f, 0.3f, 1);
+		shapeRenderer.rect(
+		    0,
+		    groundOffset,
+		    worldWidth,
+		    (worldHeight - groundOffset) * 1/5
+		);
+
+		shapeRenderer.end();
+	}
+}

@@ -34,6 +34,12 @@ public class GameContactListener implements ContactListener {
         this.boss = boss;
     }
     
+    public GameContactListener(MainGame game, Player player) {
+    	this.game = game;
+    	this.sceneManager = game.sceneManager;
+        this.player = player;
+    }
+    
     //note: i made this class this way so all i need to do is to compare what collisions happen, and what to do with it
     //this class detects all collisions and checks what collisionTypes are involved to determine what to do with them
     @Override
@@ -104,7 +110,6 @@ public class GameContactListener implements ContactListener {
             
             BossAttackBlock bossBlock = (BossAttackBlock) bossAttackFixture.getBody().getUserData();
             toDestroyBossBlocks.add(bossBlock);
-            System.out.print("hit");
         }
         
         if (isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.PLAYER_ATTACK_BLOCK, CollisionType.BOSS)) {
@@ -112,7 +117,7 @@ public class GameContactListener implements ContactListener {
             
             PlayerAttackBlock playerBlock = (PlayerAttackBlock) playerAttackFixture.getBody().getUserData();
             boss.takeDamage(playerBlock.getDamage());
-            //sceneManager.isGameWin(boss.getHealth());
+            sceneManager.isGameWin(boss.getHealth());
         }
         
         //System.out.println("Fixture A: " + fixtureA.getUserData() + ", Fixture B: " + fixtureB.getUserData());
