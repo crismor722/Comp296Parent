@@ -4,6 +4,7 @@ import com.GatherAtDusk.MainGame;
 import com.GatherAtDusk.Blocks.BossAttackBlock;
 import com.GatherAtDusk.Blocks.CheckpointBlock;
 import com.GatherAtDusk.Blocks.PlayerAttackBlock;
+import com.GatherAtDusk.BossStuff.Boss;
 import com.GatherAtDusk.Managers.SceneManager;
 import com.GatherAtDusk.PlayerStuff.Player;
 import com.badlogic.gdx.physics.box2d.*;
@@ -12,16 +13,25 @@ import com.badlogic.gdx.utils.Array;
 public class GameContactListener implements ContactListener {
 
     private final Player player;
+    private Boss boss;
     private final MainGame game;
     private final SceneManager sceneManager;
     private Array<CheckpointBlock> checkpointBlocks; //array list makes life easier
-    private Array<PlayerAttackBlock> toDestroy = new Array<>();
+    private Array<PlayerAttackBlock> toDestroyPlayerBlocks = new Array<>();
+    private Array<BossAttackBlock> toDestroyBossBlocks = new Array<>();
 
     public GameContactListener(MainGame game, Player player, Array<CheckpointBlock> checkpointBlocks ) {
     	this.game = game;
     	this.sceneManager = game.sceneManager;
         this.player = player;
         this.checkpointBlocks = checkpointBlocks;
+    }
+    
+    public GameContactListener(MainGame game, Player player, Boss boss) {
+    	this.game = game;
+    	this.sceneManager = game.sceneManager;
+        this.player = player;
+        this.boss = boss;
     }
     
     //note: i made this class this way so all i need to do is to compare what collisions happen, and what to do with it
@@ -70,7 +80,7 @@ public class GameContactListener implements ContactListener {
             Fixture playerAttackFixture =  (currentCollisionTypeA == CollisionType.PLAYER_ATTACK_BLOCK) ? fixtureA : fixtureB;
 
             PlayerAttackBlock playerBlock = (PlayerAttackBlock) playerAttackFixture.getBody().getUserData();
-            toDestroy.add(playerBlock);
+            toDestroyPlayerBlocks.add(playerBlock);
         }
         
         if (isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.PLAYER, CollisionType.BOSS_ATTACK_BLOCK)) {
@@ -79,8 +89,33 @@ public class GameContactListener implements ContactListener {
             BossAttackBlock bossBlock = (BossAttackBlock) bossAttackFixture.getBody().getUserData();
             player.takeDamage(bossBlock.getDamage());
             sceneManager.isGameOver(player.getHealth());
-            //toDestroyBossBlock.add(block);
+            toDestroyBossBlocks.add(bossBlock);
         }
+        
+        if(isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.BOSS_ATTACK_BLOCK, CollisionType.WALL)) {
+        	Fixture bossAttackFixture =  (currentCollisionTypeA == CollisionType.BOSS_ATTACK_BLOCK) ? fixtureA : fixtureB;
+            
+            BossAttackBlock bossBlock = (BossAttackBlock) bossAttackFixture.getBody().getUserData();
+            toDestroyBossBlocks.add(bossBlock);
+        }
+        
+        if(isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.BOSS_ATTACK_BLOCK, CollisionType.GROUND)) {
+        	Fixture bossAttackFixture =  (currentCollisionTypeA == CollisionType.BOSS_ATTACK_BLOCK) ? fixtureA : fixtureB;
+            
+            BossAttackBlock bossBlock = (BossAttackBlock) bossAttackFixture.getBody().getUserData();
+            toDestroyBossBlocks.add(bossBlock);
+            System.out.print("hit");
+        }
+        
+        if (isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.PLAYER_ATTACK_BLOCK, CollisionType.BOSS)) {
+            Fixture playerAttackFixture =  (currentCollisionTypeA == CollisionType.PLAYER_ATTACK_BLOCK) ? fixtureA : fixtureB;
+            
+            PlayerAttackBlock playerBlock = (PlayerAttackBlock) playerAttackFixture.getBody().getUserData();
+            boss.takeDamage(playerBlock.getDamage());
+            //sceneManager.isGameWin(boss.getHealth());
+        }
+        
+        //System.out.println("Fixture A: " + fixtureA.getUserData() + ", Fixture B: " + fixtureB.getUserData());
     }
 
     @Override
@@ -120,13 +155,21 @@ public class GameContactListener implements ContactListener {
     }
     
     public void processPendingDestruction() {
-        for (PlayerAttackBlock block : toDestroy) { //array to destroy blocks
+        for (PlayerAttackBlock block : toDestroyPlayerBlocks) { //array to destroy blocks
         	block.destroy();
         	if (player.getAttackBlock() == block) {
                 player.clearCurrentAttack(); // let player attack again
             }
         }
-        toDestroy.clear();
+        toDestroyPlayerBlocks.clear();
+        
+        for (BossAttackBlock block : toDestroyBossBlocks) { 
+        	block.destroy();
+        	if (boss.getAttackBlock() == block) {
+                boss.clearCurrentAttack(); 
+            }
+        }
+        toDestroyBossBlocks.clear();
     }
     
     

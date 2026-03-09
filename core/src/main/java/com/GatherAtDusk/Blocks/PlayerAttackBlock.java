@@ -8,10 +8,12 @@ public class PlayerAttackBlock {
 	
 	private Body playerAttackBody;
 	private World world;
+	private Fixture playerAttackFix;
 	
 	private static final float PPM = (float) 100;
 	private static final float BLOCK_WIDTH = 10f /PPM;
 	private static final float BLOCK_HEIGHT = 6f / PPM;
+	private int damage = 10; 
 	private boolean destroyed = false;
 	
 	
@@ -20,7 +22,7 @@ public class PlayerAttackBlock {
 		
 		//the usual create body stuff
         BodyDef bd = new BodyDef();
-        bd.type = BodyDef.BodyType.KinematicBody; //this body type allows it to ignore physics
+        bd.type = BodyDef.BodyType.DynamicBody; //this body type allows it to ignore physics
         bd.position.set(blockPos);
 
         playerAttackBody = world.createBody(bd);
@@ -33,8 +35,9 @@ public class PlayerAttackBlock {
         fd.shape = shape;
         fd.isSensor = true;
 
-        Fixture playerAttackFix = playerAttackBody.createFixture(fd);
+        playerAttackFix = playerAttackBody.createFixture(fd);
         playerAttackFix.setUserData(CollisionType.PLAYER_ATTACK_BLOCK);
+        playerAttackBody.setGravityScale(0f);
         
         setVelocity();
         
@@ -66,12 +69,17 @@ public class PlayerAttackBlock {
 	}
 	
 	public void destroy() {
+		playerAttackBody.destroyFixture(playerAttackFix);
 		world.destroyBody(playerAttackBody);
 		destroyed = true;
 	}
 	
 	public boolean isDestroyed() {
 		return destroyed;
+	}
+
+	public int getDamage() {
+		return damage;
 	}
 	
 	

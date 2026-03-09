@@ -7,7 +7,7 @@ import com.GatherAtDusk.Blocks.PlayerAttackBlock;
 import com.GatherAtDusk.ContactListener.*;
 import com.GatherAtDusk.Managers.SaveManager;
 import com.GatherAtDusk.PlayerStuff.Player;
-import com.GatherAtDusk.PlayerStuff.PlayerHealthUI;
+import com.GatherAtDusk.PlayerStuff.HealthUI;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
@@ -53,10 +53,7 @@ public class IntroScene extends ScreenAdapter {
     		
     private Array<CheckpointBlock> checkpointsArray = new Array<>();
     private GameContactListener contactListener;
-    private PlayerHealthUI playerHealthUI;
-    
-    private Vector2 tempVector;
-    private BossAttackBlock tempDamageBlock;
+    private HealthUI healthUI;
     
     public IntroScene(MainGame game) {
         this.game = game;
@@ -81,24 +78,17 @@ public class IntroScene extends ScreenAdapter {
         createTiles();
         
         
-        tempDamageBlock();
         
         contactListener = new GameContactListener(game, player, checkpointsArray);
         world.setContactListener(contactListener); //set contact listener is built into box2d
     }
-
-
-	private void tempDamageBlock() {
-		tempVector = new Vector2(800f /2 /PPM, 100f / PPM);
-		tempDamageBlock = new BossAttackBlock(world, tempVector);
-	}
 
 	private void createPlayer(float spawnX, float spawnY) {
 		player = new Player(world, spawnX, spawnY);
 	}
 	
 	private void createPlayerHealthUI() {
-		playerHealthUI = new PlayerHealthUI(player);
+		healthUI = new HealthUI(player);
 	}
 	
 	private void createTiles() {
@@ -272,32 +262,25 @@ public class IntroScene extends ScreenAdapter {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(1f, 0f, 0f, 1); // red for attacks
         
-        //sensors don't get color fill so i trick the game with + 0.001f to make it think i am not coloring the sensor
         for (PlayerAttackBlock attack : player.getActiveAttacks()) {
-        	shapeRenderer.rect(
-        		attack.getPosition().x + 0.001f - PlayerAttackBlock.getBlockWidth() + 0.001f / 2f,
-                attack.getPosition().y + 0.001f- PlayerAttackBlock.getBlockHeight() + 0.001f / 2f,
-                PlayerAttackBlock.getBlockWidth() + 0.001f / PPM,
-                PlayerAttackBlock.getBlockHeight() + 0.001f /PPM
+        	if(attack.isDestroyed()){ //this if statement gets rid of the left over color when the block deletes
+        		shapeRenderer.end();
+        		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+                shapeRenderer.setColor(1f, 0f, 0f, 1);
+        	}
+        	else {
+        		shapeRenderer.rect(
+                		attack.getPosition().x  - PlayerAttackBlock.getBlockWidth() / 2f,
+                        attack.getPosition().y - PlayerAttackBlock.getBlockHeight() / 2f,
+                        PlayerAttackBlock.getBlockWidth(),
+                        PlayerAttackBlock.getBlockHeight()
                 );
+        	}
         }
         shapeRenderer.end();
         
-        //temp damage block
-        
-        //NOTE: most likely will need to loop this like player attack block
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(1f, 0f, 0f, 1);
-        shapeRenderer.rect(
-            tempDamageBlock.getPosition().x - BossAttackBlock.getBlockWidth() /2 / PPM, 
-            tempDamageBlock.getPosition().y - BossAttackBlock.getBlockHeight() /2 / PPM, 
-            BossAttackBlock.getBlockWidth() / PPM,
-            BossAttackBlock.getBlockHeight() / PPM
-        );
-        shapeRenderer.end();
-        
-        playerHealthUI.update();
-        playerHealthUI.render(delta);
+        healthUI.playerUpdate();
+        healthUI.render(delta);
         //box2d debug
         //debugRenderer.render(world, camera.combined);
     }

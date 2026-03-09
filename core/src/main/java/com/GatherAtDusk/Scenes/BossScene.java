@@ -4,10 +4,11 @@ import com.GatherAtDusk.MainGame;
 import com.GatherAtDusk.Blocks.BossAttackBlock;
 import com.GatherAtDusk.Blocks.CheckpointBlock;
 import com.GatherAtDusk.Blocks.PlayerAttackBlock;
+import com.GatherAtDusk.BossStuff.Boss;
 import com.GatherAtDusk.ContactListener.CollisionType;
 import com.GatherAtDusk.ContactListener.GameContactListener;
 import com.GatherAtDusk.PlayerStuff.Player;
-import com.GatherAtDusk.PlayerStuff.PlayerHealthUI;
+import com.GatherAtDusk.PlayerStuff.HealthUI;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
@@ -34,7 +35,7 @@ public class BossScene extends ScreenAdapter{
     private World world;
     private Box2DDebugRenderer debugRenderer;
     private Player player;
-    private CheckpointBlock checkpoint4;
+    private Boss boss;
     private Texture grassTexture; //note: top of grassTexture is 37.5% transparent
     private Texture groundTexture;
     
@@ -53,12 +54,8 @@ public class BossScene extends ScreenAdapter{
     private static final float WALL_THICKNESS = 10f / PPM;
     private static final float TILE_SIZE = 16f/ PPM;
     private static final float TILE_INDEX_X = GROUND_WIDTH_SIZE / (TILE_SIZE *PPM); // 800 /16 = 50
-    private Array<CheckpointBlock> checkpointsArray = new Array<>();
     private GameContactListener contactListener;
-    private PlayerHealthUI playerHealthUI;
-    
-    private Vector2 tempVector;
-    private BossAttackBlock tempDamageBlock;
+    private HealthUI healthUI;
     
     public BossScene(MainGame game) {
     	this.game = game;
@@ -76,27 +73,25 @@ public class BossScene extends ScreenAdapter{
 
         createGround();
         createBoundaries();
-        createCheckpoints(); //checkpoints need to be before player
-        createPlayerHealthUI();
+        createBoss();
+        createPlayer(playerStartX, playerStartY);
+        createHealthUI();
         createTiles();
         
         
-        tempDamageBlock();
-        
-        contactListener = new GameContactListener(game, player, checkpointsArray);
+        contactListener = new GameContactListener(game, player, boss);
         world.setContactListener(contactListener); //set contact listener is built into box2d
     }
-    private void tempDamageBlock() {
-		tempVector = new Vector2(900f /2 /PPM, 100f / PPM);
-		tempDamageBlock = new BossAttackBlock(world, tempVector);
+    private void createBoss() {
+		boss = new Boss(world, 700f, GROUND_HEIGHT_POSITION + 60f);
 	}
 
 	private void createPlayer(float spawnX, float spawnY) {
-		player = new Player(world, spawnX, spawnY);
+		player = new Player(world, spawnX, spawnY, boss);
 	}
 	
-	private void createPlayerHealthUI() {
-		playerHealthUI = new PlayerHealthUI(player);
+	private void createHealthUI() {
+		healthUI = new HealthUI(player, boss);
 	}
 	private void createTiles() {
 		grassTexture = new Texture("Platform Tileset/grasstop.png");
@@ -108,6 +103,7 @@ public class BossScene extends ScreenAdapter{
         bodyDef.type = BodyDef.BodyType.StaticBody;
         bodyDef.position.set(GROUND_WIDTH_POSITION/ PPM, GROUND_HEIGHT_POSITION / PPM); //Box2d centers it from middle of the width but 
         Body groundBody = world.createBody(bodyDef);
+        groundBody.setUserData(this); 
 
         PolygonShape groundShape = new PolygonShape();
         groundShape.setAsBox(GROUND_WIDTH_SIZE/2 / PPM, GROUND_HEIGHT_SIZE/2 / PPM); //create the shape of the ground
@@ -163,12 +159,6 @@ public class BossScene extends ScreenAdapter{
         rightShape.dispose();
     }
     
-    private void createCheckpoints(){
-    	checkpoint4 = new CheckpointBlock(world, 100f/ PPM, 600f/ PPM, 10f/ PPM, 10f/ PPM, 3); //this checkpoint is made just to make contactlistenr happy, doesnt do anything
-    	
-    	checkpointsArray.add(checkpoint4);
-    	createPlayer(playerStartX, playerStartY);
-    }
 
     @Override
     public void render(float delta) { 
@@ -177,7 +167,7 @@ public class BossScene extends ScreenAdapter{
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         
         //CHECK HERE IF COLLISIONS OR OVERLAP IS INCONSISTENT
-        world.step(1 / 60f, 6, 2); //(timeStep, velocityIterations, positionIterations) renders at 60 fps, how good collisons, how good overlapping
+        world.step(1 / 60f, 8, 2); //(timeStep, velocityIterations, positionIterations) renders at 60 fps, how good collisons, how good overlapping
         camera.update();
         shapeRenderer.setProjectionMatrix(camera.combined);
         batch.setProjectionMatrix(camera.combined);
@@ -230,34 +220,61 @@ public class BossScene extends ScreenAdapter{
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(1f, 0f, 0f, 1); // red for attacks
         
-        //sensors don't get color fill so i trick the game with + 0.001f to make it think i am not coloring the sensor
         for (PlayerAttackBlock attack : player.getActiveAttacks()) {
-        	shapeRenderer.rect(
-        		attack.getPosition().x + 0.001f - PlayerAttackBlock.getBlockWidth() + 0.001f / 2f,
-                attack.getPosition().y + 0.001f- PlayerAttackBlock.getBlockHeight() + 0.001f / 2f,
-                PlayerAttackBlock.getBlockWidth() + 0.001f / PPM,
-                PlayerAttackBlock.getBlockHeight() + 0.001f /PPM
-                );
+        	if(attack.isDestroyed()){ //this if statement gets rid of the left over color when the block deletes
+        		shapeRenderer.end();
+        		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+                shapeRenderer.setColor(1f, 0f, 0f, 1);
+        	}
+        	else {
+        		shapeRenderer.rect(
+                		attack.getPosition().x - PlayerAttackBlock.getBlockWidth() / 2f,
+                        attack.getPosition().y - PlayerAttackBlock.getBlockHeight() / 2f,
+                        PlayerAttackBlock.getBlockWidth(),
+                        PlayerAttackBlock.getBlockHeight()
+                        );
+        	}
         }
         shapeRenderer.end();
         
         //temp damage block
-        
-        //NOTE: most likely will need to loop this like player attack block
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(1f, 0f, 0f, 1);
+        
+        for(BossAttackBlock attack : boss.getActiveAttacks()) {
+        	if(attack.isDestroyed()){ //this if statement gets rid of the left over color when the block deletes
+        		shapeRenderer.end();
+        		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+                shapeRenderer.setColor(1f, 0f, 0f, 1);
+        	}
+        	else {
+        		shapeRenderer.rect(
+                        attack.getPosition().x - attack.getBlockWidth() / 2 , 
+                        attack.getPosition().y - attack.getBlockHeight() /2 , 
+                        attack.getBlockWidth(),
+                        attack.getBlockHeight()
+        		);
+        	}
+            
+            
+        }
+        
+        shapeRenderer.end();
+        
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(1f, 0f, 0f, 1); // red boss
         shapeRenderer.rect(
-            tempDamageBlock.getPosition().x - BossAttackBlock.getBlockWidth() /2 / PPM, 
-            tempDamageBlock.getPosition().y - BossAttackBlock.getBlockHeight() /2 / PPM, 
-            BossAttackBlock.getBlockWidth() / PPM,
-            BossAttackBlock.getBlockHeight() / PPM
+            boss.getPosition().x - Boss.getBossWidth() /2 / PPM,
+            boss.getPosition().y - Boss.getBossHeight() /2 / PPM, 
+            Boss.getBossWidth() / PPM,
+            Boss.getBossHeight() / PPM
         );
         shapeRenderer.end();
         
-        playerHealthUI.update();
-        playerHealthUI.render(delta);
+        healthUI.bossAndPlayerUpdate();
+        healthUI.render(delta);
         //box2d debug
-        //debugRenderer.render(world, camera.combined);
+        debugRenderer.render(world, camera.combined);
     }
 
     @Override
