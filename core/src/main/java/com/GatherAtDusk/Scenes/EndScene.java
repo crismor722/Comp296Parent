@@ -6,13 +6,16 @@ import com.GatherAtDusk.Blocks.PlayerAttackBlock;
 import com.GatherAtDusk.BossStuff.Boss;
 import com.GatherAtDusk.ContactListener.CollisionType;
 import com.GatherAtDusk.ContactListener.GameContactListener;
+import com.GatherAtDusk.Helpers.AnimationHelper;
 import com.GatherAtDusk.PlayerStuff.Player;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -35,6 +38,10 @@ public class EndScene extends ScreenAdapter{
     private Boss boss;
     private Texture grassTexture; //note: top of grassTexture is 37.5% transparent
     private Texture groundTexture;
+    private Texture backgroundDusk;
+    private Texture campfireSheet;
+    private GameContactListener contactListener;
+    private Animation<TextureRegion> campfireAnimation;
     
 	private static final int HGRAVITY = 0;
     private static final float VGRAVITY = -9.8f; //LibGDX likes floats for decimals
@@ -51,7 +58,10 @@ public class EndScene extends ScreenAdapter{
     private static final float WALL_THICKNESS = 10f / PPM;
     private static final float TILE_SIZE = 16f/ PPM;
     private static final float TILE_INDEX_X = GROUND_WIDTH_SIZE / (TILE_SIZE *PPM); // 800 /16 = 50
-    private GameContactListener contactListener;
+    private float stateTime;
+    private static final int CAMPFIRE_SIZE = 32;
+    private static final int CAMPFIRE_FRAMES = 4;
+    
     
     public EndScene(MainGame game) {
     	this.game = game;
@@ -72,6 +82,8 @@ public class EndScene extends ScreenAdapter{
         //createBoss(); //boss is needed later
         createPlayer(playerStartX, playerStartY);
         createTiles();
+        createBackground();
+        createCampfire();
         
         
         //contactListener = new GameContactListener(game, player, boss);
@@ -88,6 +100,15 @@ public class EndScene extends ScreenAdapter{
 	private void createTiles() {
 		grassTexture = new Texture("Platform Tileset/grasstop.png");
 		groundTexture = new Texture("Platform Tileset/dirtfull.png");
+	}
+	
+	private void createBackground() {
+		backgroundDusk = new Texture("DuskBackground.png");
+	}
+	
+	private void createCampfire() {
+		campfireSheet = new Texture("Campfire.png");
+		campfireAnimation = AnimationHelper.createAnimation(campfireSheet, CAMPFIRE_SIZE, CAMPFIRE_SIZE, CAMPFIRE_FRAMES, 0.1f, false);
 	}
 
 	private void createGround() { //createGround needs to be in this scene and not in MainGame, MainGame only handles scenes
@@ -154,14 +175,14 @@ public class EndScene extends ScreenAdapter{
 
     @Override
     public void render(float delta) { 
+    	stateTime += delta;
         // sky color
-    	Gdx.gl.glClearColor(0.05f, 0.02f, 0.08f, 1);
+    	//Gdx.gl.glClearColor(0.05f, 0.02f, 0.08f, 1);
         //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         
         //CHECK HERE IF COLLISIONS OR OVERLAP IS INCONSISTENT
         world.step(1 / 60f, 8, 2); //(timeStep, velocityIterations, positionIterations) renders at 60 fps, how good collisons, how good overlapping
         camera.update();
-        renderDuskSky();
         
         shapeRenderer.setProjectionMatrix(camera.combined);
         batch.setProjectionMatrix(camera.combined);
@@ -173,7 +194,7 @@ public class EndScene extends ScreenAdapter{
         shapeRenderer.end();
         
         batch.begin();
-
+        batch.draw(backgroundDusk, 0, GROUND_HEIGHT_POSITION/ PPM, WORLD_WIDTH/ PPM, WORLD_HEIGHT/ PPM);
         for(int i = 0; i < TILE_INDEX_X; i++)
         {
             batch.draw(
@@ -230,6 +251,17 @@ public class EndScene extends ScreenAdapter{
         	}
         }
         shapeRenderer.end();
+        
+        batch.begin();
+        batch.draw(
+         
+        		campfireAnimation.getKeyFrame(stateTime, true),
+                (WORLD_WIDTH/2 - (CAMPFIRE_SIZE +10f))/ PPM,
+                (GROUND_HEIGHT_POSITION + 10f) / PPM, //change here for position
+                (CAMPFIRE_SIZE +0f) / PPM *3,
+                (CAMPFIRE_SIZE +0f) / PPM  *3 
+            );
+       batch.end();
                 
        /* shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(1f, 0f, 0f, 1); // red boss
@@ -251,51 +283,4 @@ public class EndScene extends ScreenAdapter{
         debugRenderer.dispose();
         shapeRenderer.dispose();
     }
-
-	private void renderDuskSky() {
-
-		float worldWidth = WORLD_WIDTH / PPM;
-		float worldHeight = WORLD_HEIGHT / PPM;
-		float groundOffset = GROUND_HEIGHT_POSITION / PPM;
-
-		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
-		// dark purple
-		shapeRenderer.setColor(0.2f, 0.1f, 0.35f, 1);
-		shapeRenderer.rect(
-		    0,
-		    groundOffset + (worldHeight - groundOffset) * 3/5, //start at 3/5 of the screen
-		    worldWidth,
-		    (worldHeight - groundOffset) * 2/5 //172 pixels
-		);
-
-		// purple
-		shapeRenderer.setColor(0.45f, 0.2f, 0.5f, 1);
-		shapeRenderer.rect(
-		    0,
-		    groundOffset + (worldHeight - groundOffset) * 2/5,
-		    worldWidth,
-		    (worldHeight - groundOffset) * 1/5 //86 pixels 
-		);
-
-		// orange
-		shapeRenderer.setColor(0.9f, 0.45f, 0.25f, 1);
-		shapeRenderer.rect(
-		    0,
-		    groundOffset + (worldHeight - groundOffset) * 1/5,
-		    worldWidth,
-		    (worldHeight - groundOffset) * 1/5
-		);
-
-		// brighter orange
-		shapeRenderer.setColor(1f, 0.6f, 0.3f, 1);
-		shapeRenderer.rect(
-		    0,
-		    groundOffset,
-		    worldWidth,
-		    (worldHeight - groundOffset) * 1/5
-		);
-
-		shapeRenderer.end();
-	}
 }

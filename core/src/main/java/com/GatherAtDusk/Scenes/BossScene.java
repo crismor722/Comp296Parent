@@ -38,6 +38,7 @@ public class BossScene extends ScreenAdapter{
     private Boss boss;
     private Texture grassTexture; //note: top of grassTexture is 37.5% transparent
     private Texture groundTexture;
+    private Texture backgroundDay;
     
 	private static final int HGRAVITY = 0;
     private static final float VGRAVITY = -9.8f; //LibGDX likes floats for decimals
@@ -77,6 +78,7 @@ public class BossScene extends ScreenAdapter{
         createPlayer(playerStartX, playerStartY);
         createHealthUI();
         createTiles();
+        createBackground();
         
         
         contactListener = new GameContactListener(game, player, boss);
@@ -96,6 +98,10 @@ public class BossScene extends ScreenAdapter{
 	private void createTiles() {
 		grassTexture = new Texture("Platform Tileset/grasstop.png");
 		groundTexture = new Texture("Platform Tileset/dirtfull.png");
+	}
+	
+	private void createBackground(){
+		backgroundDay = new Texture ("DayBackground.png");
 	}
 
 	private void createGround() { //createGround needs to be in this scene and not in MainGame, MainGame only handles scenes
@@ -163,8 +169,8 @@ public class BossScene extends ScreenAdapter{
     @Override
     public void render(float delta) { 
         // sky color
-        Gdx.gl.glClearColor(0.4f, 0.7f, 1f, 1); // color blue
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        //Gdx.gl.glClearColor(0.4f, 0.7f, 1f, 1); // color blue
+        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         
         //CHECK HERE IF COLLISIONS OR OVERLAP IS INCONSISTENT
         world.step(1 / 60f, 8, 2); //(timeStep, velocityIterations, positionIterations) renders at 60 fps, how good collisons, how good overlapping
@@ -179,7 +185,17 @@ public class BossScene extends ScreenAdapter{
         shapeRenderer.end();
         
         batch.begin();
-
+        batch.draw(backgroundDay, 0, GROUND_HEIGHT_POSITION/ PPM, WORLD_WIDTH/ PPM, WORLD_HEIGHT/ PPM);
+        batch.end();
+        
+        Gdx.gl.glEnable(GL20.GL_BLEND); //enables blending the white with the background to make it brighter
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(1f, 1f, 1f, 0.3f); // slight white glow
+        shapeRenderer.rect(0, 0, WORLD_WIDTH / PPM, WORLD_HEIGHT / PPM);
+        shapeRenderer.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
+        
+        batch.begin();
         for(int i = 0; i < TILE_INDEX_X; i++)
         {
             batch.draw(

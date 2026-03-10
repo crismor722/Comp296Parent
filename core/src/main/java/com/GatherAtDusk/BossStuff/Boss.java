@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.GatherAtDusk.Helpers.*;
 
 public class Boss {
 	private Body bossBody;
@@ -44,8 +45,9 @@ public class Boss {
 		createBody(world, startX, startY);
 		callTimer();
 		loadSprites();
-		
 	}
+
+	
 
 	private void callTimer() {
 		Timer.schedule(new Timer.Task() {
@@ -93,11 +95,12 @@ public class Boss {
 	    idleSheet = new Texture("BossIdle.png");
 	    attackSheet = new Texture("BossAttack.png");
 
-	    idleAnimation = createAnimation(idleSheet, 96, 96, 10, 0.1f);
-	    attackAnimation = createAnimation(attackSheet, 96, 96, 6, 0.08f);
+	    idleAnimation = AnimationHelper.createAnimation(idleSheet, 96, 96, 10, 0.1f, true);
+	    attackAnimation = AnimationHelper.createAnimation(attackSheet, 96, 96, 6, 0.08f, true);
 	}
+	
 	//helper method  that makes animations
-	private Animation<TextureRegion> createAnimation(Texture sheet, int frameWidth, int frameHeight, int frameCount, float frameDuration) {
+	/*private Animation<TextureRegion> createAnimation(Texture sheet, int frameWidth, int frameHeight, int frameCount, float frameDuration) {
 
 	    TextureRegion[][] temp = TextureRegion.split(sheet, frameWidth, frameHeight);
 
@@ -110,6 +113,7 @@ public class Boss {
 
 	    return new Animation<>(frameDuration, frames);
 	}
+	*/
 	public void setHealth(int health){
 		this.health = health;
 	}
