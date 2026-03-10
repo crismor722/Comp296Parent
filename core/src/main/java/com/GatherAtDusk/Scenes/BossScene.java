@@ -83,7 +83,7 @@ public class BossScene extends ScreenAdapter{
         world.setContactListener(contactListener); //set contact listener is built into box2d
     }
     private void createBoss() {
-		boss = new Boss(world, 700f, GROUND_HEIGHT_POSITION + 60f);
+		boss = new Boss(world, 750f, GROUND_HEIGHT_POSITION + 60f);
 	}
 
 	private void createPlayer(float spawnX, float spawnY) {
@@ -276,10 +276,10 @@ public class BossScene extends ScreenAdapter{
 
         batch.draw(
             boss.getFrame(),
-            boss.getPosition().x - 32f/ PPM,
-            boss.getPosition().y - 32f/ PPM, //sprite is 96 so offset by 48
-            96f / PPM,
-            96f / PPM
+            boss.getPosition().x - 190f/ PPM,
+            boss.getPosition().y - 95f/ PPM, //change here for boss sprire and height pos
+            96f / PPM *4,
+            96f / PPM *4
         );
 
         batch.end();

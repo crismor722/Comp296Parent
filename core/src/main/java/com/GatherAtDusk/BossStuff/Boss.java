@@ -162,7 +162,7 @@ public class Boss {
 	
 	public void attack() { //creates the attack block
 		Vector2 bossPos = bossBody.getPosition();
-	    float xOffset = 0.5f;
+	    float xOffset = 1.6f;
 	    blockPos = new Vector2(bossPos.x - xOffset, bossPos.y);
 
 	    BossAttackBlock newAttack = new BossAttackBlock(world, blockPos);
