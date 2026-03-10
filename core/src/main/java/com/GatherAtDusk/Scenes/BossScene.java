@@ -261,7 +261,7 @@ public class BossScene extends ScreenAdapter{
         
         shapeRenderer.end();
         
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        /*shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(1f, 0f, 0f, 1); // red boss
         shapeRenderer.rect(
             boss.getPosition().x - Boss.getBossWidth() /2 / PPM,
@@ -270,11 +270,25 @@ public class BossScene extends ScreenAdapter{
             Boss.getBossHeight() / PPM
         );
         shapeRenderer.end();
+        */
+        
+        batch.begin();
+
+        batch.draw(
+            boss.getFrame(),
+            boss.getPosition().x - 32f/ PPM,
+            boss.getPosition().y - 32f/ PPM, //sprite is 96 so offset by 48
+            96f / PPM,
+            96f / PPM
+        );
+
+        batch.end();
+        boss.update(delta);
         
         healthUI.bossAndPlayerUpdate();
         healthUI.render(delta);
         //box2d debug
-        debugRenderer.render(world, camera.combined);
+        //debugRenderer.render(world, camera.combined);
     }
 
     @Override

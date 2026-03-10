@@ -11,11 +11,14 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.Animation;
 
 public class Boss {
 	private Body bossBody;
-	private static final float BOSS_WIDTH = 40f;
-	private static final float BOSS_HEIGHT = 60f;
+	private static final float BOSS_WIDTH = 64f;
+	private static final float BOSS_HEIGHT = 64f;
 	private static final float PPM = (float) 100; // 100 pixels per meter 
 	private World world;
 	private Vector2 blockPos;
@@ -25,14 +28,22 @@ public class Boss {
 	private float xPos = 400f / PPM;
 	private float yPos = 480f / PPM;
 	private float velocity = -1.5f;
+	private float stateTime;
+	private boolean isAttacking;
+	private boolean attackDone;
+	private int attackFrameIndex;
 	
-
+	private Texture idleSheet;
+	private Texture attackSheet;
 	
+	private Animation<TextureRegion> idleAnimation;
+	private Animation<TextureRegion> attackAnimation;
 	
 	public Boss(World world, float startX, float startY) {
 		this.world = world;
 		createBody(world, startX, startY);
 		callTimer();
+		loadSprites();
 		
 	}
 
@@ -40,21 +51,24 @@ public class Boss {
 		Timer.schedule(new Timer.Task() {
 		    @Override
 		    public void run() {
-		        attack();
+		    	isAttacking= true;
+		    	attackDone = true; //allows the attack to happen again
+		        stateTime = 0f; //reset statetime is needed or else attack will be really fast
+		        attackFrameIndex = attackAnimation.getKeyFrameIndex(stateTime);  
 		    }
-		}, 0, 2);
+		}, 1, 2);// delay, interval
 		
 		Timer.schedule(new Timer.Task() {
 		    @Override
 		    public void run() {
 		        attack(xPos, yPos);
 		    }
-		}, 0, 2);
+		}, 1, 2);
 	}
 
 	private void createBody(World world, float startX, float startY) {
 		BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody; //dynamic sprite
+        bodyDef.type = BodyDef.BodyType.StaticBody; 
         bodyDef.position.set(startX/ PPM, startY/ PPM);
         
         bossBody = world.createBody(bodyDef); 
@@ -72,6 +86,29 @@ public class Boss {
         bossFixture.setUserData(CollisionType.BOSS);
         
         shape.dispose();
+	}
+	
+	private void loadSprites() {
+
+	    idleSheet = new Texture("BossIdle.png");
+	    attackSheet = new Texture("BossAttack.png");
+
+	    idleAnimation = createAnimation(idleSheet, 96, 96, 10, 0.1f);
+	    attackAnimation = createAnimation(attackSheet, 96, 96, 6, 0.08f);
+	}
+	//helper method  that makes animations
+	private Animation<TextureRegion> createAnimation(Texture sheet, int frameWidth, int frameHeight, int frameCount, float frameDuration) {
+
+	    TextureRegion[][] temp = TextureRegion.split(sheet, frameWidth, frameHeight);
+
+	    TextureRegion[] frames = new TextureRegion[frameCount];
+
+	    for (int i = 0; i < frameCount; i++) {
+	        frames[i] = temp[0][i];
+	        frames[i].flip(true, false); // flip horizontally
+	    }
+
+	    return new Animation<>(frameDuration, frames);
 	}
 	public void setHealth(int health){
 		this.health = health;
@@ -113,6 +150,16 @@ public class Boss {
 		this.xPos = xPos;
 	}
 	
+	public TextureRegion getFrame() {
+
+	    if(isAttacking) {
+	        return attackAnimation.getKeyFrame(stateTime, false);
+	        
+	    }
+	    return idleAnimation.getKeyFrame(stateTime, true);
+	}
+	
+	
 	public void attack() { //creates the attack block
 		Vector2 bossPos = bossBody.getPosition();
 	    float xOffset = 0.5f;
@@ -133,5 +180,19 @@ public class Boss {
 	    return activeAttacks;
 	}
 
-	//public void update() {    } 
+	public void update(float delta) {
+	    stateTime += delta;
+	    if (attackAnimation.isAnimationFinished(stateTime)) {
+			isAttacking= false;
+		}
+	    if(isAttacking) {
+	    	attackFrameIndex = attackAnimation.getKeyFrameIndex(stateTime); //only get frame when attacking
+	    }
+	    if(attackFrameIndex == 4) { // only attack when sword swipe
+	    	if (attackDone) { //without this if statement like 10 attacks will be sent;
+	    		attack();
+	    		attackDone = false; // only send one attack
+	    	}
+        }
+	}
 }

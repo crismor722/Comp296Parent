@@ -89,6 +89,13 @@ public class GameContactListener implements ContactListener {
             toDestroyPlayerBlocks.add(playerBlock);
         }
         
+        if (isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.PLAYER_ATTACK_BLOCK, CollisionType.BOSS)) {
+            Fixture playerAttackFixture =  (currentCollisionTypeA == CollisionType.PLAYER_ATTACK_BLOCK) ? fixtureA : fixtureB;
+
+            PlayerAttackBlock playerBlock = (PlayerAttackBlock) playerAttackFixture.getBody().getUserData();
+            toDestroyPlayerBlocks.add(playerBlock);
+        }
+        
         if (isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.PLAYER, CollisionType.BOSS_ATTACK_BLOCK)) {
             Fixture bossAttackFixture =  (currentCollisionTypeA == CollisionType.BOSS_ATTACK_BLOCK) ? fixtureA : fixtureB;
             

@@ -242,7 +242,7 @@ public class EndScene extends ScreenAdapter{
         shapeRenderer.end();
         */
         //box2d debug
-        debugRenderer.render(world, camera.combined);
+        //debugRenderer.render(world, camera.combined);
     }
 
     @Override
