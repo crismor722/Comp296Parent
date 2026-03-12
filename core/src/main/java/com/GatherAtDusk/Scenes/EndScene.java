@@ -217,10 +217,20 @@ public class EndScene extends ScreenAdapter{
         batch.end();
         
         contactListener.processPendingDestruction(); //need to be called  after world step in order for LibGDX to be happy
-        player.update();  //happens before player rendering and coloring
+        player.update(delta);  //happens before player rendering and coloring
         
         //player color and rendering
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        batch.begin();
+        batch.draw(
+            player.getFrame(),
+            player.getPosition().x -64f/PPM,
+            player.getPosition().y -40f/PPM, //change here for boss sprire and height pos
+            player.getFrameSize()/ PPM *2,
+            player.getFrameSize() / PPM *2
+        );
+
+        batch.end();
+        /*shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(1f, 0f, 0f, 1); // red player
         shapeRenderer.rect(
             player.getPosition().x - Player.getPlayerWidth() /2 / PPM, //sets start of x render to the left edge of the player body
@@ -230,6 +240,7 @@ public class EndScene extends ScreenAdapter{
             Player.getPlayerHeight() / PPM
         );
         shapeRenderer.end();
+        */
         
         
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);

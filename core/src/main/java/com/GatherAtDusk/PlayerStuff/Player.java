@@ -2,34 +2,66 @@ package com.GatherAtDusk.PlayerStuff;
 import com.GatherAtDusk.Blocks.PlayerAttackBlock;
 import com.GatherAtDusk.BossStuff.Boss;
 import com.GatherAtDusk.ContactListener.CollisionType;
+import com.GatherAtDusk.Helpers.AnimationHelper;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
 
 
 public class Player {
 	private Body playerBody;
 	private Boss boss;
 	private Boolean isOnGround = false;
-	private static final float PLAYER_WIDTH = 40f;
-	private static final float PLAYER_HEIGHT = 60f;
+	private static final float PLAYER_WIDTH = 64f;
+	private static final float PLAYER_HEIGHT = 64f;
 	private static final float PPM = (float) 100; // 100 pixels per meter 
 	private World world;
 	private PlayerAttackBlock currentAttack;
 	private Array<PlayerAttackBlock> activeAttacks = new Array<>();
 	private int health = 100;
 	
+	private float stateTime;
+	private boolean isAttacking;
+	private boolean isLooping;
+	
+	private int frameSize = 64;
+	private int frameCount;
+	private float frameDuration = 0.1f;
+	private int row;
+	
+	//textures
+	private Texture idleSheet;
+	private Texture attackSheet;
+	private Texture runSheet;
+	
+	//animations
+	private Animation<TextureRegion> idleAnimation;
+	
+	private Animation<TextureRegion> runRightAnimation;
+	private Animation<TextureRegion> runLeftAnimation;
+	
+	private Animation<TextureRegion> attackRightAnimation;
+	private Animation<TextureRegion> attackLeftAnimation;
+	
+	private Animation<TextureRegion> currentAnimation;
+	
 	
 	public Player(World world, float startX, float startY) {
 		this.world = world;
 		createBody(world, startX, startY);
+		loadSprites();
 	}
 	public Player(World world, float startX, float startY, Boss boss) {
 		this.world = world;
 		this.boss = boss;
 		createBody(world, startX, startY);
+		loadSprites();
 	}
 
 	private void createBody(World world, float startX, float startY) {
@@ -53,6 +85,45 @@ public class Player {
         
         shape.dispose();
 	}
+	
+	private void loadSprites() {
+
+	    idleSheet = new Texture("mainIdle.png");
+	    attackSheet = new Texture("mainShoot.png");
+	    runSheet = new Texture("mainRun.png");
+	    
+	    row = 2;
+	    frameCount = 2;
+	    
+	    idleAnimation = AnimationHelper.createAnimation(idleSheet, frameSize, frameSize, row, frameCount, frameDuration, false);
+	    
+	    row = 3;
+	    frameCount = 8;
+	    
+	    runRightAnimation = AnimationHelper.createAnimation(runSheet, frameSize, frameSize, row, frameCount, frameDuration, false);
+	    
+	    row = 1;
+	    runLeftAnimation = AnimationHelper.createAnimation(runSheet, frameSize, frameSize, row, frameCount, frameDuration, false);
+	    
+	    row = 3;
+	    frameCount = 13;
+	    frameDuration = 0.02f;
+	    attackRightAnimation = AnimationHelper.createAnimation(attackSheet, frameSize, frameSize, row, frameCount, frameDuration, false);
+	}
+	
+	public TextureRegion getFrame() {
+	    return currentAnimation.getKeyFrame(stateTime, isLooping); //when using loop libgdx knows what frame to call based on the duration that has passed
+	    //if 0.1 seconds has passed then the next frame is called. this is initialized when i created the animation and set the frame duration
+	}
+	
+	private void setFrame(Animation<TextureRegion> currentAnimation, boolean isLooping) {
+		this.isLooping = isLooping;
+		this.currentAnimation = currentAnimation;
+	}
+	public int getFrameSize() {
+		return frameSize;
+	}
+	
 	public void setHealth(int health){
 		this.health = health;
 	}
@@ -95,32 +166,42 @@ public class Player {
 	
 	
 	public void attack() { //creates the attack block
-		Vector2 playerPos = playerBody.getPosition();
-	    float xOffset = 0.3f;
-	    Vector2 blockPos = new Vector2(playerPos.x + xOffset, playerPos.y);
+		stateTime = 0;
+		Timer.schedule(new Timer.Task() {
+		    @Override
+		    public void run() {  
+				Vector2 playerPos = playerBody.getPosition();
+			    float Offset = 0.3f;
+			    Vector2 blockPos = new Vector2(playerPos.x + Offset, playerPos.y + Offset);
 
-	    PlayerAttackBlock newAttack = new PlayerAttackBlock(world, blockPos);
-	    activeAttacks.add(newAttack);
+			    PlayerAttackBlock newAttack = new PlayerAttackBlock(world, blockPos);
+			    activeAttacks.add(newAttack);
+		    }
+		}, 0.2f, 0f, 1);// delay, interval
+		
 	}
 	
 	public Array<PlayerAttackBlock> getActiveAttacks() {
 	    return activeAttacks;
 	}
 
-	public void update() { //gravity is established in introscene already
-
+	public void update(float delta) { //gravity is established in introscene already
+		stateTime += delta;
         float moveSpeed = 3f; //base movespeed
         
         Vector2 playerVelocity = playerBody.getLinearVelocity();
 
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             playerBody.setLinearVelocity(-moveSpeed, playerVelocity.y); //pressing "a" make the player go left
+            setFrame(runLeftAnimation, true);
         }
         else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
             playerBody.setLinearVelocity(moveSpeed, playerVelocity.y); //pressing "d" makes the player go right
+            setFrame(runRightAnimation, true);
         }
-        else {
-            playerBody.setLinearVelocity(0, playerVelocity.y); //if no buttons pressed, do nothing
+        else if(!isAttacking) {
+        	playerBody.setLinearVelocity(0, playerVelocity.y); //if no buttons pressed, do nothing
+        	setFrame(idleAnimation, true);
         }
 
         if (isOnGround && Gdx.input.isKeyJustPressed(Input.Keys.W)) { // player needs to be on ground before they could jump
@@ -129,10 +210,15 @@ public class Player {
         
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             attack();
+            setFrame(attackRightAnimation, false);
+            isAttacking = true;
         }
         if(boss != null) {
         	 boss.setBossAttackPosX(playerBody.getPosition().x);
         }
-       
+        
+        if (attackRightAnimation.isAnimationFinished(stateTime)) {
+			isAttacking= false;
+		}
     }		
 }

@@ -35,6 +35,7 @@ public class IntroScene extends ScreenAdapter {
     private Texture grassTexture; //note: top of grassTexture is 37.5% transparent
     private Texture groundTexture;
     private Texture backgroundDay;
+    private Texture rockTexture;
     
     private static final int HGRAVITY = 0;
     private static final float VGRAVITY = -9.8f; //LibGDX likes floats for decimals
@@ -87,6 +88,7 @@ public class IntroScene extends ScreenAdapter {
 
 	private void createPlayer(float spawnX, float spawnY) {
 		player = new Player(world, spawnX, spawnY);
+		rockTexture = new Texture("small-rock.png");
 	}
 	
 	private void createPlayerHealthUI() {
@@ -247,10 +249,21 @@ public class IntroScene extends ScreenAdapter {
         batch.end();
         
         contactListener.processPendingDestruction(); //need to be called  after world step in order for LibGDX to be happy
-        player.update();  //happens before player rendering and coloring
+        player.update(delta); //happens before player rendering and coloring
+        batch.begin();
+        batch.draw(
+            player.getFrame(),
+            player.getPosition().x -64f/PPM,
+            player.getPosition().y -40f/PPM, //change here for boss sprire and height pos
+            player.getFrameSize()/ PPM *2,
+            player.getFrameSize() / PPM *2
+        );
+
+        batch.end();
+        
         
         //player color and rendering
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        /*shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(1f, 0f, 0f, 1); // red player
         shapeRenderer.rect(
             player.getPosition().x - Player.getPlayerWidth() /2 / PPM, //sets start of x render to the left edge of the player body
@@ -260,6 +273,7 @@ public class IntroScene extends ScreenAdapter {
             Player.getPlayerHeight() / PPM
         );
         shapeRenderer.end();
+        */
         
         //checkpoint color and rendering 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -274,31 +288,30 @@ public class IntroScene extends ScreenAdapter {
         }
         shapeRenderer.end();
         
-        
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(1f, 0f, 0f, 1); // red for attacks
+        batch.begin();
         
         for (PlayerAttackBlock attack : player.getActiveAttacks()) {
         	if(attack.isDestroyed()){ //this if statement gets rid of the left over color when the block deletes
-        		shapeRenderer.end();
-        		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-                shapeRenderer.setColor(1f, 0f, 0f, 1);
+        		player.getActiveAttacks().removeValue(attack, true);
         	}
         	else {
-        		shapeRenderer.rect(
-                		attack.getPosition().x  - PlayerAttackBlock.getBlockWidth() / 2f,
-                        attack.getPosition().y - PlayerAttackBlock.getBlockHeight() / 2f,
-                        PlayerAttackBlock.getBlockWidth(),
-                        PlayerAttackBlock.getBlockHeight()
-                );
+        		batch.draw(
+        		  rockTexture,
+                  attack.getPosition().x- PlayerAttackBlock.getBlockWidth() / 2,
+                  attack.getPosition().y - PlayerAttackBlock.getBlockHeight() /2, // 0.64 meters
+                  PlayerAttackBlock.getBlockWidth() *5,
+                  PlayerAttackBlock.getBlockHeight() *5
+              );
+                
         	}
         }
-        shapeRenderer.end();
+        
+        batch.end();
         
         healthUI.playerUpdate();
         healthUI.render(delta);
         //box2d debug
-        //debugRenderer.render(world, camera.combined);
+        debugRenderer.render(world, camera.combined);
     }
 
     @Override

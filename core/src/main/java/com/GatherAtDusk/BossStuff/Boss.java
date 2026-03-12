@@ -55,14 +55,14 @@ public class Boss {
 		    public void run() {
 		    	isAttacking= true;
 		    	attackDone = true; //allows the attack to happen again
-		        stateTime = 0f; //reset statetime is needed or else attack will be really fast
+		        stateTime = 0f; //reset statetime is needed or else attack will be set to the wrong frame
 		        attackFrameIndex = attackAnimation.getKeyFrameIndex(stateTime);  
 		    }
 		}, 1, 2);// delay, interval
 		
 		Timer.schedule(new Timer.Task() {
 		    @Override
-		    public void run() {
+		    public void run() { //this attack will attack over the head of the player
 		        attack(xPos, yPos);
 		    }
 		}, 1, 2);
@@ -156,11 +156,12 @@ public class Boss {
 	
 	public TextureRegion getFrame() {
 
-	    if(isAttacking) {
-	        return attackAnimation.getKeyFrame(stateTime, false);
+	    if(isAttacking) { //pretty self- expanitory
+	        return attackAnimation.getKeyFrame(stateTime, false); //(statetime , is looping?) 
 	        
 	    }
-	    return idleAnimation.getKeyFrame(stateTime, true);
+	    return idleAnimation.getKeyFrame(stateTime, true); //when using loop libgdx knows what frame to call based on the duration that has passed
+	    //if 0.1 seconds has passed then the next frame is called. this is initialized when i created the animation and set the frame duration
 	}
 	
 	
@@ -173,7 +174,7 @@ public class Boss {
 	    activeAttacks.add(newAttack);
 	}
 	
-	public void attack(float xPos, float yPos) {
+	public void attack(float xPos, float yPos) { //two methods of attack, first one is normal attack from boss, second attack is from over the players head
 	    blockPos = new Vector2(xPos, yPos);
 
 	    BossAttackBlock newAttack = new BossAttackBlock(world, blockPos, velocity);
@@ -185,7 +186,7 @@ public class Boss {
 	}
 
 	public void update(float delta) {
-	    stateTime += delta;
+	    stateTime += delta; //statetime determines what frame the animation needs to be at
 	    if (attackAnimation.isAnimationFinished(stateTime)) {
 			isAttacking= false;
 		}

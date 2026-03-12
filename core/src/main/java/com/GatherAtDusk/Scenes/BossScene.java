@@ -39,6 +39,9 @@ public class BossScene extends ScreenAdapter{
     private Texture grassTexture; //note: top of grassTexture is 37.5% transparent
     private Texture groundTexture;
     private Texture backgroundDay;
+    private Texture swooshTexture;
+    private Texture kunaiTexture;
+    private Texture rockTexture;
     
 	private static final int HGRAVITY = 0;
     private static final float VGRAVITY = -9.8f; //LibGDX likes floats for decimals
@@ -86,10 +89,13 @@ public class BossScene extends ScreenAdapter{
     }
     private void createBoss() {
 		boss = new Boss(world, 750f, GROUND_HEIGHT_POSITION + 60f);
+		swooshTexture = new Texture("BossSwoosh.png");
+		kunaiTexture = new Texture("kunai.png");
 	}
 
 	private void createPlayer(float spawnX, float spawnY) {
 		player = new Player(world, spawnX, spawnY, boss);
+		rockTexture = new Texture("small-rock.png");
 	}
 	
 	private void createHealthUI() {
@@ -218,10 +224,20 @@ public class BossScene extends ScreenAdapter{
         batch.end();
         
         contactListener.processPendingDestruction(); //need to be called  after world step in order for LibGDX to be happy
-        player.update();  //happens before player rendering and coloring
+        player.update(delta);  //happens before player rendering and coloring
         
         //player color and rendering
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        batch.begin();
+        batch.draw(
+            player.getFrame(),
+            player.getPosition().x -64f/PPM,
+            player.getPosition().y -40f/PPM, //change here for boss sprire and height pos
+            player.getFrameSize()/ PPM *2,
+            player.getFrameSize() / PPM *2
+        );
+
+        batch.end();
+        /*shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(1f, 0f, 0f, 1); // red player
         shapeRenderer.rect(
             player.getPosition().x - Player.getPlayerWidth() /2 / PPM, //sets start of x render to the left edge of the player body
@@ -231,49 +247,69 @@ public class BossScene extends ScreenAdapter{
             Player.getPlayerHeight() / PPM
         );
         shapeRenderer.end();
+        */
         
-        
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(1f, 0f, 0f, 1); // red for attacks
+ batch.begin();
         
         for (PlayerAttackBlock attack : player.getActiveAttacks()) {
         	if(attack.isDestroyed()){ //this if statement gets rid of the left over color when the block deletes
-        		shapeRenderer.end();
-        		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-                shapeRenderer.setColor(1f, 0f, 0f, 1);
+        		player.getActiveAttacks().removeValue(attack, true);
         	}
         	else {
-        		shapeRenderer.rect(
-                		attack.getPosition().x - PlayerAttackBlock.getBlockWidth() / 2f,
-                        attack.getPosition().y - PlayerAttackBlock.getBlockHeight() / 2f,
-                        PlayerAttackBlock.getBlockWidth(),
-                        PlayerAttackBlock.getBlockHeight()
-                        );
+        		batch.draw(
+        		  rockTexture,
+                  attack.getPosition().x- PlayerAttackBlock.getBlockWidth() / 2,
+                  attack.getPosition().y - PlayerAttackBlock.getBlockHeight() /2, // 0.64 meters
+                  PlayerAttackBlock.getBlockWidth() *5,
+                  PlayerAttackBlock.getBlockHeight() *5
+              );
+                
         	}
         }
-        shapeRenderer.end();
+        
+        batch.end();
         
         //temp damage block
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(1f, 0f, 0f, 1);
         
+        batch.begin();
         for(BossAttackBlock attack : boss.getActiveAttacks()) {
-        	if(attack.isDestroyed()){ //this if statement gets rid of the left over color when the block deletes
-        		shapeRenderer.end();
-        		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-                shapeRenderer.setColor(1f, 0f, 0f, 1);
+        	if(attack.isDestroyed()) {
+    			boss.getActiveAttacks().removeValue(attack, true); //clean up array to prevent lingering sprite images
+    		}
+        	if(attack.isAbove()){ //this if statement gets rid of the left over color when the block deletes
+        		batch.draw(
+                        kunaiTexture,
+                        attack.getPosition().x- attack.getBlockWidth() / 2,
+                        attack.getPosition().y - attack.getBlockHeight() /2, // 0.64 meters
+                        attack.getBlockWidth(),
+                        attack.getBlockHeight()
+                    );
+        		
         	}
         	else {
-        		shapeRenderer.rect(
+        		
+        		batch.draw(
+                        swooshTexture,
+                        attack.getPosition().x- attack.getBlockWidth() / 2,
+                        attack.getPosition().y - attack.getBlockHeight() /2, // 0.64 meters
+                        attack.getBlockWidth() *3,
+                        attack.getBlockHeight() *3
+                    );
+        		
+        		/*shapeRenderer.rect(
                         attack.getPosition().x - attack.getBlockWidth() / 2 , 
                         attack.getPosition().y - attack.getBlockHeight() /2 , 
                         attack.getBlockWidth(),
                         attack.getBlockHeight()
+                        
         		);
+        		*/
         	}
             
-            
         }
+        batch.end();
         
         shapeRenderer.end();
         

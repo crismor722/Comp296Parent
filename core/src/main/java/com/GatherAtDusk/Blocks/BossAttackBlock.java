@@ -20,12 +20,15 @@ public class BossAttackBlock {
 	private Fixture bossAttackFix;
 	private Vector2 blockPos;
 	private float velocity = -3.5f;
+	private boolean isAbove;
+	
 	
 	public BossAttackBlock(World world, Vector2 blockPos){
 		this.world = world;
 		this.blockPos = blockPos;
 		destroyed = false;
 		createBody();
+		isAbove = false;
 	}
 	 // if velocity is  sent, x vel is 0 and y veloc goes down, else x veloc is set and y is zero
 	public BossAttackBlock(World world, Vector2 blockPos, float velocity){ //second constructor to allows for attacks from sky, need to edit velocity
@@ -34,6 +37,7 @@ public class BossAttackBlock {
 		this.velocity = velocity;
 		destroyed = false;
 		createBody(velocity);
+		isAbove = true;
 	}
 	
 	private void createBody() {
@@ -100,6 +104,10 @@ public class BossAttackBlock {
 		bossAttackBody.setLinearVelocity(blockVector.x, velocity);
 		
 	} 
+	
+	public boolean isAbove() {
+		return isAbove;
+	}
 	
 	public void setDamage(int damage) {
 		this.damage = damage;
