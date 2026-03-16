@@ -91,7 +91,7 @@ public class EndScene extends ScreenAdapter{
         world.setContactListener(contactListener); //set contact listener is built into box2d
     }
     private void createBoss() {
-		boss = new Boss(world, 700f, GROUND_HEIGHT_POSITION + 60f);
+		boss = new Boss(world, player, 700f, GROUND_HEIGHT_POSITION + 60f);
 	}
 
 	private void createPlayer(float spawnX, float spawnY) {

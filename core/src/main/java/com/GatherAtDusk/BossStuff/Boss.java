@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.GatherAtDusk.Helpers.*;
+import com.GatherAtDusk.PlayerStuff.Player;
 
 public class Boss {
 	private Body bossBody;
@@ -22,6 +23,7 @@ public class Boss {
 	private static final float BOSS_HEIGHT = 64f;
 	private static final float PPM = (float) 100; // 100 pixels per meter 
 	private World world;
+	private Player player;
 	private Vector2 blockPos;
 	private BossAttackBlock currentAttack;
 	private Array<BossAttackBlock> activeAttacks = new Array<>();
@@ -32,6 +34,7 @@ public class Boss {
 	private float stateTime;
 	private boolean isAttacking;
 	private boolean attackDone;
+	private boolean timerStarted = false;
 	private int attackFrameIndex;
 	
 	private Texture idleSheet;
@@ -40,14 +43,13 @@ public class Boss {
 	private Animation<TextureRegion> idleAnimation;
 	private Animation<TextureRegion> attackAnimation;
 	
-	public Boss(World world, float startX, float startY) {
+	public Boss(World world, Player player, float startX, float startY) {
 		this.world = world;
+		this.player = player;
 		createBody(world, startX, startY);
-		callTimer();
 		loadSprites();
 	}
 
-	
 
 	private void callTimer() {
 		Timer.schedule(new Timer.Task() {
@@ -55,15 +57,15 @@ public class Boss {
 		    public void run() {
 		    	isAttacking= true;
 		    	attackDone = true; //allows the attack to happen again
-		        stateTime = 0f; //reset statetime is needed or else attack will be set to the wrong frame
-		        attackFrameIndex = attackAnimation.getKeyFrameIndex(stateTime);  
+		    	stateTime = 0f; //reset statetime is needed or else attack will be set to the wrong frame
+		    	attackFrameIndex = attackAnimation.getKeyFrameIndex(stateTime);  
 		    }
 		}, 1, 2);// delay, interval
 		
 		Timer.schedule(new Timer.Task() {
 		    @Override
 		    public void run() { //this attack will attack over the head of the player
-		        attack(xPos, yPos);
+		        attackFromAbove();
 		    }
 		}, 1, 2);
 	}
@@ -99,21 +101,6 @@ public class Boss {
 	    attackAnimation = AnimationHelper.createAnimation(attackSheet, 96, 96, 6, 0.08f, true);
 	}
 	
-	//helper method  that makes animations
-	/*private Animation<TextureRegion> createAnimation(Texture sheet, int frameWidth, int frameHeight, int frameCount, float frameDuration) {
-
-	    TextureRegion[][] temp = TextureRegion.split(sheet, frameWidth, frameHeight);
-
-	    TextureRegion[] frames = new TextureRegion[frameCount];
-
-	    for (int i = 0; i < frameCount; i++) {
-	        frames[i] = temp[0][i];
-	        frames[i].flip(true, false); // flip horizontally
-	    }
-
-	    return new Animation<>(frameDuration, frames);
-	}
-	*/
 	public void setHealth(int health){
 		this.health = health;
 	}
@@ -174,8 +161,10 @@ public class Boss {
 	    activeAttacks.add(newAttack);
 	}
 	
-	public void attack(float xPos, float yPos) { //two methods of attack, first one is normal attack from boss, second attack is from over the players head
-	    blockPos = new Vector2(xPos, yPos);
+	public void attackFromAbove() { //two methods of attack, first one is normal attack from boss, second attack is from over the players head
+		float playerX = player.getPosition().x;
+
+	    blockPos = new Vector2(playerX, yPos);
 
 	    BossAttackBlock newAttack = new BossAttackBlock(world, blockPos, velocity);
 	    activeAttacks.add(newAttack);
@@ -187,6 +176,11 @@ public class Boss {
 
 	public void update(float delta) {
 	    stateTime += delta; //statetime determines what frame the animation needs to be at
+	    if(!timerStarted && player.getCanMove()) {
+	        callTimer();
+	        timerStarted = true;
+	    }
+	    
 	    if (attackAnimation.isAnimationFinished(stateTime)) {
 			isAttacking= false;
 		}

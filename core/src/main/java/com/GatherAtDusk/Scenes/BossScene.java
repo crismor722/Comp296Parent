@@ -7,6 +7,7 @@ import com.GatherAtDusk.Blocks.PlayerAttackBlock;
 import com.GatherAtDusk.BossStuff.Boss;
 import com.GatherAtDusk.ContactListener.CollisionType;
 import com.GatherAtDusk.ContactListener.GameContactListener;
+import com.GatherAtDusk.Managers.DialogueManager;
 import com.GatherAtDusk.PlayerStuff.Player;
 import com.GatherAtDusk.PlayerStuff.HealthUI;
 import com.badlogic.gdx.Gdx;
@@ -42,6 +43,7 @@ public class BossScene extends ScreenAdapter{
     private Texture swooshTexture;
     private Texture kunaiTexture;
     private Texture rockTexture;
+    private DialogueManager dialogueManager;
     
 	private static final int HGRAVITY = 0;
     private static final float VGRAVITY = -9.8f; //LibGDX likes floats for decimals
@@ -52,7 +54,7 @@ public class BossScene extends ScreenAdapter{
     private static final float GROUND_WIDTH_SIZE =  WORLD_WIDTH;
     private static final float GROUND_HEIGHT_SIZE = GROUND_HEIGHT_POSITION;
     private static final float FRICTION = 0.8f; //friction doesn't really have an effect now, maybe find a way to remove later
-    private float playerStartX = WORLD_WIDTH / 2 ; // center of screen in pixels
+    private float playerStartX = 100f ; // center of screen in pixels
     private float playerStartY = GROUND_HEIGHT_POSITION + 60f; // above ground
     private static final float PPM = (float) 100; // 100 pixels per meter 
     private static final float WALL_THICKNESS = 10f / PPM;
@@ -77,18 +79,16 @@ public class BossScene extends ScreenAdapter{
 
         createGround();
         createBoundaries();
-        createBoss();
         createPlayer(playerStartX, playerStartY);
-        createHealthUI();
-        createTiles();
-        createBackground();
+        createBoss();
+        createExtraStuff();
         
         
         contactListener = new GameContactListener(game, player, boss);
         world.setContactListener(contactListener); //set contact listener is built into box2d
     }
     private void createBoss() {
-		boss = new Boss(world, 750f, GROUND_HEIGHT_POSITION + 60f);
+		boss = new Boss(world, player, 750f, GROUND_HEIGHT_POSITION + 60f);
 		swooshTexture = new Texture("BossSwoosh.png");
 		kunaiTexture = new Texture("kunai.png");
 	}
@@ -98,16 +98,12 @@ public class BossScene extends ScreenAdapter{
 		rockTexture = new Texture("small-rock.png");
 	}
 	
-	private void createHealthUI() {
+	private void createExtraStuff() {
 		healthUI = new HealthUI(player, boss);
-	}
-	private void createTiles() {
 		grassTexture = new Texture("Platform Tileset/grasstop.png");
 		groundTexture = new Texture("Platform Tileset/dirtfull.png");
-	}
-	
-	private void createBackground(){
 		backgroundDay = new Texture ("DayBackground.png");
+		dialogueManager = new DialogueManager(player, 1);
 	}
 
 	private void createGround() { //createGround needs to be in this scene and not in MainGame, MainGame only handles scenes
@@ -249,7 +245,7 @@ public class BossScene extends ScreenAdapter{
         shapeRenderer.end();
         */
         
- batch.begin();
+        batch.begin();
         
         for (PlayerAttackBlock attack : player.getActiveAttacks()) {
         	if(attack.isDestroyed()){ //this if statement gets rid of the left over color when the block deletes
@@ -336,6 +332,9 @@ public class BossScene extends ScreenAdapter{
 
         batch.end();
         boss.update(delta);
+        
+        dialogueManager.update(delta);
+        dialogueManager.render();
         
         healthUI.bossAndPlayerUpdate();
         healthUI.render(delta);

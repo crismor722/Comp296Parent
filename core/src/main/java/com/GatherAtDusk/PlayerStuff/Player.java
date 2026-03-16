@@ -29,6 +29,8 @@ public class Player {
 	private float stateTime;
 	private boolean isAttacking;
 	private boolean isLooping;
+	private boolean canMove = true;
+	private float idleTime = 0f;
 	
 	private int frameSize = 64;
 	private int frameCount;
@@ -47,7 +49,6 @@ public class Player {
 	private Animation<TextureRegion> runLeftAnimation;
 	
 	private Animation<TextureRegion> attackRightAnimation;
-	private Animation<TextureRegion> attackLeftAnimation;
 	
 	private Animation<TextureRegion> currentAnimation;
 	
@@ -57,6 +58,7 @@ public class Player {
 		createBody(world, startX, startY);
 		loadSprites();
 	}
+	
 	public Player(World world, float startX, float startY, Boss boss) {
 		this.world = world;
 		this.boss = boss;
@@ -115,6 +117,9 @@ public class Player {
 	    return currentAnimation.getKeyFrame(stateTime, isLooping); //when using loop libgdx knows what frame to call based on the duration that has passed
 	    //if 0.1 seconds has passed then the next frame is called. this is initialized when i created the animation and set the frame duration
 	}
+	public void setIdleTime(float idleTime){
+		this.idleTime = idleTime;
+	}
 	
 	private void setFrame(Animation<TextureRegion> currentAnimation, boolean isLooping) {
 		this.isLooping = isLooping;
@@ -163,7 +168,13 @@ public class Player {
 	public void clearCurrentAttack() {
 		currentAttack = null;
 	}
+	public void setCanMove(boolean canMove){
+		this.canMove = canMove;
+	}
 	
+	public boolean getCanMove(){
+		return canMove;
+	}
 	
 	public void attack() { //creates the attack block
 		stateTime = 0;
@@ -184,41 +195,55 @@ public class Player {
 	public Array<PlayerAttackBlock> getActiveAttacks() {
 	    return activeAttacks;
 	}
+	
 
 	public void update(float delta) { //gravity is established in introscene already
+		idleTime -= delta;
 		stateTime += delta;
         float moveSpeed = 3f; //base movespeed
         
         Vector2 playerVelocity = playerBody.getLinearVelocity();
-
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            playerBody.setLinearVelocity(-moveSpeed, playerVelocity.y); //pressing "a" make the player go left
-            setFrame(runLeftAnimation, true);
-        }
-        else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            playerBody.setLinearVelocity(moveSpeed, playerVelocity.y); //pressing "d" makes the player go right
-            setFrame(runRightAnimation, true);
-        }
-        else if(!isAttacking) {
-        	playerBody.setLinearVelocity(0, playerVelocity.y); //if no buttons pressed, do nothing
-        	setFrame(idleAnimation, true);
-        }
-
-        if (isOnGround && Gdx.input.isKeyJustPressed(Input.Keys.W)) { // player needs to be on ground before they could jump
-            playerBody.setLinearVelocity(playerVelocity.x, 5f); // jumps straight up
+        if(idleTime <= 0) {
+        	if(canMove) {
+        		if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+        			playerBody.setLinearVelocity(-moveSpeed, playerVelocity.y); //pressing "a" make the player go left
+        			setFrame(runLeftAnimation, true);
+        		}
+        		else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+        			playerBody.setLinearVelocity(moveSpeed, playerVelocity.y); //pressing "d" makes the player go right
+        			setFrame(runRightAnimation, true);
+        		}
+        		else if(!isAttacking){
+        			playerBody.setLinearVelocity(0, playerVelocity.y); //if no buttons pressed, do nothing
+        			setFrame(idleAnimation, true);
+        		}
+        	}
+        	else {
+             	playerBody.setLinearVelocity(0, playerVelocity.y); //if cant move just idle
+                setFrame(idleAnimation, true);
+             }
         }
         
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            attack();
-            setFrame(attackRightAnimation, false);
-            isAttacking = true;
-        }
-        if(boss != null) {
-        	 boss.setBossAttackPosX(playerBody.getPosition().x);
+        if(idleTime <= 0) {
+        	if(canMove) {
+        		if (isOnGround && Gdx.input.isKeyJustPressed(Input.Keys.W)) { // player needs to be on ground before they could jump
+        			playerBody.setLinearVelocity(playerVelocity.x, 5f); // jumps straight up
+        		}
+        		if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+        			attack();
+        			setFrame(attackRightAnimation, false);
+        			isAttacking = true;
+        		}
+        	
+        	}
         }
         
         if (attackRightAnimation.isAnimationFinished(stateTime)) {
 			isAttacking= false;
 		}
+        if(idleTime > 0) {
+        	playerBody.setLinearVelocity(0, playerVelocity.y); //if no buttons pressed, do nothing
+        	setFrame(idleAnimation, true);
+        }
     }		
 }

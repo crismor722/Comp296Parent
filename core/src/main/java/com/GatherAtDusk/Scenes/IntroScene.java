@@ -5,6 +5,7 @@ import com.GatherAtDusk.Blocks.BossAttackBlock;
 import com.GatherAtDusk.Blocks.CheckpointBlock;
 import com.GatherAtDusk.Blocks.PlayerAttackBlock;
 import com.GatherAtDusk.ContactListener.*;
+import com.GatherAtDusk.Managers.DialogueManager;
 import com.GatherAtDusk.Managers.SaveManager;
 import com.GatherAtDusk.PlayerStuff.Player;
 import com.GatherAtDusk.PlayerStuff.HealthUI;
@@ -36,6 +37,7 @@ public class IntroScene extends ScreenAdapter {
     private Texture groundTexture;
     private Texture backgroundDay;
     private Texture rockTexture;
+    private DialogueManager dialogueManager;
     
     private static final int HGRAVITY = 0;
     private static final float VGRAVITY = -9.8f; //LibGDX likes floats for decimals
@@ -52,6 +54,8 @@ public class IntroScene extends ScreenAdapter {
     private static final float WALL_THICKNESS = 10f / PPM;
     private static final float TILE_SIZE = 16f/ PPM;
     private static final float TILE_INDEX_X = GROUND_WIDTH_SIZE / (TILE_SIZE *PPM); // 800 /16 = 50
+    private float idleTime;
+    private int checkpointID;
     		
     private Array<CheckpointBlock> checkpointsArray = new Array<>();
     private GameContactListener contactListener;
@@ -76,10 +80,7 @@ public class IntroScene extends ScreenAdapter {
         createGround();
         createBoundaries();
         createCheckpoints(); //checkpoints need to be before player
-        createPlayerHealthUI();
-        createTiles();
-        createBackground();
-        
+        createExtraStuff();
         
         
         contactListener = new GameContactListener(game, player, checkpointsArray);
@@ -89,19 +90,16 @@ public class IntroScene extends ScreenAdapter {
 	private void createPlayer(float spawnX, float spawnY) {
 		player = new Player(world, spawnX, spawnY);
 		rockTexture = new Texture("small-rock.png");
+		//player.setIdleTime(idleTime);
 	}
-	
-	private void createPlayerHealthUI() {
+	private void createExtraStuff() {
 		healthUI = new HealthUI(player);
-	}
-	
-	private void createTiles() {
 		grassTexture = new Texture("Platform Tileset/grasstop.png");
 		groundTexture = new Texture("Platform Tileset/dirtfull.png");
-	}
-	
-	private void createBackground(){
 		backgroundDay = new Texture ("DayBackground.png");
+		if(checkpointID == 0) {
+			dialogueManager = new DialogueManager(player, 0);
+		}
 	}
 
 	private void createGround() { //createGround needs to be in this scene and not in MainGame, MainGame only handles scenes
@@ -175,7 +173,7 @@ public class IntroScene extends ScreenAdapter {
     	checkpointsArray.add(checkpoint2);
     	checkpointsArray.add(checkpoint3);
 
-    	int checkpointID = SaveManager.loadCheckpoint();
+    	checkpointID = SaveManager.loadCheckpoint();
     	Vector2 spawn = new Vector2(playerStartX, playerStartY); // default spawn
     	
 
@@ -307,6 +305,11 @@ public class IntroScene extends ScreenAdapter {
         }
         
         batch.end();
+        if(dialogueManager != null) {
+        	dialogueManager.update(delta);
+        	dialogueManager.render();
+        }
+        
         
         healthUI.playerUpdate();
         healthUI.render(delta);
