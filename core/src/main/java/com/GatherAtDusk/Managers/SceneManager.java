@@ -5,13 +5,15 @@ import com.GatherAtDusk.Scenes.*; //imports all scenes
 
 public class SceneManager {
     private MainGame game;
+    private TitleScreen titleScreen;
 
     public SceneManager(MainGame game) {
         this.game = game;
     }
     
     public void startTitleScreen() {
-    	game.setScreen(new TitleScreen(game));
+    	this.titleScreen = new TitleScreen(game);
+    	game.setScreen(titleScreen);
     	
     }
 
@@ -38,9 +40,11 @@ public class SceneManager {
     	}
     }
     
-    public void isGameWin(int health) {
-    	if(health <= 0) {
-    		game.setScreen(new EndScene(game));
-    	}
+    public void setEndScene() {
+    	game.setScreen(new EndScene(game));
+    }
+    
+    public void disposeTitleScreen() {
+    	titleScreen.dispose();
     }
 }

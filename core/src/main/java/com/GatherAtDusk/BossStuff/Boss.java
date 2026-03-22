@@ -37,6 +37,9 @@ public class Boss {
 	private boolean timerStarted = false;
 	private int attackFrameIndex;
 	
+	private Timer.Task attackTask;
+	private Timer.Task aboveAttackTask;
+	
 	private Texture idleSheet;
 	private Texture attackSheet;
 	
@@ -52,7 +55,7 @@ public class Boss {
 
 
 	private void callTimer() {
-		Timer.schedule(new Timer.Task() {
+		attackTask = new Timer.Task() { // do it this way so I can cancel task
 		    @Override
 		    public void run() {
 		    	isAttacking= true;
@@ -60,14 +63,17 @@ public class Boss {
 		    	stateTime = 0f; //reset statetime is needed or else attack will be set to the wrong frame
 		    	attackFrameIndex = attackAnimation.getKeyFrameIndex(stateTime);  
 		    }
-		}, 1, 2);// delay, interval
+		};
 		
-		Timer.schedule(new Timer.Task() {
+		aboveAttackTask = new Timer.Task() {
 		    @Override
 		    public void run() { //this attack will attack over the head of the player
 		        attackFromAbove();
 		    }
-		}, 1, 2);
+		};
+		
+		Timer.schedule(attackTask, 1, 2);// delay, interval
+		Timer.schedule(aboveAttackTask, 1, 2);
 	}
 
 	private void createBody(World world, float startX, float startY) {
@@ -110,7 +116,10 @@ public class Boss {
 	}
 	
 	public void takeDamage(int damage ) {
-		health = health - damage;
+		if(health !=0) {
+			health = health - damage;
+		}
+		
 	}
 
 	public static float getBossWidth() {
@@ -179,6 +188,10 @@ public class Boss {
 	    if(!timerStarted && player.getCanMove()) {
 	        callTimer();
 	        timerStarted = true;
+	    }
+	    if(timerStarted && player.getCanMove() == false) {
+	    	attackTask.cancel();
+	    	aboveAttackTask.cancel();
 	    }
 	    
 	    if (attackAnimation.isAnimationFinished(stateTime)) {

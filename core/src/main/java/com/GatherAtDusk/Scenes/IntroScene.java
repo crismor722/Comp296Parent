@@ -41,8 +41,8 @@ public class IntroScene extends ScreenAdapter {
     
     private static final int HGRAVITY = 0;
     private static final float VGRAVITY = -9.8f; //LibGDX likes floats for decimals
-    private static final float WORLD_WIDTH = 800f;
-    private static final float WORLD_HEIGHT = 480f;
+    private static final float WORLD_WIDTH = 800f *3/2;
+    private static final float WORLD_HEIGHT = 480f *3/2;
     private static final float GROUND_WIDTH_POSITION = WORLD_WIDTH/2;
     private static final float GROUND_HEIGHT_POSITION= 50F; //height center is the position not size
     private static final float GROUND_WIDTH_SIZE =  WORLD_WIDTH;
@@ -63,6 +63,7 @@ public class IntroScene extends ScreenAdapter {
     
     public IntroScene(MainGame game) {
         this.game = game;
+        game.sceneManager.disposeTitleScreen(); //the titlescreen button lingers unless i dispose of it
     }
 
     @Override
@@ -98,7 +99,7 @@ public class IntroScene extends ScreenAdapter {
 		groundTexture = new Texture("Platform Tileset/dirtfull.png");
 		backgroundDay = new Texture ("DayBackground.png");
 		if(checkpointID == 0) {
-			dialogueManager = new DialogueManager(player, 0);
+			dialogueManager = new DialogueManager(game, player, 0);
 		}
 	}
 

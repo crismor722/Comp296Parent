@@ -31,6 +31,7 @@ public class Player {
 	private boolean isLooping;
 	private boolean canMove = true;
 	private float idleTime = 0f;
+	private float moveSpeed = 3f; //base movespeed
 	
 	private int frameSize = 64;
 	private int frameCount;
@@ -96,15 +97,15 @@ public class Player {
 	    
 	    row = 2;
 	    frameCount = 2;
-	    
+	    frameDuration = 0.2f;
 	    idleAnimation = AnimationHelper.createAnimation(idleSheet, frameSize, frameSize, row, frameCount, frameDuration, false);
 	    
 	    row = 3;
 	    frameCount = 8;
-	    
+	    frameDuration = 0.1f;
 	    runRightAnimation = AnimationHelper.createAnimation(runSheet, frameSize, frameSize, row, frameCount, frameDuration, false);
 	    
-	    row = 1;
+	    row = 1; //same frame count and frame duration
 	    runLeftAnimation = AnimationHelper.createAnimation(runSheet, frameSize, frameSize, row, frameCount, frameDuration, false);
 	    
 	    row = 3;
@@ -125,6 +126,79 @@ public class Player {
 		this.isLooping = isLooping;
 		this.currentAnimation = currentAnimation;
 	}
+	
+	public void attack() { //creates the attack block
+		stateTime = 0;
+		Timer.schedule(new Timer.Task() {
+		    @Override
+		    public void run() {  
+				Vector2 playerPos = playerBody.getPosition();
+			    float Offset = 0.3f;
+			    Vector2 blockPos = new Vector2(playerPos.x + Offset, playerPos.y + Offset);
+
+			    PlayerAttackBlock newAttack = new PlayerAttackBlock(world, blockPos);
+			    activeAttacks.add(newAttack);
+		    }
+		}, 0.2f, 0f, 1);// delay, interval
+		
+	}
+	
+	public Array<PlayerAttackBlock> getActiveAttacks() {
+	    return activeAttacks;
+	}
+	
+
+	public void update(float delta) { //gravity is established in introscene already
+		idleTime -= delta;
+		stateTime += delta;
+        
+        
+        Vector2 playerVelocity = playerBody.getLinearVelocity();
+        if(idleTime <= 0) {
+        	if(canMove) {
+        		if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+        			playerBody.setLinearVelocity(-moveSpeed, playerVelocity.y); //pressing "a" make the player go left
+        			setFrame(runLeftAnimation, true);
+        		}
+        		else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+        			playerBody.setLinearVelocity(moveSpeed, playerVelocity.y); //pressing "d" makes the player go right
+        			setFrame(runRightAnimation, true);
+        		}
+        		else if(!isAttacking){
+        			playerBody.setLinearVelocity(0, playerVelocity.y); //if no buttons pressed, do nothing
+        			setFrame(idleAnimation, true);
+        		}
+        	}
+        	else {
+             	playerBody.setLinearVelocity(0, playerVelocity.y); //if cant move just idle
+                setFrame(idleAnimation, true);
+             }
+        }
+        
+        if(idleTime <= 0) {
+        	if(canMove) {
+        		if (isOnGround && Gdx.input.isKeyJustPressed(Input.Keys.W)) { // player needs to be on ground before they could jump
+        			playerBody.setLinearVelocity(playerVelocity.x, 5f); // jumps straight up
+        		}
+        		if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+        			attack();
+        			setFrame(attackRightAnimation, false);
+        			isAttacking = true;
+        		}
+        	
+        	}
+        }
+        
+        if (attackRightAnimation.isAnimationFinished(stateTime)) {
+			isAttacking= false;
+		}
+        
+        if(idleTime > 0) {
+        	playerBody.setLinearVelocity(0, playerVelocity.y); //if no buttons pressed, do nothing
+        	setFrame(idleAnimation, true);
+        }
+    }
+	
 	public int getFrameSize() {
 		return frameSize;
 	}
@@ -175,75 +249,4 @@ public class Player {
 	public boolean getCanMove(){
 		return canMove;
 	}
-	
-	public void attack() { //creates the attack block
-		stateTime = 0;
-		Timer.schedule(new Timer.Task() {
-		    @Override
-		    public void run() {  
-				Vector2 playerPos = playerBody.getPosition();
-			    float Offset = 0.3f;
-			    Vector2 blockPos = new Vector2(playerPos.x + Offset, playerPos.y + Offset);
-
-			    PlayerAttackBlock newAttack = new PlayerAttackBlock(world, blockPos);
-			    activeAttacks.add(newAttack);
-		    }
-		}, 0.2f, 0f, 1);// delay, interval
-		
-	}
-	
-	public Array<PlayerAttackBlock> getActiveAttacks() {
-	    return activeAttacks;
-	}
-	
-
-	public void update(float delta) { //gravity is established in introscene already
-		idleTime -= delta;
-		stateTime += delta;
-        float moveSpeed = 3f; //base movespeed
-        
-        Vector2 playerVelocity = playerBody.getLinearVelocity();
-        if(idleTime <= 0) {
-        	if(canMove) {
-        		if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-        			playerBody.setLinearVelocity(-moveSpeed, playerVelocity.y); //pressing "a" make the player go left
-        			setFrame(runLeftAnimation, true);
-        		}
-        		else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-        			playerBody.setLinearVelocity(moveSpeed, playerVelocity.y); //pressing "d" makes the player go right
-        			setFrame(runRightAnimation, true);
-        		}
-        		else if(!isAttacking){
-        			playerBody.setLinearVelocity(0, playerVelocity.y); //if no buttons pressed, do nothing
-        			setFrame(idleAnimation, true);
-        		}
-        	}
-        	else {
-             	playerBody.setLinearVelocity(0, playerVelocity.y); //if cant move just idle
-                setFrame(idleAnimation, true);
-             }
-        }
-        
-        if(idleTime <= 0) {
-        	if(canMove) {
-        		if (isOnGround && Gdx.input.isKeyJustPressed(Input.Keys.W)) { // player needs to be on ground before they could jump
-        			playerBody.setLinearVelocity(playerVelocity.x, 5f); // jumps straight up
-        		}
-        		if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-        			attack();
-        			setFrame(attackRightAnimation, false);
-        			isAttacking = true;
-        		}
-        	
-        	}
-        }
-        
-        if (attackRightAnimation.isAnimationFinished(stateTime)) {
-			isAttacking= false;
-		}
-        if(idleTime > 0) {
-        	playerBody.setLinearVelocity(0, playerVelocity.y); //if no buttons pressed, do nothing
-        	setFrame(idleAnimation, true);
-        }
-    }		
 }

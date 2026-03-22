@@ -8,6 +8,7 @@ import com.GatherAtDusk.BossStuff.Boss;
 import com.GatherAtDusk.ContactListener.CollisionType;
 import com.GatherAtDusk.ContactListener.GameContactListener;
 import com.GatherAtDusk.Managers.DialogueManager;
+import com.GatherAtDusk.NPCS.Wife;
 import com.GatherAtDusk.PlayerStuff.Player;
 import com.GatherAtDusk.PlayerStuff.HealthUI;
 import com.badlogic.gdx.Gdx;
@@ -36,6 +37,7 @@ public class BossScene extends ScreenAdapter{
     private World world;
     private Box2DDebugRenderer debugRenderer;
     private Player player;
+    private Wife wife;
     private Boss boss;
     private Texture grassTexture; //note: top of grassTexture is 37.5% transparent
     private Texture groundTexture;
@@ -47,8 +49,8 @@ public class BossScene extends ScreenAdapter{
     
 	private static final int HGRAVITY = 0;
     private static final float VGRAVITY = -9.8f; //LibGDX likes floats for decimals
-    private static final float WORLD_WIDTH = 800f;
-    private static final float WORLD_HEIGHT = 480f;
+    private static final float WORLD_WIDTH = 800f *3/2f;
+    private static final float WORLD_HEIGHT = 480f *3/2f;
     private static final float GROUND_WIDTH_POSITION = WORLD_WIDTH/2;
     private static final float GROUND_HEIGHT_POSITION= 50F; //height center is the position not size
     private static final float GROUND_WIDTH_SIZE =  WORLD_WIDTH;
@@ -84,11 +86,11 @@ public class BossScene extends ScreenAdapter{
         createExtraStuff();
         
         
-        contactListener = new GameContactListener(game, player, boss);
+        contactListener = new GameContactListener(game, player, boss, this, dialogueManager); //sending this boss scene
         world.setContactListener(contactListener); //set contact listener is built into box2d
     }
     private void createBoss() {
-		boss = new Boss(world, player, 750f, GROUND_HEIGHT_POSITION + 60f);
+		boss = new Boss(world, player, 700f *3/2, GROUND_HEIGHT_POSITION + 60f);
 		swooshTexture = new Texture("BossSwoosh.png");
 		kunaiTexture = new Texture("kunai.png");
 	}
@@ -103,7 +105,11 @@ public class BossScene extends ScreenAdapter{
 		grassTexture = new Texture("Platform Tileset/grasstop.png");
 		groundTexture = new Texture("Platform Tileset/dirtfull.png");
 		backgroundDay = new Texture ("DayBackground.png");
-		dialogueManager = new DialogueManager(player, 1);
+		dialogueManager = new DialogueManager(game, player, 1);
+	}
+	
+	private void createWife() {
+		wife = new Wife(world, 800f *3/2, GROUND_HEIGHT_POSITION + 60f);
 	}
 
 	private void createGround() { //createGround needs to be in this scene and not in MainGame, MainGame only handles scenes
@@ -329,8 +335,27 @@ public class BossScene extends ScreenAdapter{
             96f / PPM *4,
             96f / PPM *4
         );
-
         batch.end();
+        
+        if (contactListener.shouldCreateWife()) {
+            createWife();
+            contactListener.resetCreateWife();
+        }
+        if(wife !=null) {
+        	 batch.begin();
+             batch.draw(
+                 wife.getFrame(),
+                 wife.getPosition().x -64f/PPM,
+                 wife.getPosition().y -40f/PPM, 
+                 wife.getFrameSize()/ PPM *2,
+                 wife.getFrameSize() / PPM *2
+             );
+
+             batch.end();
+             wife.update(delta);
+        }
+
+       
         boss.update(delta);
         
         dialogueManager.update(delta);
@@ -339,7 +364,7 @@ public class BossScene extends ScreenAdapter{
         healthUI.bossAndPlayerUpdate();
         healthUI.render(delta);
         //box2d debug
-        //debugRenderer.render(world, camera.combined);
+        debugRenderer.render(world, camera.combined);
     }
 
     @Override

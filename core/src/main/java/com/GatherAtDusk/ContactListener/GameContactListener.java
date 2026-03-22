@@ -5,17 +5,23 @@ import com.GatherAtDusk.Blocks.BossAttackBlock;
 import com.GatherAtDusk.Blocks.CheckpointBlock;
 import com.GatherAtDusk.Blocks.PlayerAttackBlock;
 import com.GatherAtDusk.BossStuff.Boss;
+import com.GatherAtDusk.Managers.DialogueManager;
 import com.GatherAtDusk.Managers.SceneManager;
+import com.GatherAtDusk.NPCS.Wife;
 import com.GatherAtDusk.PlayerStuff.Player;
+import com.GatherAtDusk.Scenes.BossScene;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 
 public class GameContactListener implements ContactListener {
 
     private final Player player;
+    private DialogueManager dialogueManager;
     private Boss boss;
+    private BossScene bossScene;
     private final MainGame game;
     private final SceneManager sceneManager;
+    private boolean shouldCreateWife = false;
     private Array<CheckpointBlock> checkpointBlocks; //array list makes life easier
     private Array<PlayerAttackBlock> toDestroyPlayerBlocks = new Array<>();
     private Array<BossAttackBlock> toDestroyBossBlocks = new Array<>();
@@ -27,11 +33,13 @@ public class GameContactListener implements ContactListener {
         this.checkpointBlocks = checkpointBlocks;
     }
     
-    public GameContactListener(MainGame game, Player player, Boss boss) {
+    public GameContactListener(MainGame game, Player player, Boss boss, BossScene bossScene, DialogueManager dialogueManager) {
     	this.game = game;
     	this.sceneManager = game.sceneManager;
         this.player = player;
         this.boss = boss;
+        this.bossScene = bossScene;
+        this.dialogueManager = dialogueManager;
     }
     
     public GameContactListener(MainGame game, Player player) {
@@ -123,8 +131,19 @@ public class GameContactListener implements ContactListener {
             Fixture playerAttackFixture =  (currentCollisionTypeA == CollisionType.PLAYER_ATTACK_BLOCK) ? fixtureA : fixtureB;
             
             PlayerAttackBlock playerBlock = (PlayerAttackBlock) playerAttackFixture.getBody().getUserData();
+            
             boss.takeDamage(playerBlock.getDamage());
-            sceneManager.isGameWin(boss.getHealth());
+            dialogueManager.isSetNewLine(boss.getHealth(), 2);
+            if(boss.getHealth() ==0) {
+            	shouldCreateWife = true;
+            }
+            //sceneManager.isGameWin(boss.getHealth()); //moved this to dialogueManager
+        }
+        
+        if (isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.BOSS, CollisionType.WIFE)) {
+            Fixture wifeFixture = (currentCollisionTypeA == CollisionType.WIFE) ? fixtureA : fixtureB;
+            Wife wife = (Wife) wifeFixture.getBody().getUserData();
+            wife.setWalking(false);
         }
         
         //System.out.println("Fixture A: " + fixtureA.getUserData() + ", Fixture B: " + fixtureB.getUserData());
@@ -182,6 +201,14 @@ public class GameContactListener implements ContactListener {
             }
         }
         toDestroyBossBlocks.clear();
+    }
+    
+    public boolean shouldCreateWife() {
+        return shouldCreateWife;
+    }
+
+    public void resetCreateWife() {
+        shouldCreateWife = false;
     }
     
     

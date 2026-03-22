@@ -14,7 +14,7 @@ public class HealthUI {
 	private int playerHealth;
 	private int bossHealth;
 	private float uiXPlayer = 10f;
-	private float uiXBoss = 500f;
+	private float uiXBoss = Gdx.graphics.getWidth() *3/4f;
 	private Player player;
 	private Boss boss;
 	
@@ -27,7 +27,7 @@ public class HealthUI {
 		stage = new Stage( new ScreenViewport());
 		Label.LabelStyle style = new Label.LabelStyle();
         style.font = new BitmapFont();
-        style.font.getData().setScale(1.5f);
+        style.font.getData().setScale(2.5f);
         
         playerLabel = new Label("HP: 100", style);
         bossLabel = new Label("HP: 100", style);
@@ -43,7 +43,7 @@ public class HealthUI {
 		stage = new Stage( new ScreenViewport());
 		Label.LabelStyle style = new Label.LabelStyle();
         style.font = new BitmapFont();
-        style.font.getData().setScale(1.5f);
+        style.font.getData().setScale(2.5f);
         
         playerLabel = new Label("HP: 100", style);
         bossLabel = new Label("HP: 100", style);
@@ -53,8 +53,8 @@ public class HealthUI {
 	}
 	
 	private void createUI(float uiX, Label label) {
-		label.setPosition(uiX, Gdx.graphics.getHeight() - 40); //x was 10
-        label.setSize(200, 50);
+		label.setPosition(uiX, Gdx.graphics.getHeight() * 9/10F); //x was 10
+        label.setSize(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 7f);
         stage.addActor(label);
 		
 	}

@@ -1,5 +1,6 @@
 package com.GatherAtDusk.Managers;
 
+import com.GatherAtDusk.MainGame;
 import com.GatherAtDusk.BossStuff.Boss;
 import com.GatherAtDusk.PlayerStuff.Player;
 import com.badlogic.gdx.Gdx;
@@ -16,25 +17,34 @@ public class DialogueManager {
     private Boss boss;
     private Stage stage;
     private Label dialogueLabel;
+    private MainGame game; // game is being used to get the game's scenemanager
+    private SceneManager sceneManager;
 
     private Array<String> lines = new Array<>();
     private int currentIndex = 0;
+    private int dialogueID;
 
    
 
     private boolean active = false;
   //right now i have 2 constructors because i may want the dialogue above the player or boss
     
-    public DialogueManager(Player player, int dialogueID) { 
+    public DialogueManager(MainGame game,Player player, int dialogueID) { 
+    	this.game = game;
+    	this.sceneManager = game.sceneManager;
         this.player = player;
+        this.dialogueID = dialogueID;
         setupUI();
         createLines(dialogueID);
         startDialogue();
     }
 
-    public DialogueManager(Player player, Boss boss, int dialogueID) {
+    public DialogueManager(MainGame game, Player player, Boss boss, int dialogueID) {
+    	this.game = game;
+    	this.sceneManager = game.sceneManager;
         this.player = player;
         this.boss = boss;
+        this.dialogueID = dialogueID;
         setupUI();
         createLines(dialogueID);
         startDialogue();
@@ -46,18 +56,18 @@ public class DialogueManager {
 
         BitmapFont font = new BitmapFont();
         Label.LabelStyle style = new Label.LabelStyle(font, Color.LIGHT_GRAY);
+        style.font.getData().setScale(2f);
 
         dialogueLabel = new Label("", style);
 
-        dialogueLabel.setPosition(50, 5);
-        dialogueLabel.setSize(700, 100);
+        dialogueLabel.setPosition(Gdx.graphics.getWidth() * 1/3f, Gdx.graphics.getHeight() * 1/20f);
+        dialogueLabel.setSize(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 7f);
 
         stage.addActor(dialogueLabel);
     }
 
     private void startDialogue() {
         if(lines.size == 0) return;
-
         currentIndex = 0;
         dialogueLabel.setText(lines.get(currentIndex));
         active = true;
@@ -69,30 +79,50 @@ public class DialogueManager {
             case 0:
             	player.setCanMove(false);
                 lines.add("Press enter to read next line"); //0
-                lines.add("It has been almost a day in my search."); //1
+                lines.add("YOU: It has been almost a day in my search."); //1
                 lines.add("I must find my family..."); //2
                 lines.add("Press WASD to move and SPACE to attack"); //3
                 break;
 
             case 1:
             	player.setCanMove(false);
-                lines.add("Hey you! You are going to pay for this!"); //
+                lines.add("YOU: Hey you! You are going to pay for this!"); //
                 break;
 
             case 2:
-            	lines.add("Wife: Honey! What are you doing here?");
-            	lines.add("Player: I'm here to save you of course!");
-            	lines.add("Wife: Save me? This is my father!");
-            	lines.add("I told you last night I was going to bring my father home today");
-            	lines.add("Player: Oh yeah um I uh... forgot...");
+            	player.setCanMove(false);
+            	lines.add("WIFE: Honey! What are you doing here?");
+            	lines.add("YOU: I'm here to save you of course!");
+            	lines.add("WIFE: Save me? This is my father!");
+            	lines.add("WIFE: I told you last night I was going to bring my father home today");
+            	lines.add("YOU: Oh yeah um I uh... forgot...");
                 break;
             case 3:
-            	lines.add("Player: So... No hard feelings?");
-            	lines.add("Grandfather: Mhm");
+            	lines.add("YOU: So... No hard feelings?");
+            	lines.add("GRANDFATHER: Mhm");
         }
     }
-
-
+    
+    public void isSetNewLine(int health, int dialogueID) {
+    	this.dialogueID = dialogueID;
+    	if(health <=0) {
+    		lines.clear();
+    		createLines(dialogueID);
+    		startDialogue();
+    		
+    	}
+    }
+    
+    private void updateScene(int dialogueID) { //not all cases will need to switch to scene so just skip to 2
+    	switch(dialogueID) {
+    	case 2:
+    		sceneManager.setEndScene();
+    		break;
+    	case 3:
+    		break;
+    	}
+	}
+    
 	public void update(float delta) {
 
         if(!active) return;
@@ -101,9 +131,10 @@ public class DialogueManager {
 
             currentIndex++;
 
-            if(currentIndex >= lines.size) {
+            if(currentIndex >= lines.size) { //when dialogue is finished...
                 active = false;
                 player.setCanMove(true);
+                updateScene(dialogueID); //check if scene needs to be updated after dialogue is finished
                 return;
             }
 
@@ -113,7 +144,7 @@ public class DialogueManager {
         stage.act(delta);
     }
 
-    public void render() {
+	public void render() {
 
         if(!active) return;
 
