@@ -1,8 +1,8 @@
 package com.GatherAtDusk.PlayerStuff;
 import com.GatherAtDusk.Blocks.PlayerAttackBlock;
-import com.GatherAtDusk.BossStuff.Boss;
 import com.GatherAtDusk.ContactListener.CollisionType;
 import com.GatherAtDusk.Helpers.AnimationHelper;
+import com.GatherAtDusk.NPCS.Boss;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
@@ -29,8 +29,9 @@ public class Player {
 	private float stateTime;
 	private boolean isAttacking;
 	private boolean isLooping;
+	private boolean isSitting = false;
+	
 	private boolean canMove = true;
-	private float idleTime = 0f;
 	private float moveSpeed = 3f; //base movespeed
 	
 	private int frameSize = 64;
@@ -42,9 +43,12 @@ public class Player {
 	private Texture idleSheet;
 	private Texture attackSheet;
 	private Texture runSheet;
+	private Texture sitSheet;
 	
 	//animations
 	private Animation<TextureRegion> idleAnimation;
+	
+	private Animation<TextureRegion> sittingAnimation;
 	
 	private Animation<TextureRegion> runRightAnimation;
 	private Animation<TextureRegion> runLeftAnimation;
@@ -89,11 +93,12 @@ public class Player {
         shape.dispose();
 	}
 	
-	private void loadSprites() {
+	private void loadSprites() { // i thought about doing a animation helper method but i like this better so i can see everything
 
 	    idleSheet = new Texture("mainIdle.png");
 	    attackSheet = new Texture("mainShoot.png");
 	    runSheet = new Texture("mainRun.png");
+	    sitSheet = new Texture("mainSit.png");
 	    
 	    row = 2;
 	    frameCount = 2;
@@ -112,14 +117,16 @@ public class Player {
 	    frameCount = 13;
 	    frameDuration = 0.02f;
 	    attackRightAnimation = AnimationHelper.createAnimation(attackSheet, frameSize, frameSize, row, frameCount, frameDuration, false);
+	    
+	    row = 3;
+	    frameCount = 1;
+	    frameDuration = 1f; //doesn't really matter bc it will only be one frame;
+	    sittingAnimation = AnimationHelper.createAnimation(sitSheet, frameSize, frameSize, row, frameCount, frameDuration, false);
 	}
 	
 	public TextureRegion getFrame() {
 	    return currentAnimation.getKeyFrame(stateTime, isLooping); //when using loop libgdx knows what frame to call based on the duration that has passed
 	    //if 0.1 seconds has passed then the next frame is called. this is initialized when i created the animation and set the frame duration
-	}
-	public void setIdleTime(float idleTime){
-		this.idleTime = idleTime;
 	}
 	
 	private void setFrame(Animation<TextureRegion> currentAnimation, boolean isLooping) {
@@ -149,12 +156,16 @@ public class Player {
 	
 
 	public void update(float delta) { //gravity is established in introscene already
-		idleTime -= delta;
 		stateTime += delta;
+		
+        Vector2 playerVelocity = playerBody.getLinearVelocity(); //needs to be here because it changes based on inputs
         
+        if(isSitting) {
+        	playerBody.setLinearVelocity(0, playerVelocity.y);
+        	setFrame(sittingAnimation, true);
+        	return; //if sitting nothing else needs to be checked or processed
+        }
         
-        Vector2 playerVelocity = playerBody.getLinearVelocity();
-        if(idleTime <= 0) {
         	if(canMove) {
         		if (Gdx.input.isKeyPressed(Input.Keys.A)) {
         			playerBody.setLinearVelocity(-moveSpeed, playerVelocity.y); //pressing "a" make the player go left
@@ -173,9 +184,7 @@ public class Player {
              	playerBody.setLinearVelocity(0, playerVelocity.y); //if cant move just idle
                 setFrame(idleAnimation, true);
              }
-        }
         
-        if(idleTime <= 0) {
         	if(canMove) {
         		if (isOnGround && Gdx.input.isKeyJustPressed(Input.Keys.W)) { // player needs to be on ground before they could jump
         			playerBody.setLinearVelocity(playerVelocity.x, 5f); // jumps straight up
@@ -187,18 +196,22 @@ public class Player {
         		}
         	
         	}
-        }
         
         if (attackRightAnimation.isAnimationFinished(stateTime)) {
 			isAttacking= false;
 		}
-        
-        if(idleTime > 0) {
-        	playerBody.setLinearVelocity(0, playerVelocity.y); //if no buttons pressed, do nothing
-        	setFrame(idleAnimation, true);
-        }
     }
 	
+	public boolean isSitting() {
+		return isSitting;
+	}
+
+	public void setSitting(boolean isSitting) {
+		this.isSitting = isSitting;
+		canMove = !isSitting; //if sitting than cannot move, if not sitting then can move this is for the boss class
+		//boss class checks if player can move so i need to set this just for boss to not attack
+	}
+
 	public int getFrameSize() {
 		return frameSize;
 	}

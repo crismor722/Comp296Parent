@@ -4,9 +4,9 @@ import com.GatherAtDusk.MainGame;
 import com.GatherAtDusk.Blocks.BossAttackBlock;
 import com.GatherAtDusk.Blocks.CheckpointBlock;
 import com.GatherAtDusk.Blocks.PlayerAttackBlock;
-import com.GatherAtDusk.BossStuff.Boss;
 import com.GatherAtDusk.Managers.DialogueManager;
 import com.GatherAtDusk.Managers.SceneManager;
+import com.GatherAtDusk.NPCS.Boss;
 import com.GatherAtDusk.NPCS.Wife;
 import com.GatherAtDusk.PlayerStuff.Player;
 import com.GatherAtDusk.Scenes.BossScene;
@@ -18,10 +18,10 @@ public class GameContactListener implements ContactListener {
     private final Player player;
     private DialogueManager dialogueManager;
     private Boss boss;
-    private BossScene bossScene;
     private final MainGame game;
     private final SceneManager sceneManager;
     private boolean shouldCreateWife = false;
+    private boolean wifeCreated = false;
     private Array<CheckpointBlock> checkpointBlocks; //array list makes life easier
     private Array<PlayerAttackBlock> toDestroyPlayerBlocks = new Array<>();
     private Array<BossAttackBlock> toDestroyBossBlocks = new Array<>();
@@ -38,7 +38,6 @@ public class GameContactListener implements ContactListener {
     	this.sceneManager = game.sceneManager;
         this.player = player;
         this.boss = boss;
-        this.bossScene = bossScene;
         this.dialogueManager = dialogueManager;
     }
     
@@ -73,7 +72,12 @@ public class GameContactListener implements ContactListener {
             for (CheckpointBlock currentCheckpoint : checkpointBlocks) {
                 if (currentCheckpoint.getBody().getFixtureList().contains(checkpointFixture, true)
                 		&& currentCheckpoint.getIdofCurrentCheckpoint() != 2) { //goes through each checkpoint and matches it to the checkpoint in the collison instance
-                    currentCheckpoint.activateSave(player); 
+                    
+                	if(currentCheckpoint.getIdofCurrentCheckpoint() == 0) { //don't resave for first checkpoint
+                    	break;
+                    }
+                	
+                	currentCheckpoint.activateSave(player); 
                     //long story short, this compares the unique memory reference of all the created checkpoints and compares it to the checkpoint that is involved with the collision
                     
                     //getBody of current chkpnt , get the fixtures of it, figures out which fixture is the same in memmory reference and then determines that that checkpoint calls activateSave
@@ -97,17 +101,17 @@ public class GameContactListener implements ContactListener {
             toDestroyPlayerBlocks.add(playerBlock);
         }
         
-        if (isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.PLAYER_ATTACK_BLOCK, CollisionType.BOSS)) {
-            Fixture playerAttackFixture =  (currentCollisionTypeA == CollisionType.PLAYER_ATTACK_BLOCK) ? fixtureA : fixtureB;
-
-            PlayerAttackBlock playerBlock = (PlayerAttackBlock) playerAttackFixture.getBody().getUserData();
-            toDestroyPlayerBlocks.add(playerBlock);
-        }
         
         if (isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.PLAYER, CollisionType.BOSS_ATTACK_BLOCK)) {
             Fixture bossAttackFixture =  (currentCollisionTypeA == CollisionType.BOSS_ATTACK_BLOCK) ? fixtureA : fixtureB;
             
             BossAttackBlock bossBlock = (BossAttackBlock) bossAttackFixture.getBody().getUserData();
+            
+            if (wifeCreated == true) {
+            	toDestroyBossBlocks.add(bossBlock);
+            	return;
+            	// if wife exists, don't take damage
+            }
             player.takeDamage(bossBlock.getDamage());
             sceneManager.isGameOver(player.getHealth());
             toDestroyBossBlocks.add(bossBlock);
@@ -132,11 +136,18 @@ public class GameContactListener implements ContactListener {
             
             PlayerAttackBlock playerBlock = (PlayerAttackBlock) playerAttackFixture.getBody().getUserData();
             
+            if (wifeCreated == true) {
+            	toDestroyPlayerBlocks.add(playerBlock);
+            	return;// if wife already created don't create another one
+            }
             boss.takeDamage(playerBlock.getDamage());
             dialogueManager.isSetNewLine(boss.getHealth(), 2);
             if(boss.getHealth() ==0) {
-            	shouldCreateWife = true;
+                shouldCreateWife = true;
+                wifeCreated = true;
             }
+                
+            toDestroyPlayerBlocks.add(playerBlock);
             //sceneManager.isGameWin(boss.getHealth()); //moved this to dialogueManager
         }
         

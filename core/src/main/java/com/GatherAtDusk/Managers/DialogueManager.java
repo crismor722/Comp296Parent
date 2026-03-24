@@ -1,7 +1,7 @@
 package com.GatherAtDusk.Managers;
 
 import com.GatherAtDusk.MainGame;
-import com.GatherAtDusk.BossStuff.Boss;
+import com.GatherAtDusk.NPCS.Boss;
 import com.GatherAtDusk.PlayerStuff.Player;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -100,6 +100,7 @@ public class DialogueManager {
             case 3:
             	lines.add("YOU: So... No hard feelings?");
             	lines.add("GRANDFATHER: Mhm");
+            	break;
         }
     }
     
@@ -119,6 +120,7 @@ public class DialogueManager {
     		sceneManager.setEndScene();
     		break;
     	case 3:
+    		sceneManager.setGameWin();
     		break;
     	}
 	}
@@ -133,7 +135,7 @@ public class DialogueManager {
 
             if(currentIndex >= lines.size) { //when dialogue is finished...
                 active = false;
-                player.setCanMove(true);
+                if(player.isSitting() == false) player.setCanMove(true); //don't set player can move if sitting
                 updateScene(dialogueID); //check if scene needs to be updated after dialogue is finished
                 return;
             }

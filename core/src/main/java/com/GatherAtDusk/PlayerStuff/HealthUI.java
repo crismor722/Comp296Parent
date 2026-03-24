@@ -1,6 +1,6 @@
 package com.GatherAtDusk.PlayerStuff;
 
-import com.GatherAtDusk.BossStuff.Boss;
+import com.GatherAtDusk.NPCS.Boss;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Stage;

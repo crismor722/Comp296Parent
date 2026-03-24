@@ -4,10 +4,10 @@ import com.GatherAtDusk.MainGame;
 import com.GatherAtDusk.Blocks.BossAttackBlock;
 import com.GatherAtDusk.Blocks.CheckpointBlock;
 import com.GatherAtDusk.Blocks.PlayerAttackBlock;
-import com.GatherAtDusk.BossStuff.Boss;
 import com.GatherAtDusk.ContactListener.CollisionType;
 import com.GatherAtDusk.ContactListener.GameContactListener;
 import com.GatherAtDusk.Managers.DialogueManager;
+import com.GatherAtDusk.NPCS.Boss;
 import com.GatherAtDusk.NPCS.Wife;
 import com.GatherAtDusk.PlayerStuff.Player;
 import com.GatherAtDusk.PlayerStuff.HealthUI;
@@ -239,17 +239,6 @@ public class BossScene extends ScreenAdapter{
         );
 
         batch.end();
-        /*shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(1f, 0f, 0f, 1); // red player
-        shapeRenderer.rect(
-            player.getPosition().x - Player.getPlayerWidth() /2 / PPM, //sets start of x render to the left edge of the player body
-            player.getPosition().y - Player.getPlayerHeight() /2 / PPM, //sets start of y render to the bottom of the player body
-            //rendering a rect needs to start at bottom left corner of the player this formula does that
-            Player.getPlayerWidth() / PPM,
-            Player.getPlayerHeight() / PPM
-        );
-        shapeRenderer.end();
-        */
         
         batch.begin();
         
@@ -271,9 +260,6 @@ public class BossScene extends ScreenAdapter{
         
         batch.end();
         
-        //temp damage block
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(1f, 0f, 0f, 1);
         
         batch.begin();
         for(BossAttackBlock attack : boss.getActiveAttacks()) {
@@ -299,32 +285,10 @@ public class BossScene extends ScreenAdapter{
                         attack.getBlockWidth() *3,
                         attack.getBlockHeight() *3
                     );
-        		
-        		/*shapeRenderer.rect(
-                        attack.getPosition().x - attack.getBlockWidth() / 2 , 
-                        attack.getPosition().y - attack.getBlockHeight() /2 , 
-                        attack.getBlockWidth(),
-                        attack.getBlockHeight()
-                        
-        		);
-        		*/
         	}
             
         }
         batch.end();
-        
-        shapeRenderer.end();
-        
-        /*shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(1f, 0f, 0f, 1); // red boss
-        shapeRenderer.rect(
-            boss.getPosition().x - Boss.getBossWidth() /2 / PPM,
-            boss.getPosition().y - Boss.getBossHeight() /2 / PPM, 
-            Boss.getBossWidth() / PPM,
-            Boss.getBossHeight() / PPM
-        );
-        shapeRenderer.end();
-        */
         
         batch.begin();
 
@@ -337,7 +301,7 @@ public class BossScene extends ScreenAdapter{
         );
         batch.end();
         
-        if (contactListener.shouldCreateWife()) {
+        if (contactListener.shouldCreateWife() && wife == null) {
             createWife();
             contactListener.resetCreateWife();
         }

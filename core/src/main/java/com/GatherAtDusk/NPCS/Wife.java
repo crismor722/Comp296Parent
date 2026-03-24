@@ -88,7 +88,7 @@ public class Wife {
 	    walkAnimation = AnimationHelper.createAnimation(walkSheet, frameSize, frameSize, row, frameCount, frameDuration, false);
 	    
 	    row = 3; //sit right
-	    frameCount = 2;
+	    frameCount = 1;
 	    frameDuration = 1f;
 	    sitAnimation = AnimationHelper.createAnimation(sitSheet, frameSize, frameSize, row, frameCount, frameDuration, false);
 	}
@@ -101,20 +101,22 @@ public class Wife {
 		this.currentAnimation = currentAnimation;
 	}
 	
-	
-
 	public void update(float delta) {
 		stateTime += delta;
 		
 		Vector2 wifeVelocity = wifeBody.getLinearVelocity();
+		
+		if (isSitting) {
+			wifeBody.setLinearVelocity(0, wifeVelocity.y);
+			setFrame(sitAnimation, true);
+			return; //again no need to check anything else
+		}
+		
 		if(isWalking) {
 			wifeBody.setLinearVelocity(-moveSpeed, wifeVelocity.y);
 			setFrame(walkAnimation, true);
 		}
-		else if (isSitting) {
-			wifeBody.setLinearVelocity(0, wifeVelocity.y);
-			setFrame(sitAnimation, true);
-		}
+		
 		else {
 			wifeBody.setLinearVelocity(0, wifeVelocity.y);
 			setFrame(idleAnimation, true);
@@ -131,6 +133,7 @@ public class Wife {
 
 	public void setSitting(boolean isSitting) {
 		this.isSitting = isSitting;
+		isWalking = !isSitting; //if sitting then not walking
 	}
 
 	public boolean isWalking() {

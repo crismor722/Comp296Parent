@@ -2,7 +2,7 @@ package com.GatherAtDusk.Managers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 
-public class SaveManager {
+public  abstract class SaveManager {
 
     private static final String SAVE_NAME = "GatherAtDuskSave";
 
@@ -24,5 +24,13 @@ public class SaveManager {
     	int loadId = prefs.getInteger("checkpointID", 1);
         System.out.println("Loaded checkpoint: " + loadId);
         return loadId;
+    }
+    
+    public static void overrideSave() {
+    	Preferences prefs = Gdx.app.getPreferences(SAVE_NAME); //retrieves the saved data
+    	int firstCheckpointID = 0;
+    	prefs.putInteger("checkpointID", firstCheckpointID);
+        prefs.flush(); //this actually writes
+        System.out.println("Reset checkpoint to: " + firstCheckpointID);
     }
 }

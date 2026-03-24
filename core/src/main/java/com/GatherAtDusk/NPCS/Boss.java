@@ -1,4 +1,4 @@
-package com.GatherAtDusk.BossStuff;
+package com.GatherAtDusk.NPCS;
 
 import com.GatherAtDusk.Blocks.BossAttackBlock;
 import com.GatherAtDusk.ContactListener.CollisionType;
@@ -119,7 +119,6 @@ public class Boss {
 		if(health !=0) {
 			health = health - damage;
 		}
-		
 	}
 
 	public static float getBossWidth() {

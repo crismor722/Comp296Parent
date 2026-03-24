@@ -3,10 +3,14 @@ package com.GatherAtDusk.Scenes;
 import com.GatherAtDusk.MainGame;
 import com.GatherAtDusk.Blocks.BossAttackBlock;
 import com.GatherAtDusk.Blocks.PlayerAttackBlock;
-import com.GatherAtDusk.BossStuff.Boss;
 import com.GatherAtDusk.ContactListener.CollisionType;
 import com.GatherAtDusk.ContactListener.GameContactListener;
 import com.GatherAtDusk.Helpers.AnimationHelper;
+import com.GatherAtDusk.Managers.DialogueManager;
+import com.GatherAtDusk.NPCS.Boss;
+import com.GatherAtDusk.NPCS.Child;
+import com.GatherAtDusk.NPCS.Wife;
+import com.GatherAtDusk.PlayerStuff.HealthUI;
 import com.GatherAtDusk.PlayerStuff.Player;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
@@ -41,6 +45,9 @@ public class EndScene extends ScreenAdapter{
     private Texture backgroundDusk;
     private Texture campfireSheet;
     private GameContactListener contactListener;
+    private DialogueManager dialogueManager;
+    private Wife wife;
+    private Child child;
     private Animation<TextureRegion> campfireAnimation;
     
 	private static final int HGRAVITY = 0;
@@ -52,7 +59,7 @@ public class EndScene extends ScreenAdapter{
     private static final float GROUND_WIDTH_SIZE =  WORLD_WIDTH;
     private static final float GROUND_HEIGHT_SIZE = GROUND_HEIGHT_POSITION;
     private static final float FRICTION = 0.8f; //friction doesn't really have an effect now, maybe find a way to remove later
-    private float playerStartX = WORLD_WIDTH / 2 ; // center of screen in pixels
+    private float playerStartX = WORLD_WIDTH / 2  - 60f; // center of screen in pixels
     private float playerStartY = GROUND_HEIGHT_POSITION + 60f; // above ground
     private static final float PPM = (float) 100; // 100 pixels per meter 
     private static final float WALL_THICKNESS = 10f / PPM;
@@ -79,36 +86,37 @@ public class EndScene extends ScreenAdapter{
 
         createGround();
         createBoundaries();
-        //createBoss(); //boss is needed later
         createPlayer(playerStartX, playerStartY);
-        createTiles();
-        createBackground();
-        createCampfire();
-        
+        createWifeAndChild();
+        createBoss(); //boss is needed later
+        createExtraStuff();
         
         //contactListener = new GameContactListener(game, player, boss);
         contactListener = new GameContactListener(game, player);
         world.setContactListener(contactListener); //set contact listener is built into box2d
     }
-    private void createBoss() {
-		boss = new Boss(world, player, 700f, GROUND_HEIGHT_POSITION + 60f);
+    
+	private void createBoss() {
+		boss = new Boss(world, player, 500f, GROUND_HEIGHT_POSITION + 60f);
 	}
 
 	private void createPlayer(float spawnX, float spawnY) {
 		player = new Player(world, spawnX, spawnY);
+		player.setSitting(true);
 	}
-	private void createTiles() {
+	private void createWifeAndChild() {
+		wife = new Wife(world, playerStartX - 30f, playerStartY);
+		wife.setSitting(true);
+		
+		child = new Child(world, playerStartX +200f, playerStartY);
+	}
+	private void createExtraStuff() {
 		grassTexture = new Texture("Platform Tileset/grasstop.png");
 		groundTexture = new Texture("Platform Tileset/dirtfull.png");
-	}
-	
-	private void createBackground() {
 		backgroundDusk = new Texture("DuskBackground.png");
-	}
-	
-	private void createCampfire() {
 		campfireSheet = new Texture("Campfire.png");
 		campfireAnimation = AnimationHelper.createAnimation(campfireSheet, CAMPFIRE_SIZE, CAMPFIRE_SIZE, CAMPFIRE_FRAMES, 0.1f, false);
+		dialogueManager = new DialogueManager(game, player, 3);
 	}
 
 	private void createGround() { //createGround needs to be in this scene and not in MainGame, MainGame only handles scenes
@@ -230,38 +238,17 @@ public class EndScene extends ScreenAdapter{
         );
 
         batch.end();
-        /*shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(1f, 0f, 0f, 1); // red player
-        shapeRenderer.rect(
-            player.getPosition().x - Player.getPlayerWidth() /2 / PPM, //sets start of x render to the left edge of the player body
-            player.getPosition().y - Player.getPlayerHeight() /2 / PPM, //sets start of y render to the bottom of the player body
-            //rendering a rect needs to start at bottom left corner of the player this formula does that
-            Player.getPlayerWidth() / PPM,
-            Player.getPlayerHeight() / PPM
+        
+        batch.begin();
+
+        batch.draw(
+            boss.getFrame(),
+            boss.getPosition().x - 190f/ PPM,
+            boss.getPosition().y - 95f/ PPM, //change here for boss sprite and height pos
+            96f / PPM *4,
+            96f / PPM *4
         );
-        shapeRenderer.end();
-        */
-        
-        
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(1f, 0f, 0f, 1); // red for attacks
-        
-        for (PlayerAttackBlock attack : player.getActiveAttacks()) {
-        	if(attack.isDestroyed()){ //this if statement gets rid of the left over color when the block deletes
-        		shapeRenderer.end();
-        		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-                shapeRenderer.setColor(1f, 0f, 0f, 1);
-        	}
-        	else {
-        		shapeRenderer.rect(
-                		attack.getPosition().x - PlayerAttackBlock.getBlockWidth() / 2f,
-                        attack.getPosition().y - PlayerAttackBlock.getBlockHeight() / 2f,
-                        PlayerAttackBlock.getBlockWidth(),
-                        PlayerAttackBlock.getBlockHeight()
-                        );
-        	}
-        }
-        shapeRenderer.end();
+        batch.end();
         
         batch.begin();
         batch.draw(
@@ -273,17 +260,36 @@ public class EndScene extends ScreenAdapter{
                 (CAMPFIRE_SIZE +0f) / PPM  *3 
             );
        batch.end();
+       
+       batch.begin();
+       
+       batch.draw(
+           wife.getFrame(),
+           wife.getPosition().x -64f/PPM,
+           wife.getPosition().y -40f/PPM, 
+           wife.getFrameSize()/ PPM *2,
+           wife.getFrameSize() / PPM *2
+       );
+
+       batch.end();
+       
+       batch.begin();
+       
+       batch.draw(
+           child.getFrame(),
+           child.getPosition().x -64f/PPM,
+           child.getPosition().y -40f/PPM, 
+           child.getFrameSize()/ PPM *3/2,
+           child.getFrameSize() / PPM *3/2
+       );
+
+       batch.end();
+       child.update(delta);
+       wife.update(delta);
+       boss.update(delta);
+       dialogueManager.update(delta);
+       dialogueManager.render();
                 
-       /* shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(1f, 0f, 0f, 1); // red boss
-        shapeRenderer.rect(
-            boss.getPosition().x - Boss.getBossWidth() /2 / PPM,
-            boss.getPosition().y - Boss.getBossHeight() /2 / PPM, 
-            Boss.getBossWidth() / PPM,
-            Boss.getBossHeight() / PPM
-        );
-        shapeRenderer.end();
-        */
         //box2d debug
         //debugRenderer.render(world, camera.combined);
     }

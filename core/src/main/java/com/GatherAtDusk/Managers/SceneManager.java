@@ -44,6 +44,11 @@ public class SceneManager {
     	game.setScreen(new EndScene(game));
     }
     
+    public void setGameWin() {
+    	game.setScreen(new GameWinScene(game));
+    	SaveManager.overrideSave();
+    }
+    
     public void disposeTitleScreen() {
     	titleScreen.dispose();
     }
