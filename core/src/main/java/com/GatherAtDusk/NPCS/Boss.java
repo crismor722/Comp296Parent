@@ -28,9 +28,9 @@ public class Boss {
 	private BossAttackBlock currentAttack;
 	private Array<BossAttackBlock> activeAttacks = new Array<>();
 	private int health = 100;
-	private float xPos = 400f / PPM;
+	//private float xPos = 400f / PPM;
 	private float yPos = 480f / PPM;
-	private float velocity = -1.5f;
+	private float velocity = -3f;
 	private float stateTime;
 	private boolean isAttacking;
 	private boolean attackDone;
@@ -38,7 +38,9 @@ public class Boss {
 	private int attackFrameIndex;
 	
 	private Timer.Task attackTask;
+	private Timer.Task secondAttackTask;
 	private Timer.Task aboveAttackTask;
+	private Timer.Task secondAboveAttackTask;
 	
 	private Texture idleSheet;
 	private Texture attackSheet;
@@ -65,6 +67,12 @@ public class Boss {
 		    }
 		};
 		
+		secondAttackTask = new Timer.Task(){
+			public void run() {
+				attack();
+			}
+		};
+		
 		aboveAttackTask = new Timer.Task() {
 		    @Override
 		    public void run() { //this attack will attack over the head of the player
@@ -72,8 +80,17 @@ public class Boss {
 		    }
 		};
 		
+		secondAboveAttackTask = new Timer.Task() {
+		    @Override
+		    public void run() { //this attack will attack over the head of the player
+		        attackFromAbove(3);
+		    }
+		};
+		
 		Timer.schedule(attackTask, 1, 2);// delay, interval
-		Timer.schedule(aboveAttackTask, 1, 2);
+		Timer.schedule(aboveAttackTask, 2, 2);
+		Timer.schedule(secondAboveAttackTask, 3, 3);
+		Timer.schedule(secondAttackTask, 1.5f, 2);
 	}
 
 	private void createBody(World world, float startX, float startY) {
@@ -105,6 +122,87 @@ public class Boss {
 
 	    idleAnimation = AnimationHelper.createAnimation(idleSheet, 96, 96, 10, 0.1f, true);
 	    attackAnimation = AnimationHelper.createAnimation(attackSheet, 96, 96, 6, 0.08f, true);
+	}
+	
+	
+	
+	public TextureRegion getFrame() {
+
+	    if(isAttacking) { //pretty self- expanitory
+	        return attackAnimation.getKeyFrame(stateTime, false); //(statetime , is looping?) 
+	        
+	    }
+	    return idleAnimation.getKeyFrame(stateTime, true); //when using loop libgdx knows what frame to call based on the duration that has passed
+	    //if 0.1 seconds has passed then the next frame is called. this is initialized when i created the animation and set the frame duration
+	}
+	
+	
+	public void attack() { //creates the attack block
+		Vector2 bossPos = bossBody.getPosition();
+	    float xOffset = 1.6f;
+	    blockPos = new Vector2(bossPos.x - xOffset, bossPos.y);
+
+	    BossAttackBlock newAttack = new BossAttackBlock(world, blockPos);
+	    activeAttacks.add(newAttack);
+	}
+
+
+	public void attackFromAbove() { //two methods of attack, first one is normal attack from boss, second attack is from over the players head
+		float playerX = player.getPosition().x;
+
+	    blockPos = new Vector2(playerX, yPos);
+
+	    BossAttackBlock newAttack = new BossAttackBlock(world, blockPos, velocity);
+	    newAttack.setDamage(10);
+	    activeAttacks.add(newAttack);
+	}
+	
+	public void attackFromAbove(int attackAmount) { //two methods of attack, first one is normal attack from boss, second attack is from over the players head
+		float xOffset = -10f;
+		float playerX;
+		
+	    for( int i = 0; i < attackAmount; i++) {
+	    	
+	    	playerX = player.getPosition().x + (xOffset /PPM);
+	    	blockPos = new Vector2(playerX, yPos);
+	    	
+	    	BossAttackBlock newAttack = new BossAttackBlock(world, blockPos, velocity);
+		    activeAttacks.add(newAttack);
+		    
+		    xOffset = xOffset + 10f;
+	    }
+	    
+	}
+	
+	public Array<BossAttackBlock> getActiveAttacks() {
+	    return activeAttacks;
+	}
+
+	public void update(float delta) {
+	    stateTime += delta; //statetime determines what frame the animation needs to be at
+	    if(!timerStarted && player.getCanMove()) {
+	        callTimer();
+	        timerStarted = true;
+	    }
+	    if(timerStarted && player.getCanMove() == false) {
+	    	attackTask.cancel();
+	    	aboveAttackTask.cancel();
+	    	secondAttackTask.cancel();
+	    	secondAboveAttackTask.cancel();
+	    }
+	    
+	    if (attackAnimation.isAnimationFinished(stateTime)) {
+			isAttacking= false;
+		}
+	    if(isAttacking) {
+	    	attackFrameIndex = attackAnimation.getKeyFrameIndex(stateTime); //only get frame when attacking
+	    }
+	    if(attackFrameIndex == 4) { // only attack when sword swipe
+	    	if (attackDone) { //without this if statement like 10 attacks will be sent;
+	    		attack();
+	    		attackDone = false; // only send one attack
+	    	}
+        }
 	}
 	
 	public void setHealth(int health){
@@ -143,67 +241,5 @@ public class Boss {
 	
 	public void clearCurrentAttack() {
 		currentAttack = null;
-	}
-	
-	public void setBossAttackPosX(float xPos){
-		this.xPos = xPos;
-	}
-	
-	public TextureRegion getFrame() {
-
-	    if(isAttacking) { //pretty self- expanitory
-	        return attackAnimation.getKeyFrame(stateTime, false); //(statetime , is looping?) 
-	        
-	    }
-	    return idleAnimation.getKeyFrame(stateTime, true); //when using loop libgdx knows what frame to call based on the duration that has passed
-	    //if 0.1 seconds has passed then the next frame is called. this is initialized when i created the animation and set the frame duration
-	}
-	
-	
-	public void attack() { //creates the attack block
-		Vector2 bossPos = bossBody.getPosition();
-	    float xOffset = 1.6f;
-	    blockPos = new Vector2(bossPos.x - xOffset, bossPos.y);
-
-	    BossAttackBlock newAttack = new BossAttackBlock(world, blockPos);
-	    activeAttacks.add(newAttack);
-	}
-	
-	public void attackFromAbove() { //two methods of attack, first one is normal attack from boss, second attack is from over the players head
-		float playerX = player.getPosition().x;
-
-	    blockPos = new Vector2(playerX, yPos);
-
-	    BossAttackBlock newAttack = new BossAttackBlock(world, blockPos, velocity);
-	    activeAttacks.add(newAttack);
-	}
-	
-	public Array<BossAttackBlock> getActiveAttacks() {
-	    return activeAttacks;
-	}
-
-	public void update(float delta) {
-	    stateTime += delta; //statetime determines what frame the animation needs to be at
-	    if(!timerStarted && player.getCanMove()) {
-	        callTimer();
-	        timerStarted = true;
-	    }
-	    if(timerStarted && player.getCanMove() == false) {
-	    	attackTask.cancel();
-	    	aboveAttackTask.cancel();
-	    }
-	    
-	    if (attackAnimation.isAnimationFinished(stateTime)) {
-			isAttacking= false;
-		}
-	    if(isAttacking) {
-	    	attackFrameIndex = attackAnimation.getKeyFrameIndex(stateTime); //only get frame when attacking
-	    }
-	    if(attackFrameIndex == 4) { // only attack when sword swipe
-	    	if (attackDone) { //without this if statement like 10 attacks will be sent;
-	    		attack();
-	    		attackDone = false; // only send one attack
-	    	}
-        }
 	}
 }

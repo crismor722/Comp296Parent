@@ -26,7 +26,7 @@ public  abstract class SaveManager {
         return loadId;
     }
     
-    public static void overrideSave() {
+    protected static void overrideSave() {
     	Preferences prefs = Gdx.app.getPreferences(SAVE_NAME); //retrieves the saved data
     	int firstCheckpointID = 0;
     	prefs.putInteger("checkpointID", firstCheckpointID);

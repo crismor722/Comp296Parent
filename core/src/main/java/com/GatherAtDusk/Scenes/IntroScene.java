@@ -54,7 +54,6 @@ public class IntroScene extends ScreenAdapter {
     private static final float WALL_THICKNESS = 10f / PPM;
     private static final float TILE_SIZE = 16f/ PPM;
     private static final float TILE_INDEX_X = GROUND_WIDTH_SIZE / (TILE_SIZE *PPM); // 800 /16 = 50
-    private float idleTime;
     private int checkpointID;
     		
     private Array<CheckpointBlock> checkpointsArray = new Array<>();
@@ -279,8 +278,8 @@ public class IntroScene extends ScreenAdapter {
         shapeRenderer.setColor(1f, 1f, 0f, 1); // yellow checkpoint
         for(CheckpointBlock checkpoint : checkpointsArray) {
         	shapeRenderer.rect(
-        		checkpoint.getPosition().x + 0.001f - checkpoint.getWidth()  + 0.001f / 2 / PPM,
-        		checkpoint.getPosition().y + 0.001f - checkpoint.getHeight()  + 0.001f / 2 / PPM,
+        		checkpoint.getPosition().x + 0.001f - checkpoint.getWidth()/2  + 0.001f / PPM,
+        		checkpoint.getPosition().y + 0.001f - checkpoint.getHeight()/2  + 0.001f / PPM,
         		checkpoint.getWidth()  + 0.001f/ PPM,
         		checkpoint.getHeight()  + 0.001f/ PPM
         	);

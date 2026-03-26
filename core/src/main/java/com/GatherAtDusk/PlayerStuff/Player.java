@@ -30,6 +30,7 @@ public class Player {
 	private boolean isAttacking;
 	private boolean isLooping;
 	private boolean isSitting = false;
+	private boolean canAttack = true;
 	
 	private boolean canMove = true;
 	private float moveSpeed = 3f; //base movespeed
@@ -145,9 +146,16 @@ public class Player {
 
 			    PlayerAttackBlock newAttack = new PlayerAttackBlock(world, blockPos);
 			    activeAttacks.add(newAttack);
+			    
 		    }
 		}, 0.2f, 0f, 1);// delay, interval
 		
+		Timer.schedule(new Timer.Task() { //attack delay so not too much spamming
+		    @Override
+		    public void run() {  
+		    	canAttack = true;
+		    }
+		}, 0.2f, 0f, 1);
 	}
 	
 	public Array<PlayerAttackBlock> getActiveAttacks() {
@@ -189,10 +197,11 @@ public class Player {
         		if (isOnGround && Gdx.input.isKeyJustPressed(Input.Keys.W)) { // player needs to be on ground before they could jump
         			playerBody.setLinearVelocity(playerVelocity.x, 5f); // jumps straight up
         		}
-        		if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+        		if (canAttack && Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
         			attack();
         			setFrame(attackRightAnimation, false);
         			isAttacking = true;
+        			canAttack = false;
         		}
         	
         	}

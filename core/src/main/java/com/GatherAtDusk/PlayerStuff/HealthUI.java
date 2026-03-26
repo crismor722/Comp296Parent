@@ -56,7 +56,6 @@ public class HealthUI {
 		label.setPosition(uiX, Gdx.graphics.getHeight() * 9/10F); //x was 10
         label.setSize(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 7f);
         stage.addActor(label);
-		
 	}
 
 	public void playerUpdate() { 

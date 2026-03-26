@@ -14,7 +14,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class DialogueManager {
     private Player player;
-    private Boss boss;
     private Stage stage;
     private Label dialogueLabel;
     private MainGame game; // game is being used to get the game's scenemanager
@@ -33,17 +32,6 @@ public class DialogueManager {
     	this.game = game;
     	this.sceneManager = game.sceneManager;
         this.player = player;
-        this.dialogueID = dialogueID;
-        setupUI();
-        createLines(dialogueID);
-        startDialogue();
-    }
-
-    public DialogueManager(MainGame game, Player player, Boss boss, int dialogueID) {
-    	this.game = game;
-    	this.sceneManager = game.sceneManager;
-        this.player = player;
-        this.boss = boss;
         this.dialogueID = dialogueID;
         setupUI();
         createLines(dialogueID);
