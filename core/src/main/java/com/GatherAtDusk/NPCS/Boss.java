@@ -35,7 +35,13 @@ public class Boss {
 	private boolean isAttacking;
 	private boolean attackDone;
 	private boolean timerStarted = false;
+	private boolean secondAttack = false;
 	private int attackFrameIndex;
+	private int attackFrame = 4;
+	
+	private int frameSize = 96;
+	private int frameCount;
+	private float frameDuration = 0.1f;
 	
 	private Timer.Task attackTask;
 	private Timer.Task secondAttackTask;
@@ -44,9 +50,12 @@ public class Boss {
 	
 	private Texture idleSheet;
 	private Texture attackSheet;
+	//private Texture hurtSheet;
+	
 	
 	private Animation<TextureRegion> idleAnimation;
 	private Animation<TextureRegion> attackAnimation;
+	
 	
 	public Boss(World world, Player player, float startX, float startY) {
 		this.world = world;
@@ -69,7 +78,7 @@ public class Boss {
 		
 		secondAttackTask = new Timer.Task(){
 			public void run() {
-				attack();
+				if(secondAttack) attack();
 			}
 		};
 		
@@ -83,7 +92,7 @@ public class Boss {
 		secondAboveAttackTask = new Timer.Task() {
 		    @Override
 		    public void run() { //this attack will attack over the head of the player
-		        attackFromAbove(3);
+		        if(secondAttack)attackFromAbove(3);
 		    }
 		};
 		
@@ -119,9 +128,16 @@ public class Boss {
 
 	    idleSheet = new Texture("BossIdle.png");
 	    attackSheet = new Texture("BossAttack.png");
-
-	    idleAnimation = AnimationHelper.createAnimation(idleSheet, 96, 96, 10, 0.1f, true);
-	    attackAnimation = AnimationHelper.createAnimation(attackSheet, 96, 96, 6, 0.08f, true);
+	    
+	    //hurtSheet = new Texture("BossHurt.png");
+	    
+	    frameCount = 10;
+	    idleAnimation = AnimationHelper.createAnimation(idleSheet, frameSize, frameSize, frameCount, frameDuration, true);
+	    
+	    frameCount = 6;
+	    frameDuration = 0.08f;
+	    attackAnimation = AnimationHelper.createAnimation(attackSheet, frameSize, frameSize, frameCount, frameDuration, true);
+	    
 	}
 	
 	
@@ -177,6 +193,12 @@ public class Boss {
 	public Array<BossAttackBlock> getActiveAttacks() {
 	    return activeAttacks;
 	}
+	
+	public void isNextBossStage(int health) {
+		if(health <=50) {
+			secondAttack = true;
+		}
+	}
 
 	public void update(float delta) {
 	    stateTime += delta; //statetime determines what frame the animation needs to be at
@@ -197,7 +219,7 @@ public class Boss {
 	    if(isAttacking) {
 	    	attackFrameIndex = attackAnimation.getKeyFrameIndex(stateTime); //only get frame when attacking
 	    }
-	    if(attackFrameIndex == 4) { // only attack when sword swipe
+	    if(attackFrameIndex == attackFrame) { // only attack when sword swipe
 	    	if (attackDone) { //without this if statement like 10 attacks will be sent;
 	    		attack();
 	    		attackDone = false; // only send one attack

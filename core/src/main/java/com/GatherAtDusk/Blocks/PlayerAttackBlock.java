@@ -13,7 +13,7 @@ public class PlayerAttackBlock {
 	private static final float PPM = (float) 100;
 	private static final float BLOCK_WIDTH = 10f /PPM;
 	private static final float BLOCK_HEIGHT = 6f / PPM;
-	private int damage = 1; 
+	private int damage = 10; 
 	private boolean destroyed = false;
 	
 	

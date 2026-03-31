@@ -142,6 +142,7 @@ public class GameContactListener implements ContactListener {
             }
             boss.takeDamage(playerBlock.getDamage());
             dialogueManager.isSetNewLine(boss.getHealth(), 2);
+            boss.isNextBossStage(boss.getHealth());
             if(boss.getHealth() ==0) {
                 shouldCreateWife = true;
                 wifeCreated = true;
