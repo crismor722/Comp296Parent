@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -21,6 +22,7 @@ public class GameWinScene extends ScreenAdapter {
 	private SpriteBatch batch;
 	private BitmapFont font;
 	private Stage stage;
+	private Texture gameWinText;
 	private static final float CAM_WIDTH = 800;
 	private static final float CAM_HEIGHT = 480;
 		
@@ -33,6 +35,7 @@ public class GameWinScene extends ScreenAdapter {
 	public void show() {
 		camera = new OrthographicCamera();
 	    camera.setToOrtho(false, CAM_WIDTH, CAM_HEIGHT);
+	    gameWinText = new Texture("my-Game_Win.png");
 
 	    font = new BitmapFont();
 	    font.getData().setScale(2f);
@@ -60,7 +63,8 @@ public class GameWinScene extends ScreenAdapter {
 	    batch.setProjectionMatrix(camera.combined);
 
 	    batch.begin();
-	    font.draw(batch, "GAMEWIN", 200, 300);
+	    batch.draw(gameWinText, 270, 300 ,241, 65);
+	    //font.draw(batch, "GAMEWIN", 200, 300);
 	    batch.end();
 	        
 	    stage.act(delta);

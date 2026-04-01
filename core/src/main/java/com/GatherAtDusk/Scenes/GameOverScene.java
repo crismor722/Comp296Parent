@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -20,6 +21,7 @@ public class GameOverScene extends ScreenAdapter {
 	private SpriteBatch batch;
 	private BitmapFont font;
 	private Stage stage;
+	private Texture gameOverText;
 	private static final float CAM_WIDTH = 800;
 	private static final float CAM_HEIGHT = 480;
 	
@@ -32,6 +34,7 @@ public class GameOverScene extends ScreenAdapter {
 	public void show() {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, CAM_WIDTH, CAM_HEIGHT);
+        gameOverText = new Texture("my-Game_Over.png");
 
         font = new BitmapFont();
         font.getData().setScale(2f);
@@ -59,7 +62,8 @@ public class GameOverScene extends ScreenAdapter {
         batch.setProjectionMatrix(camera.combined);
 
         batch.begin();
-        font.draw(batch, "GAMEOVER", 200, 300);
+        batch.draw(gameOverText, 275, 300 ,241, 65);
+        //font.draw(batch, "GAMEOVER", 200, 300);
         batch.end();
         
         stage.act(delta);
