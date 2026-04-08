@@ -33,11 +33,8 @@ public class SceneManager {
         }
     }
     
-    public void isGameOver(int health) {
-    	
-    	if(health <= 0) {
-    		game.setScreen(new GameOverScene(game));
-    	}
+    public void isGameOver() {
+    	game.setScreen(new GameOverScene(game));
     }
     
     public void setEndScene() {

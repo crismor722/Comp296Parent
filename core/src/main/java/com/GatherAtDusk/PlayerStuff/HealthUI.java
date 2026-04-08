@@ -2,6 +2,7 @@ package com.GatherAtDusk.PlayerStuff;
 
 import com.GatherAtDusk.NPCS.Boss;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -23,11 +24,11 @@ public class HealthUI {
 	public HealthUI(Player player) {
 		this.player = player;
 		
-		
+		BitmapFont font = new BitmapFont();
 		stage = new Stage( new ScreenViewport());
-		Label.LabelStyle style = new Label.LabelStyle();
-        style.font = new BitmapFont();
-        style.font.getData().setScale(2.5f);
+		Label.LabelStyle style = new Label.LabelStyle(font, Color.CORAL);
+        
+        style.font.getData().setScale(3.5f);
         
         playerLabel = new Label("HP: 100", style);
         bossLabel = new Label("HP: 100", style);
@@ -41,9 +42,9 @@ public class HealthUI {
 		
 		
 		stage = new Stage( new ScreenViewport());
-		Label.LabelStyle style = new Label.LabelStyle();
-        style.font = new BitmapFont();
-        style.font.getData().setScale(2.5f);
+		BitmapFont font = new BitmapFont();
+		Label.LabelStyle style = new Label.LabelStyle(font, Color.CORAL);
+        style.font.getData().setScale(3.5f);
         
         playerLabel = new Label("HP: 100", style);
         bossLabel = new Label("HP: 100", style);

@@ -22,6 +22,7 @@ public class GameContactListener implements ContactListener {
     private final SceneManager sceneManager;
     private boolean shouldCreateWife = false;
     private boolean wifeCreated = false;
+    private boolean wifeWin = true;
     private Array<CheckpointBlock> checkpointBlocks; //array list makes life easier
     private Array<PlayerAttackBlock> toDestroyPlayerBlocks = new Array<>();
     private Array<BossAttackBlock> toDestroyBossBlocks = new Array<>();
@@ -112,8 +113,17 @@ public class GameContactListener implements ContactListener {
             	return;
             	// if wife exists, don't take damage
             }
+            
             player.takeDamage(bossBlock.getDamage());
-            sceneManager.isGameOver(player.getHealth());
+            dialogueManager.isSetNewLine(player.getHealth(), 4);
+            //if lose will set wifeWin to false;
+            if(player.getHealth() == 0) {
+            	wifeWin = false;
+            	shouldCreateWife = true;
+                wifeCreated = true;
+                player.setDead(true);
+                dialogueManager.setGameOver(true);
+            }
             toDestroyBossBlocks.add(bossBlock);
         }
         
@@ -144,6 +154,7 @@ public class GameContactListener implements ContactListener {
             dialogueManager.isSetNewLine(boss.getHealth(), 2);
             boss.isNextBossStage(boss.getHealth());
             if(boss.getHealth() ==0) {
+            	Wife.setTypeWin();
                 shouldCreateWife = true;
                 wifeCreated = true;
             }
@@ -152,10 +163,18 @@ public class GameContactListener implements ContactListener {
             //sceneManager.isGameWin(boss.getHealth()); //moved this to dialogueManager
         }
         
-        if (isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.BOSS, CollisionType.WIFE)) {
-            Fixture wifeFixture = (currentCollisionTypeA == CollisionType.WIFE) ? fixtureA : fixtureB;
+        if (isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.BOSS, CollisionType.WIFE_WIN)) {
+            Fixture wifeFixture = (currentCollisionTypeA == CollisionType.WIFE_WIN) ? fixtureA : fixtureB;
             Wife wife = (Wife) wifeFixture.getBody().getUserData();
             wife.setWalking(false);
+        }
+        
+        if (isPair(currentCollisionTypeA, currentCollisionTypeB, CollisionType.PLAYER, CollisionType.WIFE_LOSE)) {
+            Fixture wifeFixture = (currentCollisionTypeA == CollisionType.WIFE_LOSE) ? fixtureA : fixtureB;
+            Wife wife = (Wife) wifeFixture.getBody().getUserData();
+            wife.setWalking(false);
+            wife.setRunning(false);
+            //sceneManager.isGameOver(); 
         }
         
         //System.out.println("Fixture A: " + fixtureA.getUserData() + ", Fixture B: " + fixtureB.getUserData());
@@ -215,14 +234,17 @@ public class GameContactListener implements ContactListener {
         toDestroyBossBlocks.clear();
     }
     
-    public boolean shouldCreateWife() {
+    public boolean shouldCreateWife() { //called in boss scene where wife is created
         return shouldCreateWife;
     }
 
-    public void resetCreateWife() {
+    public void resetCreateWife() { //called in boss scene so 15 wives wont be created
         shouldCreateWife = false;
     }
     
+    public boolean getWifeWin(){
+    	return wifeWin;
+    }
     
     //notes for future me: this method retrieves player because it call playe.setOnGround
     //getContact is called when box2d detects contact between two objects

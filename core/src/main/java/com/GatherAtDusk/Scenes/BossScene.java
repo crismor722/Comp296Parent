@@ -109,7 +109,18 @@ public class BossScene extends ScreenAdapter{
 	}
 	
 	private void createWife() {
+		if(contactListener.getWifeWin() == false) {
+			Wife.setTypeLose();
+			Wife.setRunningSpeed();
+		}
+		else {
+			Wife.setWalkingSpeed();
+		}
 		wife = new Wife(world, 800f *3/2, GROUND_HEIGHT_POSITION + 60f);
+		if(contactListener.getWifeWin() == false) {
+			wife.setRunning(true); //also sets walking to false
+			wife.setWalking(false);
+		}
 	}
 
 	private void createGround() { //createGround needs to be in this scene and not in MainGame, MainGame only handles scenes
@@ -310,7 +321,7 @@ public class BossScene extends ScreenAdapter{
              batch.draw(
                  wife.getFrame(),
                  wife.getPosition().x -64f/PPM,
-                 wife.getPosition().y -40f/PPM, 
+                 wife.getPosition().y -45f/PPM, 
                  wife.getFrameSize()/ PPM *2,
                  wife.getFrameSize() / PPM *2
              );
@@ -328,7 +339,7 @@ public class BossScene extends ScreenAdapter{
         healthUI.bossAndPlayerUpdate();
         healthUI.render(delta);
         //box2d debug
-        debugRenderer.render(world, camera.combined);
+        //debugRenderer.render(world, camera.combined);
     }
 
     @Override

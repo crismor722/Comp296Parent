@@ -8,5 +8,6 @@ public enum CollisionType { //box2d has a built in collision detection
     CHECKPOINT,
     PLAYER_ATTACK_BLOCK,
     BOSS_ATTACK_BLOCK,
-    WIFE
+    WIFE_WIN,
+    WIFE_LOSE
 }

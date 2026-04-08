@@ -314,7 +314,7 @@ public class IntroScene extends ScreenAdapter {
         healthUI.playerUpdate();
         healthUI.render(delta);
         //box2d debug
-        debugRenderer.render(world, camera.combined);
+        //debugRenderer.render(world, camera.combined);
     }
 
     @Override

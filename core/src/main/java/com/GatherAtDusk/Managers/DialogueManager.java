@@ -2,6 +2,7 @@ package com.GatherAtDusk.Managers;
 
 import com.GatherAtDusk.MainGame;
 import com.GatherAtDusk.NPCS.Boss;
+import com.GatherAtDusk.NPCS.Wife;
 import com.GatherAtDusk.PlayerStuff.Player;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -22,10 +23,10 @@ public class DialogueManager {
     private Array<String> lines = new Array<>();
     private int currentIndex = 0;
     private int dialogueID;
+    private boolean gameOver = false;
 
-   
 
-    private boolean active = false;
+	private boolean active = false;
   //right now i have 2 constructors because i may want the dialogue above the player or boss
     
     public DialogueManager(MainGame game,Player player, int dialogueID) { 
@@ -43,12 +44,12 @@ public class DialogueManager {
         stage = new Stage(new ScreenViewport());
 
         BitmapFont font = new BitmapFont();
-        Label.LabelStyle style = new Label.LabelStyle(font, Color.LIGHT_GRAY);
-        style.font.getData().setScale(2f);
+        Label.LabelStyle style = new Label.LabelStyle(font, Color.DARK_GRAY);
+        style.font.getData().setScale(3f);
 
         dialogueLabel = new Label("", style);
 
-        dialogueLabel.setPosition(Gdx.graphics.getWidth() * 1/3f, Gdx.graphics.getHeight() * 1/20f);
+        dialogueLabel.setPosition(Gdx.graphics.getWidth() * 1/4f, Gdx.graphics.getHeight() *1/2f); //used to be 1/20
         dialogueLabel.setSize(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 7f);
 
         stage.addActor(dialogueLabel);
@@ -75,6 +76,7 @@ public class DialogueManager {
             case 1:
             	player.setCanMove(false);
                 lines.add("YOU: Hey you! You are going to pay for this!"); //
+                Wife.setTypeWin();
                 break;
 
             case 2:
@@ -89,6 +91,11 @@ public class DialogueManager {
             	lines.add("YOU: So... No hard feelings?");
             	lines.add("GRANDFATHER: Mhm");
             	break;
+            case 4:
+            	player.setCanMove(false);
+            	lines.add("WIFE: Honey! Nooo! Are you okay???");
+            	gameOver = true;
+            	
         }
     }
     
@@ -123,10 +130,16 @@ public class DialogueManager {
 
             if(currentIndex >= lines.size) { //when dialogue is finished...
                 active = false;
-                if(player.isSitting() == false) player.setCanMove(true); //don't set player can move if sitting
+                if(player.isSitting() == false && Wife.isTypeWin()) player.setCanMove(true); //don't set player can move if sitting or if lost
+                //IMPORTAN NOTE WIFEWIN IS DEFAULT TO WIN DO NOT CHNAGE OR THIS WILL NOT WORK
                 updateScene(dialogueID); //check if scene needs to be updated after dialogue is finished
+                if(gameOver) {
+                	sceneManager.isGameOver();
+                }
                 return;
             }
+            
+            
 
             dialogueLabel.setText(lines.get(currentIndex));
         }
@@ -144,6 +157,10 @@ public class DialogueManager {
     public boolean isActive() {
         return active;
     }
+    
+    public void setGameOver(boolean gameOver) {
+		this.gameOver = gameOver;
+	}
 
     public void dispose() {
         stage.dispose();

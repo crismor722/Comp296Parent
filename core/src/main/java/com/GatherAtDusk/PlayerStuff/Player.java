@@ -31,6 +31,8 @@ public class Player {
 	private boolean isLooping;
 	private boolean isSitting = false;
 	private boolean canAttack = true;
+	private boolean isDead = false;
+	private boolean shouldResetStatetime = true;
 	
 	private boolean canMove = true;
 	private float moveSpeed = 3f; //base movespeed
@@ -45,6 +47,7 @@ public class Player {
 	private Texture attackSheet;
 	private Texture runSheet;
 	private Texture sitSheet;
+	private Texture hurtSheet;
 	
 	//animations
 	private Animation<TextureRegion> idleAnimation;
@@ -55,6 +58,8 @@ public class Player {
 	private Animation<TextureRegion> runLeftAnimation;
 	
 	private Animation<TextureRegion> attackRightAnimation;
+	
+	private Animation<TextureRegion> hurtAnimation;
 	
 	private Animation<TextureRegion> currentAnimation;
 	
@@ -100,6 +105,7 @@ public class Player {
 	    attackSheet = new Texture("mainShoot.png");
 	    runSheet = new Texture("mainRun.png");
 	    sitSheet = new Texture("mainSit.png");
+	    hurtSheet = new Texture("mainHurt.png");
 	    
 	    row = 2;
 	    frameCount = 2;
@@ -123,6 +129,11 @@ public class Player {
 	    frameCount = 1;
 	    frameDuration = 1f; //doesn't really matter bc it will only be one frame;
 	    sittingAnimation = AnimationHelper.createAnimation(sitSheet, frameSize, frameSize, row, frameCount, frameDuration, false);
+	    
+	    row = 0;
+	    frameCount = 4;
+	    frameDuration = 0.15f;
+	    hurtAnimation = AnimationHelper.createAnimation(hurtSheet, frameSize, frameSize, row, frameCount, frameDuration, false);
 	}
 	
 	public TextureRegion getFrame() {
@@ -167,6 +178,16 @@ public class Player {
 		stateTime += delta;
 		
         Vector2 playerVelocity = playerBody.getLinearVelocity(); //needs to be here because it changes based on inputs
+        
+        if(isDead) {
+        	playerBody.setLinearVelocity(0, playerVelocity.y);
+        	setFrame(hurtAnimation, false);
+        	if(shouldResetStatetime) { //for non-looping animations i need to do this or else animation will not catch the correct stateTime
+        		shouldResetStatetime = false;
+        		stateTime = 0;
+        	}
+        	return;
+        }
         
         if(isSitting) {
         	playerBody.setLinearVelocity(0, playerVelocity.y);
@@ -271,4 +292,13 @@ public class Player {
 	public boolean getCanMove(){
 		return canMove;
 	}
+
+	public boolean isDead() {
+		return isDead;
+	}
+
+	public void setDead(boolean isDead) {
+		this.isDead = isDead;
+	}
+	
 }

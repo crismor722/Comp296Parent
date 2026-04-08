@@ -3,6 +3,7 @@ package com.GatherAtDusk.Scenes;
 import com.GatherAtDusk.MainGame;
 import com.GatherAtDusk.Blocks.BossAttackBlock;
 import com.GatherAtDusk.Blocks.PlayerAttackBlock;
+import com.GatherAtDusk.Buttons.EasterEggButton;
 import com.GatherAtDusk.ContactListener.CollisionType;
 import com.GatherAtDusk.ContactListener.GameContactListener;
 import com.GatherAtDusk.Helpers.AnimationHelper;
@@ -29,6 +30,8 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class EndScene extends ScreenAdapter{
 	
@@ -49,6 +52,8 @@ public class EndScene extends ScreenAdapter{
     private Wife wife;
     private Child child;
     private Animation<TextureRegion> campfireAnimation;
+    private EasterEggButton easterEggButton;
+    private Stage stage;
     
 	private static final int HGRAVITY = 0;
     private static final float VGRAVITY = -9.8f; //LibGDX likes floats for decimals
@@ -117,6 +122,16 @@ public class EndScene extends ScreenAdapter{
 		campfireSheet = new Texture("Campfire.png");
 		campfireAnimation = AnimationHelper.createAnimation(campfireSheet, CAMPFIRE_SIZE, CAMPFIRE_SIZE, CAMPFIRE_FRAMES, 0.1f, false);
 		dialogueManager = new DialogueManager(game, player, 3);
+		easterEggButton = new EasterEggButton();
+		
+		stage = new Stage(new ScreenViewport());
+        Gdx.input.setInputProcessor(stage); 
+		
+		 easterEggButton.setPosition(
+				 Gdx.graphics.getWidth() / 2f - EasterEggButton.getButtonWidth() / 2f, 
+	             Gdx.graphics.getHeight() / 5f - EasterEggButton.getButtonHeight() / 2f
+	     );
+		 stage.addActor(easterEggButton);
 	}
 
 	private void createGround() { //createGround needs to be in this scene and not in MainGame, MainGame only handles scenes
@@ -232,7 +247,7 @@ public class EndScene extends ScreenAdapter{
         batch.draw(
             player.getFrame(),
             player.getPosition().x -64f/PPM,
-            player.getPosition().y -40f/PPM, //change here for boss sprire and height pos
+            player.getPosition().y -45f/PPM, //change here for player sprite and height pos
             player.getFrameSize()/ PPM *2,
             player.getFrameSize() / PPM *2
         );
@@ -266,7 +281,7 @@ public class EndScene extends ScreenAdapter{
        batch.draw(
            wife.getFrame(),
            wife.getPosition().x -64f/PPM,
-           wife.getPosition().y -40f/PPM, 
+           wife.getPosition().y -45f/PPM, 
            wife.getFrameSize()/ PPM *2,
            wife.getFrameSize() / PPM *2
        );
@@ -284,11 +299,27 @@ public class EndScene extends ScreenAdapter{
        );
 
        batch.end();
+       
+       if(easterEggButton.isAddAnimation()) {
+    	   batch.begin();
+    	   batch.draw(
+    			   easterEggButton.getFrame(),
+    	           (WORLD_WIDTH/2 - (CAMPFIRE_SIZE +20f))/ PPM,
+                   (GROUND_HEIGHT_POSITION + 40f) / PPM, //change here for position
+                   (CAMPFIRE_SIZE +0f) / PPM *3,
+                   (CAMPFIRE_SIZE +0f) / PPM  *3 
+    	   );
+    	   batch.end();
+       }
+       
        child.update(delta);
        wife.update(delta);
        boss.update(delta);
        dialogueManager.update(delta);
        dialogueManager.render();
+       stage.act(delta);
+       easterEggButton.update(delta);
+       stage.draw();
                 
         //box2d debug
         //debugRenderer.render(world, camera.combined);
