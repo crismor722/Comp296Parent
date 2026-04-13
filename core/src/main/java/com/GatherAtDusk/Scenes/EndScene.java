@@ -304,8 +304,8 @@ public class EndScene extends ScreenAdapter{
     	   batch.begin();
     	   batch.draw(
     			   easterEggButton.getFrame(),
-    	           (WORLD_WIDTH/2 - (CAMPFIRE_SIZE +20f))/ PPM,
-                   (GROUND_HEIGHT_POSITION + 40f) / PPM, //change here for position
+    	           (WORLD_WIDTH/2 - (CAMPFIRE_SIZE +80f))/ PPM,
+                   (GROUND_HEIGHT_POSITION + 80f) / PPM, //change here for position
                    (CAMPFIRE_SIZE +0f) / PPM *3,
                    (CAMPFIRE_SIZE +0f) / PPM  *3 
     	   );

@@ -1,17 +1,22 @@
 package com.GatherAtDusk.Managers;
 
 import com.GatherAtDusk.MainGame;
-import com.GatherAtDusk.NPCS.Boss;
 import com.GatherAtDusk.NPCS.Wife;
 import com.GatherAtDusk.PlayerStuff.Player;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class DialogueManager {
     private Player player;
@@ -19,15 +24,14 @@ public class DialogueManager {
     private Label dialogueLabel;
     private MainGame game; // game is being used to get the game's scenemanager
     private SceneManager sceneManager;
-
     private Array<String> lines = new Array<>();
+    
     private int currentIndex = 0;
     private int dialogueID;
+    private static final int BORDER_HEIGHT = 150;
+    private static final int BORDER_WIDTH = 600;
     private boolean gameOver = false;
-
-
 	private boolean active = false;
-  //right now i have 2 constructors because i may want the dialogue above the player or boss
     
     public DialogueManager(MainGame game,Player player, int dialogueID) { 
     	this.game = game;
@@ -40,19 +44,47 @@ public class DialogueManager {
     }
 
     private void setupUI() {
-
+    	
         stage = new Stage(new ScreenViewport());
+        
+        
+        // making background for text
+        Pixmap pixmap = new Pixmap(BORDER_WIDTH, BORDER_HEIGHT, Pixmap.Format.RGBA8888); // setting height and width here doesn't do anything i just do it for the border
+        pixmap.setColor(Color.WHITE); 
+        pixmap.fill();
+        
+        //border
+        pixmap.setColor(Color.BLACK);
+        pixmap.drawRectangle(0, 0, pixmap.getWidth(), pixmap.getHeight());
 
+        Texture texture = new Texture(pixmap);
+        Drawable whiteDrawable = new TextureRegionDrawable(new TextureRegion(texture));
+
+        pixmap.dispose();
+        
+        //text
         BitmapFont font = new BitmapFont();
         Label.LabelStyle style = new Label.LabelStyle(font, Color.DARK_GRAY);
         style.font.getData().setScale(3f);
 
         dialogueLabel = new Label("", style);
+        Table textBox = new Table();
+        
+        textBox.setBackground(whiteDrawable);
+        dialogueLabel.setWrap(true);
 
-        dialogueLabel.setPosition(Gdx.graphics.getWidth() * 1/4f, Gdx.graphics.getHeight() *1/2f); //used to be 1/20
-        dialogueLabel.setSize(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 7f);
+        textBox.add(dialogueLabel).width(BORDER_WIDTH).height(BORDER_HEIGHT).pad(20); //this actually edits width and height
+        textBox.pack();   
 
-        stage.addActor(dialogueLabel);
+        //dialogueLabel.setPosition(Gdx.graphics.getWidth() * 1/4f, Gdx.graphics.getHeight() *1/2f); //used to be 1/20
+        //dialogueLabel.setSize(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 7f);
+        
+        textBox.setPosition( // i like this format better
+                Gdx.graphics.getWidth() / 4f,
+                Gdx.graphics.getHeight() / 2f
+            );
+        
+        stage.addActor(textBox);
     }
 
     private void startDialogue() {
@@ -76,7 +108,7 @@ public class DialogueManager {
             case 1:
             	player.setCanMove(false);
                 lines.add("YOU: Hey you! You are going to pay for this!"); //
-                Wife.setTypeWin();
+                Wife.setTypeWin(); // reset here because of it being a static method maybe find a better way to reset wife
                 break;
 
             case 2:

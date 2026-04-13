@@ -159,14 +159,14 @@ public class Player {
 			    activeAttacks.add(newAttack);
 			    
 		    }
-		}, 0.2f, 0f, 1);// delay, interval, how many times to run the task. Delay here is to match the attack animation so it attacks on the actual release of the slingshot
+		}, 0.2f, 0f, 0);// delay, interval, how many times to run the task. Delay here is to match the attack animation so it attacks on the actual release of the slingshot
 		
 		Timer.schedule(new Timer.Task() { //attack delay so not too much spamming
 		    @Override
 		    public void run() {  
 		    	canAttack = true;
 		    }
-		}, 0.2f, 0f, 1); //only runs once
+		}, 0.2f, 0f, 0); //only runs once
 	}
 	
 	public Array<PlayerAttackBlock> getActiveAttacks() {

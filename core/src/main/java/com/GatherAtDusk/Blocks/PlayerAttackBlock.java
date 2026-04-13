@@ -13,7 +13,8 @@ public class PlayerAttackBlock {
 	private static final float PPM = (float) 100;
 	private static final float BLOCK_WIDTH = 10f /PPM;
 	private static final float BLOCK_HEIGHT = 6f / PPM;
-	private int damage = 1; 
+	private int damage = 1;
+	private float blockSize = 5;
 	private boolean destroyed = false;
 	
 	
@@ -39,16 +40,30 @@ public class PlayerAttackBlock {
         playerAttackFix.setUserData(CollisionType.PLAYER_ATTACK_BLOCK);
         playerAttackBody.setGravityScale(0f);
         
+        setCrit();
         setVelocity();
         
         shape.dispose();
 	}
 	
+	private void setCrit() {
+		int min = 5, max = 25;
+		int randVal = min + (int)(Math.random() * ((max - min) + 1));
+		if(randVal >= 15) {
+			damage = damage *2;
+			blockSize = 8.5f; //this is to visibly show that it is a crit block
+		}
+	}
+
 	private void setVelocity() { //pretty much the same thing as setting the player's velocity
 		float moveSpeed = 3.5f;
 		Vector2 blockVector = playerAttackBody.getLinearVelocity();
 		playerAttackBody.setLinearVelocity(moveSpeed, blockVector.x);
 		
+	}
+
+	public float getBlockSize() {
+		return blockSize;
 	}
 
 	public static float getBlockWidth() {

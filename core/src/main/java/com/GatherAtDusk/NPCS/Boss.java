@@ -42,6 +42,8 @@ public class Boss {
 	private int frameSize = 96;
 	private int frameCount;
 	private float frameDuration = 0.1f;
+	private float attackInterval1 = 2;
+	private float attackInterval2 = 3;
 	
 	private Timer.Task attackTask;
 	private Timer.Task secondAttackTask;
@@ -96,10 +98,10 @@ public class Boss {
 		    }
 		};
 		
-		Timer.schedule(attackTask, 1, 2);// delay, interval
-		Timer.schedule(aboveAttackTask, 2, 2);
-		Timer.schedule(secondAboveAttackTask, 3, 3);
-		Timer.schedule(secondAttackTask, 1.5f, 2);
+		Timer.schedule(attackTask, 1, attackInterval1);// delay, interval
+		Timer.schedule(aboveAttackTask, 2, attackInterval1);
+		Timer.schedule(secondAboveAttackTask, 3, attackInterval2);
+		Timer.schedule(secondAttackTask, 1.5f, attackInterval1);
 	}
 
 	private void createBody(World world, float startX, float startY) {
@@ -264,4 +266,5 @@ public class Boss {
 	public void clearCurrentAttack() {
 		currentAttack = null;
 	}
+	
 }

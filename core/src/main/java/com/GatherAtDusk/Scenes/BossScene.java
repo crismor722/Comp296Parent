@@ -262,8 +262,8 @@ public class BossScene extends ScreenAdapter{
         		  rockTexture,
                   attack.getPosition().x- PlayerAttackBlock.getBlockWidth() / 2,
                   attack.getPosition().y - PlayerAttackBlock.getBlockHeight() /2, // 0.64 meters
-                  PlayerAttackBlock.getBlockWidth() *5,
-                  PlayerAttackBlock.getBlockHeight() *5
+                  PlayerAttackBlock.getBlockWidth() * attack.getBlockSize(), //check to see if critblock
+                  PlayerAttackBlock.getBlockHeight() * attack.getBlockSize()
               );
                 
         	}
