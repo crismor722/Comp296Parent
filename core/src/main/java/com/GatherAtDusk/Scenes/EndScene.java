@@ -14,6 +14,7 @@ import com.GatherAtDusk.NPCS.Wife;
 import com.GatherAtDusk.PlayerStuff.HealthUI;
 import com.GatherAtDusk.PlayerStuff.Player;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -54,6 +55,7 @@ public class EndScene extends ScreenAdapter{
     private Animation<TextureRegion> campfireAnimation;
     private EasterEggButton easterEggButton;
     private Stage stage;
+    private boolean shuttingDown = false;
     
 	private static final int HGRAVITY = 0;
     private static final float VGRAVITY = -9.8f; //LibGDX likes floats for decimals
@@ -198,6 +200,7 @@ public class EndScene extends ScreenAdapter{
 
     @Override
     public void render(float delta) { 
+    	if(shuttingDown) return;
     	stateTime += delta;
         // sky color
     	//Gdx.gl.glClearColor(0.05f, 0.02f, 0.08f, 1);
@@ -209,17 +212,9 @@ public class EndScene extends ScreenAdapter{
         
         shapeRenderer.setProjectionMatrix(camera.combined);
         batch.setProjectionMatrix(camera.combined);
-
-        //ground color and rendering
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled); //fills in color for ground
-        shapeRenderer.setColor(Color.valueOf("579747")); //color green of the png to match
-        shapeRenderer.rect(0, 64f/PPM, GROUND_WIDTH_SIZE / PPM, TILE_SIZE ); // Collision block is 2/3 shape of ground color right now
-        shapeRenderer.end();
-        
         batch.begin();
         batch.draw(backgroundDusk, 0, GROUND_HEIGHT_POSITION/ PPM, WORLD_WIDTH/ PPM, WORLD_HEIGHT/ PPM);
-        for(int i = 0; i < TILE_INDEX_X; i++)
-        {
+        for(int i = 0; i < TILE_INDEX_X; i++){
             batch.draw(
                 grassTexture,
                 i * TILE_SIZE,
@@ -320,6 +315,7 @@ public class EndScene extends ScreenAdapter{
        stage.act(delta);
        easterEggButton.update(delta);
        stage.draw();
+       
                 
         //box2d debug
         //debugRenderer.render(world, camera.combined);
@@ -327,8 +323,23 @@ public class EndScene extends ScreenAdapter{
 
     @Override
     public void dispose() { //when new scene starts make sure to dispose these elements
-        world.dispose();
-        debugRenderer.dispose();
+    	player.dispose();
+        wife.dispose();
+        child.dispose();
+        boss.dispose();
+        world.step(0, 0, 0);
+        player = null;
+        boss = null;
+        child = null;
+        wife = null;
+    	groundTexture.dispose();
+        backgroundDusk.dispose();
+        dialogueManager.dispose();
         shapeRenderer.dispose();
+        batch.dispose();
+        world.dispose(); 
     }
+	public void beginShutdown() {
+		shuttingDown = true;
+	}
 }

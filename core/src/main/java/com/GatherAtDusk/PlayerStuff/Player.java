@@ -301,4 +301,12 @@ public class Player {
 		this.isDead = isDead;
 	}
 	
+	public void dispose() {
+		idleSheet.dispose();
+		attackSheet.dispose();
+		runSheet.dispose();
+		sitSheet.dispose();
+		hurtSheet.dispose();
+	}
+	
 }

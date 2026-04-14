@@ -36,14 +36,15 @@ public class Boss {
 	private boolean attackDone;
 	private boolean timerStarted = false;
 	private boolean secondAttack = false;
+	private boolean timerCalled = false;
 	private int attackFrameIndex;
 	private int attackFrame = 4;
 	
 	private int frameSize = 96;
 	private int frameCount;
 	private float frameDuration = 0.1f;
-	private float attackInterval1 = 2;
-	private float attackInterval2 = 3;
+	private float attackInterval1 = 1.75f;
+	private float attackInterval2 = 2.5f;
 	
 	private Timer.Task attackTask;
 	private Timer.Task secondAttackTask;
@@ -68,6 +69,7 @@ public class Boss {
 
 
 	private void callTimer() {
+		timerCalled = true;
 		attackTask = new Timer.Task() { // do it this way so I can cancel task
 		    @Override
 		    public void run() {
@@ -265,6 +267,29 @@ public class Boss {
 	
 	public void clearCurrentAttack() {
 		currentAttack = null;
+	}
+	
+	public void dispose() {
+		idleSheet.dispose();
+		attackSheet.dispose();
+		if(timerCalled) {
+			if(attackTask.isScheduled()) {
+				attackTask.cancel();
+			}
+		
+			if(secondAttackTask.isScheduled()) {
+				secondAttackTask.cancel();
+			}
+		
+			if(aboveAttackTask.isScheduled()) {
+				aboveAttackTask.cancel();
+			}
+		
+			if(secondAboveAttackTask.isScheduled()) {
+				secondAboveAttackTask.cancel();
+			}
+			Timer.instance().clear();
+		}
 	}
 	
 }

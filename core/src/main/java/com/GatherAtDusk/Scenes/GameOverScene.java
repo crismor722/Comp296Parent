@@ -24,6 +24,7 @@ public class GameOverScene extends ScreenAdapter {
 	private Texture gameOverText;
 	private static final float CAM_WIDTH = 800;
 	private static final float CAM_HEIGHT = 480;
+	private boolean shuttingDown = false;
 	
 	public GameOverScene(MainGame game) {
 		this.game = game;
@@ -54,6 +55,7 @@ public class GameOverScene extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
+    	if(shuttingDown) return;
     	//background
         Gdx.gl.glClearColor(0.1f, 0.1f, 0.2f, 1); //dark blue
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -75,6 +77,12 @@ public class GameOverScene extends ScreenAdapter {
     public void dispose() { //dispose when switching to different scene
         font.dispose();
         stage.dispose();
-        // don't dispose batch
+        gameOverText.dispose();
+        batch.dispose();
     }
+
+	public void beginShutdown() {
+		shuttingDown = true;
+		
+	}
 }

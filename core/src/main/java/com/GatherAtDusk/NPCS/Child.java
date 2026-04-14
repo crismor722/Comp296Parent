@@ -1,6 +1,5 @@
 package com.GatherAtDusk.NPCS;
 
-import com.GatherAtDusk.ContactListener.CollisionType;
 import com.GatherAtDusk.Helpers.AnimationHelper;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -94,5 +93,8 @@ public class Child {
 	}
 	public Vector2 getPosition() {
 	    return childBody.getPosition();
+	}
+	public void dispose() {
+		sitSheet.dispose();
 	}
 }

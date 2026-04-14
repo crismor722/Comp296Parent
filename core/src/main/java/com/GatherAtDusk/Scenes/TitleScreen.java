@@ -2,7 +2,6 @@ package com.GatherAtDusk.Scenes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -26,6 +25,7 @@ public class TitleScreen extends ScreenAdapter {
     private Stage stage;
     private static final float CAM_WIDTH = 800;
     private static final float CAM_HEIGHT = 480;
+    private boolean shuttingDown;
 
     public TitleScreen(MainGame game) {
         this.game = game;
@@ -61,6 +61,7 @@ public class TitleScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
+    	if(shuttingDown) return;
     	//background
         //Gdx.gl.glClearColor(0.1f, 0.1f, 0.2f, 1); //dark blue
         //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -80,7 +81,6 @@ public class TitleScreen extends ScreenAdapter {
         stage.act(delta);
         stage.draw();
 
-        
         // if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             // Ask SceneManager which scene to load based on the last checkpoint
             //int checkpoint = sceneManager.getLastCheckpoint();
@@ -93,6 +93,12 @@ public class TitleScreen extends ScreenAdapter {
     public void dispose() { //dispose when switching to different scene
         font.dispose();
         stage.dispose();
-        // don't dispose batch
+        background.dispose();
+        title.dispose();
+        batch.dispose();
     }
+
+	public void beginShutdown() {
+		shuttingDown = true;
+	}
 }

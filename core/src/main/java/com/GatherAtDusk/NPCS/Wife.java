@@ -195,4 +195,11 @@ public class Wife {
 	public void setRunning(boolean isRunning) {
 		this.isRunning = isRunning;
 	}
+	
+	public void dispose() {
+		idleSheet.dispose();
+		walkSheet.dispose();
+		sitSheet.dispose();
+		runSheet.dispose();
+	}
 }

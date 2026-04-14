@@ -1,7 +1,6 @@
 package com.GatherAtDusk.Scenes;
 
 import com.GatherAtDusk.MainGame;
-import com.GatherAtDusk.Blocks.BossAttackBlock;
 import com.GatherAtDusk.Blocks.CheckpointBlock;
 import com.GatherAtDusk.Blocks.PlayerAttackBlock;
 import com.GatherAtDusk.ContactListener.*;
@@ -10,6 +9,7 @@ import com.GatherAtDusk.Managers.SaveManager;
 import com.GatherAtDusk.PlayerStuff.Player;
 import com.GatherAtDusk.PlayerStuff.HealthUI;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -33,11 +33,11 @@ public class IntroScene extends ScreenAdapter {
     private CheckpointBlock checkpoint1;
     private CheckpointBlock checkpoint2;
     private CheckpointBlock checkpoint3;
-    private Texture grassTexture; //note: top of grassTexture is 37.5% transparent
     private Texture groundTexture;
     private Texture backgroundDay;
     private Texture rockTexture;
     private DialogueManager dialogueManager;
+    private boolean shuttingDown = false;
     
     private static final int HGRAVITY = 0;
     private static final float VGRAVITY = -9.8f; //LibGDX likes floats for decimals
@@ -62,7 +62,6 @@ public class IntroScene extends ScreenAdapter {
     
     public IntroScene(MainGame game) {
         this.game = game;
-        game.sceneManager.disposeTitleScreen(); //the titlescreen button lingers unless i dispose of it
     }
 
     @Override
@@ -94,7 +93,6 @@ public class IntroScene extends ScreenAdapter {
 	}
 	private void createExtraStuff() {
 		healthUI = new HealthUI(player);
-		grassTexture = new Texture("Platform Tileset/grasstop.png");
 		groundTexture = new Texture("Platform Tileset/dirtfull.png");
 		backgroundDay = new Texture ("DayBackground.png");
 		if(checkpointID == 0) {
@@ -194,6 +192,7 @@ public class IntroScene extends ScreenAdapter {
 
     @Override
     public void render(float delta) { 
+    	if(shuttingDown) return; //safty net to prevent crashes from disposing everything
         // sky color
         //Gdx.gl.glClearColor(0.4f, 0.7f, 1f, 1); // color blue
         //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -206,17 +205,13 @@ public class IntroScene extends ScreenAdapter {
         shapeRenderer.setProjectionMatrix(camera.combined);
         batch.setProjectionMatrix(camera.combined);
         
-        // making a bit more grass
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled); //fills in color for ground
-        shapeRenderer.setColor(Color.valueOf("579747")); //color green
-        shapeRenderer.rect(0, 64f/PPM, GROUND_WIDTH_SIZE / PPM, TILE_SIZE ); // Collision block is 2/3 shape of ground color right now
-        shapeRenderer.end();
         
-        //making the ground with png
+        
+        //making the background with png
         batch.begin();
-        batch.draw(backgroundDay, 0, GROUND_HEIGHT_POSITION/ PPM, WORLD_WIDTH/ PPM, WORLD_HEIGHT/ PPM);
+        batch.draw(backgroundDay, 0, GROUND_HEIGHT_POSITION / PPM, WORLD_WIDTH/ PPM, WORLD_HEIGHT / PPM);
         batch.end();
-        
+           
         Gdx.gl.glEnable(GL20.GL_BLEND); //enables blending the white with the background to make it brighter
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(1f, 1f, 1f, 0.3f); // slight white glow
@@ -224,16 +219,14 @@ public class IntroScene extends ScreenAdapter {
         shapeRenderer.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
         
+      //making a bit more grass
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled); //fills in color for ground
+        shapeRenderer.setColor(Color.FOREST);
+        shapeRenderer.rect(0, 64f/PPM, GROUND_WIDTH_SIZE / PPM, TILE_SIZE/2 ); // Collision block is 2/3 shape of ground color right now
+        shapeRenderer.end();      
+        
         batch.begin();
-        for(int i = 0; i < TILE_INDEX_X; i++)
-        {
-            batch.draw(
-                grassTexture,
-                i * TILE_SIZE,
-                TILE_SIZE * 4, // 0.64 meters
-                TILE_SIZE,
-                TILE_SIZE
-            );
+        for(int i = 0; i < TILE_INDEX_X; i++) {
             for(int j = 0; j < 4; j++) {
         		batch.draw(
         			groundTexture,
@@ -319,8 +312,23 @@ public class IntroScene extends ScreenAdapter {
 
     @Override
     public void dispose() { //when new scene starts make sure to dispose these elements
-        world.dispose();
-        debugRenderer.dispose();
+    	player.dispose();
+    	world.step(0, 0, 0);
+    	player = null;
+    	groundTexture.dispose();
+        backgroundDay.dispose();
+        rockTexture.dispose();
+        healthUI.dispose();
         shapeRenderer.dispose();
+        batch.dispose();
+        
+        if(dialogueManager != null) {
+        	dialogueManager.dispose();
+        }
+        world.dispose();
     }
+
+	public void beginShutdown() {
+		shuttingDown = true;
+	}
 }

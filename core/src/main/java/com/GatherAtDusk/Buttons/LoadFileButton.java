@@ -2,8 +2,6 @@ package com.GatherAtDusk.Buttons;
 
 import com.GatherAtDusk.Managers.SaveManager;
 import com.GatherAtDusk.Managers.SceneManager;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -18,38 +16,56 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 // pixmap is for the button's pixmap
 
 public class LoadFileButton extends TextButton {
-	private static final int BUTTON_WIDTH = 100;
+	private static final int BUTTON_WIDTH = 100; //make sure this is is double the height bc the button png is 32 by 16
 	private static final int BUTTON_HEIGHT = 50;
 
     public LoadFileButton(SceneManager sceneManager) { //scene manager needs to be included so button can call goToCheckPoint
-        super("Start", createStyle());
+        super("", createStyle());
 
         setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 
         addListener(new ClickListener() {
             @Override
-            public void clicked(InputEvent event, float curserLocationX, float curserLocationY) { //when clicked, the location of the cursor is sent, this is default
+            /*public void clicked(InputEvent event, float curserLocationX, float curserLocationY) { //when clicked, the location of the cursor is sent, this is default
                 sceneManager.goToSceneForCheckpoint(SaveManager.loadCheckpoint()); //NOTE: because the method is static, there is no need to initialize it ex. SceneManager = scenemanager
+            }
+            */
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int buttonCode) { //when user touches down
+                return true;
+            }
+            
+            public void touchUp(InputEvent event, float x, float y, int pointer, int buttonCode) { //whenev
+                //setColor(Color.WHITE); don't need this since user won't see it
+                sceneManager.goToSceneForCheckpoint(SaveManager.loadCheckpoint()); // goes to scene on touch up otherwise the user wont see the change of color on the click
             }
         });
     }
 
     private static TextButtonStyle createStyle() {
 
-        Pixmap pixmap = new Pixmap(BUTTON_WIDTH, BUTTON_HEIGHT, Pixmap.Format.RGBA8888); //setting button height and format
-        pixmap.setColor(Color.FOREST); //temp color green and testing to see if color works/looks good
+        /*Pixmap pixmap = new Pixmap(BUTTON_WIDTH, BUTTON_HEIGHT, Pixmap.Format.RGBA8888); //setting button height and format
+        pixmap.setColor(Color.SLATE); //temp color green and testing to see if color works/looks good
         pixmap.fill();
+        
+        pixmap.setColor(Color.WHITE); //outline
+        pixmap.drawRectangle(0, 0, pixmap.getWidth(), pixmap.getHeight());
 
         Texture texture = new Texture(pixmap); // sending pixmap to texture
         pixmap.dispose(); //don't need pixmap memory anymore
 
         TextureRegionDrawable drawable = new TextureRegionDrawable(new TextureRegion(texture));
+        */
+    	Texture startUp = new Texture("startButtonUp.png");
+    	Texture startDown = new Texture("startButtonDown.png");
+    	
+    	TextureRegionDrawable up = new TextureRegionDrawable(new TextureRegion(startUp));
+    	TextureRegionDrawable down = new TextureRegionDrawable(new TextureRegion(startDown));
 
         BitmapFont font = new BitmapFont(); 
 
         TextButtonStyle style = new TextButtonStyle();
-        style.up = drawable;
-        style.down = drawable;
+        style.up = up; //libgdx is awesome it already will set the style to up and down whenever the button is clicked
+        style.down = down;
         style.font = font;
 
         return style;

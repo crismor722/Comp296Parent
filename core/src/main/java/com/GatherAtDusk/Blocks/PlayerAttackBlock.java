@@ -47,7 +47,7 @@ public class PlayerAttackBlock {
 	}
 	
 	private void setCrit() {
-		int min = 5, max = 25;
+		int min = 0, max = 25;
 		int randVal = min + (int)(Math.random() * ((max - min) + 1));
 		if(randVal >= 15) {
 			damage = damage *2;
