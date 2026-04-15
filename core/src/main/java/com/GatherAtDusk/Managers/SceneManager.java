@@ -26,12 +26,14 @@ public class SceneManager {
                 game.setScreen(new IntroScene(game));
                 break;
             case 1:
-            	disposeOldScreen();
+            	setDisposeOldScreen();
                 game.setScreen(new IntroScene(game));
+                disposeOldScreen();
                 break;
             case 2:
-            	disposeOldScreen();
+            	setDisposeOldScreen();
                 game.setScreen(new BossScene(game));
+                disposeOldScreen();
                 
                 break;
             default:
@@ -40,50 +42,58 @@ public class SceneManager {
     }
     
     public void isGameOver() {
-    	disposeOldScreen();
+    	setDisposeOldScreen();
     	game.setScreen(new GameOverScene(game));
+    	disposeOldScreen();
     }
     
     public void setEndScene() {
-    	disposeOldScreen();
+    	setDisposeOldScreen();
     	game.setScreen(new EndScene(game));
+    	disposeOldScreen();
     }
     
     public void setGameWin() {
-    	disposeOldScreen();
+    	setDisposeOldScreen();
     	game.setScreen(new GameWinScene(game));
     	SaveManager.overrideSave();
+    	disposeOldScreen();
+    	
     }
-    private void disposeOldScreen() {
+    private void setDisposeOldScreen() {
     	oldScreen = game.getScreen();
     	
     	if (oldScreen instanceof IntroScene) {
     	    ((IntroScene) oldScreen).beginShutdown(); // saftey net
     	}
-    	if (oldScreen instanceof BossScene) {
+    	else if (oldScreen instanceof BossScene) {
     	    ((BossScene) oldScreen).beginShutdown();
     	}
     	
-    	if (oldScreen instanceof EndScene) {
+    	else if (oldScreen instanceof EndScene) {
     	    ((EndScene) oldScreen).beginShutdown();
     	}
     	
-    	if (oldScreen instanceof GameWinScene) {
+    	else if (oldScreen instanceof GameWinScene) {
     	    ((GameWinScene) oldScreen).beginShutdown();
     	}
-    	if (oldScreen instanceof GameOverScene) {
+    	else if (oldScreen instanceof GameOverScene) {
     	    ((GameOverScene) oldScreen).beginShutdown();
     	}
     	
-    	if (oldScreen instanceof TitleScreen) {
+    	else if (oldScreen instanceof TitleScreen) {
     	    ((TitleScreen) oldScreen).beginShutdown();
     	}
-    	
+    }
+    
+    private void disposeOldScreen(){
     	if (oldScreen != null) {
             //oldScreen.dispose(); 
-    		Gdx.app.postRunnable(() -> {// this delays the call of disposing after frame is finished otherwise the game crashes
-    		    oldScreen.dispose();// allows me to call dispose for any screen since it is in the screen interface and all the scenes extend screenAdapter which is uses the screen interface
-    		});
+    		Gdx.app.postRunnable(() ->{ //try taking 1-2 frames to sit a little bit before disposing
+    			Gdx.app.postRunnable(() -> { 
+    				oldScreen.dispose();// allows me to call dispose for any screen since it is in the screen interface and all the scenes extend screenAdapter which is uses the screen interface
+    			});// this delays the call of disposing after frame is finished otherwise the game crashes
+    		});   
         }
     }
 }

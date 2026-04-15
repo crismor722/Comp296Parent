@@ -200,7 +200,10 @@ public class EndScene extends ScreenAdapter{
 
     @Override
     public void render(float delta) { 
-    	if(shuttingDown) return;
+    	if (shuttingDown) {
+    	    Gdx.input.setInputProcessor(null);
+    	    return;
+    	}
     	stateTime += delta;
         // sky color
     	//Gdx.gl.glClearColor(0.05f, 0.02f, 0.08f, 1);
@@ -327,17 +330,21 @@ public class EndScene extends ScreenAdapter{
         wife.dispose();
         child.dispose();
         boss.dispose();
-        world.step(0, 0, 0);
+        
+        grassTexture.dispose();
+        campfireSheet.dispose();
+    	groundTexture.dispose();
+        backgroundDusk.dispose();
+        stage.dispose();
+        dialogueManager.dispose();
+        shapeRenderer.dispose();
+        batch.dispose();
+        world.dispose();
+        
         player = null;
         boss = null;
         child = null;
         wife = null;
-    	groundTexture.dispose();
-        backgroundDusk.dispose();
-        dialogueManager.dispose();
-        shapeRenderer.dispose();
-        batch.dispose();
-        world.dispose(); 
     }
 	public void beginShutdown() {
 		shuttingDown = true;

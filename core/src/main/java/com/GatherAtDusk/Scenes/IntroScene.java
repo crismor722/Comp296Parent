@@ -192,7 +192,10 @@ public class IntroScene extends ScreenAdapter {
 
     @Override
     public void render(float delta) { 
-    	if(shuttingDown) return; //safty net to prevent crashes from disposing everything
+    	if (shuttingDown) {
+    	    Gdx.input.setInputProcessor(null);
+    	    return;
+    	}//safty net to prevent crashes from disposing everything
         // sky color
         //Gdx.gl.glClearColor(0.4f, 0.7f, 1f, 1); // color blue
         //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -313,8 +316,6 @@ public class IntroScene extends ScreenAdapter {
     @Override
     public void dispose() { //when new scene starts make sure to dispose these elements
     	player.dispose();
-    	world.step(0, 0, 0);
-    	player = null;
     	groundTexture.dispose();
         backgroundDay.dispose();
         rockTexture.dispose();
@@ -326,6 +327,7 @@ public class IntroScene extends ScreenAdapter {
         	dialogueManager.dispose();
         }
         world.dispose();
+        player = null;
     }
 
 	public void beginShutdown() {
