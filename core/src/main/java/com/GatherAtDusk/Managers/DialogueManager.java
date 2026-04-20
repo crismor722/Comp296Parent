@@ -30,7 +30,20 @@ public class DialogueManager {
     private Array<Sound> disposeVoiceLines = new Array<>();
     
     private Sound currentSound;
-    private Sound line1;
+    private Sound oldSound;
+    private Sound line1player;
+    private Sound line2player;
+    private Sound line3player;
+    private Sound line4player;
+    private Sound line5player;
+    private Sound line6player;
+    
+    private Sound line1wife;
+    private Sound line2wife;
+    private Sound line3wife;
+    private Sound line4wife;
+    
+    private Sound line1grandfather;
     
     
     private int currentIndex = 0;
@@ -95,7 +108,19 @@ public class DialogueManager {
     }
 
     private void setupVoiceLines() {
-		line1 = Gdx.audio.newSound(Gdx.files.internal("line1.wav"));
+		line1player = Gdx.audio.newSound(Gdx.files.internal("line1player.wav"));
+		line2player = Gdx.audio.newSound(Gdx.files.internal("line2player.wav"));
+		line3player = Gdx.audio.newSound(Gdx.files.internal("line3player.wav"));
+		line4player = Gdx.audio.newSound(Gdx.files.internal("line4player.wav"));
+		line5player = Gdx.audio.newSound(Gdx.files.internal("line5player.wav"));
+		line6player = Gdx.audio.newSound(Gdx.files.internal("line6player.wav"));
+		
+		line1wife = Gdx.audio.newSound(Gdx.files.internal("line1wife.wav"));
+		line2wife = Gdx.audio.newSound(Gdx.files.internal("line2wife.wav"));
+		line3wife = Gdx.audio.newSound(Gdx.files.internal("line3wife.wav"));
+		line4wife= Gdx.audio.newSound(Gdx.files.internal("line4wife.wav"));
+		
+		line1grandfather = Gdx.audio.newSound(Gdx.files.internal("line1grandfather.wav"));
 		
 	}
 
@@ -108,6 +133,12 @@ public class DialogueManager {
     }
 	
 	private void voiceDialogueHelper() {
+		if(currentIndex!=0){
+			oldSound = voiceLines.get(currentIndex-1);
+			if(oldSound != null) {
+				oldSound.stop();
+			}
+		}
 		currentSound = voiceLines.get(currentIndex);
         if(currentSound != null) {
         	currentSound.play();
@@ -121,45 +152,46 @@ public class DialogueManager {
             	player.setCanMove(false);
                 lines.add("Press enter to read next line"); //0
                 voiceLines.add(null);//0
-                lines.add("YOU: It has been almost a day in my search."); //1
-                voiceLines.add(line1);//1
-                lines.add("I must find my family..."); //2
-                voiceLines.add(null);//2
+                lines.add("YOU: It has been almost a day in my search."); //1 line 1 player
+                voiceLines.add(line1player);//1
+                lines.add("YOU: I must find my family..."); //2 line 2 player
+                voiceLines.add(line2player);//2
                 lines.add("Press WASD to move and SPACE to attack"); //3
                 voiceLines.add(null);//3
                 break;
 
             case 1:
             	player.setCanMove(false);
-                lines.add("YOU: Hey you! You are going to pay for this!"); //
-                voiceLines.add(null);
+                lines.add("YOU: Hey you! You are going to pay for this!"); // 0 line 3 player
+                voiceLines.add(line3player);//0
                 Wife.setTypeWin(); // reset here because of it being a static method maybe find a better way to reset wife
                 break;
 
             case 2:
             	player.setCanMove(false);
-            	voiceLines.add(null);
-            	lines.add("WIFE: Honey! What are you doing here?");
-            	voiceLines.add(null);
-            	lines.add("YOU: I'm here to save you of course!");
-            	voiceLines.add(null);
-            	lines.add("WIFE: Save me? This is my father!");
-            	voiceLines.add(null);
-            	lines.add("WIFE: I told you last night I was going to bring my father home today");
-            	voiceLines.add(null);
-            	lines.add("YOU: Oh yeah um I uh... forgot...");
-            	voiceLines.add(null);
+            	lines.add("WIFE: Honey! What are you doing here?"); //0 line 1 wife
+            	voiceLines.add(line1wife);// 0
+            	lines.add("YOU: I'm here to save you of course!"); //1 line 4 player
+            	voiceLines.add(line4player);// 1
+            	lines.add("WIFE: Save me? This is my father!");// 2 line 2 wife
+            	voiceLines.add(line2wife);// 2
+            	lines.add("WIFE: I told you last night I was going to bring my father home today"); //3 line 3 wife
+            	voiceLines.add(line3wife);// 3
+            	lines.add("YOU: Oh yeah um I uh... forgot..."); //4 line 5 player
+            	voiceLines.add(line5player); //4
                 break;
+                
             case 3:
-            	lines.add("YOU: So... No hard feelings?");
-            	voiceLines.add(null);
-            	lines.add("GRANDFATHER: Mhm");
-            	voiceLines.add(null);
+            	lines.add("YOU: So... No hard feelings?"); // 0 line 6 player
+            	voiceLines.add(line6player);//0
+            	lines.add("GRANDFATHER: Mhm"); // 1 line 1 grandpa
+            	voiceLines.add(line1grandfather);//1
             	break;
+            	
             case 4:
             	player.setCanMove(false);
-            	lines.add("WIFE: Honey! Nooo! Are you okay???");
-            	voiceLines.add(null);
+            	lines.add("WIFE: Honey! Nooo! Are you okay???"); // 0 line 4 wife
+            	voiceLines.add(line4wife);//0
             	gameOver = true;
             	
         }
@@ -193,7 +225,7 @@ public class DialogueManager {
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
 
-            currentIndex++;
+            currentIndex++; // voice lines and text follow the same index
 
             if(currentIndex >= lines.size) { //when dialogue is finished...
                 active = false;
@@ -209,7 +241,7 @@ public class DialogueManager {
             
 
             dialogueLabel.setText(lines.get(currentIndex));
-            voiceDialogueHelper();
+            voiceDialogueHelper(); //check if verbal dialogue
         }
 
         stage.act(delta);

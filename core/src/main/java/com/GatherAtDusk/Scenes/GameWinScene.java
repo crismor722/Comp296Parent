@@ -5,6 +5,7 @@ import com.GatherAtDusk.Buttons.ReturnToTitleButton;
 import com.GatherAtDusk.Managers.SceneManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -23,14 +24,15 @@ public class GameWinScene extends ScreenAdapter {
 	private BitmapFont font;
 	private Stage stage;
 	private Texture gameWinText;
+	private Sound lineWin;
 	private static final float CAM_WIDTH = 800;
 	private static final float CAM_HEIGHT = 480;
 	private boolean shuttingDown = false;
+	
 		
 	public GameWinScene(MainGame game) {
 			this.game = game;
 			this.sceneManager = game.sceneManager; // use the shared SceneManager
-	        this.batch = game.batch;
 		}
 		
 	public void show() {
@@ -40,6 +42,7 @@ public class GameWinScene extends ScreenAdapter {
 
 	    font = new BitmapFont();
 	    font.getData().setScale(2f);
+	    batch = new SpriteBatch();
 	    stage = new Stage(new ScreenViewport());
 	    Gdx.input.setInputProcessor(stage); 
 
@@ -50,7 +53,9 @@ public class GameWinScene extends ScreenAdapter {
 	    		Gdx.graphics.getWidth() / 2f - returnTitleButton.getWidth() / 2f, 
 	            Gdx.graphics.getHeight() / 2f - returnTitleButton.getHeight() / 2f
 	        );
-
+	    
+	    lineWin = Gdx.audio.newSound(Gdx.files.internal("lineWin.wav"));
+	    lineWin.play();
 	    stage.addActor(returnTitleButton);
 	}
 
