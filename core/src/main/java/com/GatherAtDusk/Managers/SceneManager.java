@@ -88,12 +88,14 @@ public class SceneManager {
     
     private void disposeOldScreen(){
     	if (oldScreen != null) {
-            //oldScreen.dispose(); 
-    		Gdx.app.postRunnable(() ->{ //try taking 1-2 frames to sit a little bit before disposing
-    			Gdx.app.postRunnable(() -> { 
-    				oldScreen.dispose();// allows me to call dispose for any screen since it is in the screen interface and all the scenes extend screenAdapter which is uses the screen interface
-    			});// this delays the call of disposing after frame is finished otherwise the game crashes
-    		});   
+            //oldScreen.dispose();
+    		Gdx.app.postRunnable(() ->{
+    			Gdx.app.postRunnable(() ->{ //try taking 2-3 frames to sit a little bit before disposing
+    				Gdx.app.postRunnable(() -> { 
+    					oldScreen.dispose();// allows me to call dispose for any screen since it is in the screen interface and all the scenes extend screenAdapter which is uses the screen interface
+    				});// this delays the call of disposing after frame is finished otherwise the game crashes
+    			});  
+    		});
         }
     }
 }

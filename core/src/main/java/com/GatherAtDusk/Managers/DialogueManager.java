@@ -5,6 +5,7 @@ import com.GatherAtDusk.NPCS.Wife;
 import com.GatherAtDusk.PlayerStuff.Player;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -25,6 +26,12 @@ public class DialogueManager {
     private MainGame game; // game is being used to get the game's scenemanager
     private SceneManager sceneManager;
     private Array<String> lines = new Array<>();
+    private Array<Sound> voiceLines = new Array<>();
+    private Array<Sound> disposeVoiceLines = new Array<>();
+    
+    private Sound currentSound;
+    private Sound line1;
+    
     
     private int currentIndex = 0;
     private int dialogueID;
@@ -46,7 +53,7 @@ public class DialogueManager {
     private void setupUI() {
     	
         stage = new Stage(new ScreenViewport());
-        
+        setupVoiceLines();
         
         // making background for text
         Pixmap pixmap = new Pixmap(BORDER_WIDTH, BORDER_HEIGHT, Pixmap.Format.RGBA8888); // setting height and width here doesn't do anything i just do it for the border
@@ -87,12 +94,25 @@ public class DialogueManager {
         stage.addActor(textBox);
     }
 
-    private void startDialogue() {
+    private void setupVoiceLines() {
+		line1 = Gdx.audio.newSound(Gdx.files.internal("line1.wav"));
+		
+	}
+
+	private void startDialogue() {
         if(lines.size == 0) return;
         currentIndex = 0;
         dialogueLabel.setText(lines.get(currentIndex));
+        voiceDialogueHelper();
         active = true;
     }
+	
+	private void voiceDialogueHelper() {
+		currentSound = voiceLines.get(currentIndex);
+        if(currentSound != null) {
+        	currentSound.play();
+        }
+	}
 
     private void createLines(int dialogueID) {
         switch(dialogueID) {
@@ -100,32 +120,46 @@ public class DialogueManager {
             case 0:
             	player.setCanMove(false);
                 lines.add("Press enter to read next line"); //0
+                voiceLines.add(null);//0
                 lines.add("YOU: It has been almost a day in my search."); //1
+                voiceLines.add(line1);//1
                 lines.add("I must find my family..."); //2
+                voiceLines.add(null);//2
                 lines.add("Press WASD to move and SPACE to attack"); //3
+                voiceLines.add(null);//3
                 break;
 
             case 1:
             	player.setCanMove(false);
                 lines.add("YOU: Hey you! You are going to pay for this!"); //
+                voiceLines.add(null);
                 Wife.setTypeWin(); // reset here because of it being a static method maybe find a better way to reset wife
                 break;
 
             case 2:
             	player.setCanMove(false);
+            	voiceLines.add(null);
             	lines.add("WIFE: Honey! What are you doing here?");
+            	voiceLines.add(null);
             	lines.add("YOU: I'm here to save you of course!");
+            	voiceLines.add(null);
             	lines.add("WIFE: Save me? This is my father!");
+            	voiceLines.add(null);
             	lines.add("WIFE: I told you last night I was going to bring my father home today");
+            	voiceLines.add(null);
             	lines.add("YOU: Oh yeah um I uh... forgot...");
+            	voiceLines.add(null);
                 break;
             case 3:
             	lines.add("YOU: So... No hard feelings?");
+            	voiceLines.add(null);
             	lines.add("GRANDFATHER: Mhm");
+            	voiceLines.add(null);
             	break;
             case 4:
             	player.setCanMove(false);
             	lines.add("WIFE: Honey! Nooo! Are you okay???");
+            	voiceLines.add(null);
             	gameOver = true;
             	
         }
@@ -135,6 +169,7 @@ public class DialogueManager {
     	this.dialogueID = dialogueID;
     	if(health <=0) {
     		lines.clear();
+    		voiceLines.clear();
     		createLines(dialogueID);
     		startDialogue();
     		
@@ -174,6 +209,7 @@ public class DialogueManager {
             
 
             dialogueLabel.setText(lines.get(currentIndex));
+            voiceDialogueHelper();
         }
 
         stage.act(delta);

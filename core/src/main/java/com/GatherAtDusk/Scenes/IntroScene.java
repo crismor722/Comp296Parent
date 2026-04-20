@@ -11,6 +11,8 @@ import com.GatherAtDusk.PlayerStuff.HealthUI;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -193,7 +195,7 @@ public class IntroScene extends ScreenAdapter {
     @Override
     public void render(float delta) { 
     	if (shuttingDown) {
-    	    Gdx.input.setInputProcessor(null);
+    	    Gdx.input.setInputProcessor(null); //won't try to retrieve any inputs
     	    return;
     	}//safty net to prevent crashes from disposing everything
         // sky color
