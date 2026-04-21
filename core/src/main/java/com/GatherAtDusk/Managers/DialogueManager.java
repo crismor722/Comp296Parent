@@ -213,9 +213,11 @@ public class DialogueManager {
     private void updateScene(int dialogueID) { //not all cases will need to switch to scene so just skip to 2
     	switch(dialogueID) {
     	case 2:
+    		voiceLines.get(currentIndex-1).stop();
     		sceneManager.setEndScene();
     		break;
     	case 3:
+    		voiceLines.get(currentIndex-1).stop();
     		sceneManager.setGameWin();
     		break;
     	}
