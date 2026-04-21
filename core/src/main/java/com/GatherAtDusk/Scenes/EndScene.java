@@ -38,7 +38,7 @@ public class EndScene extends ScreenAdapter{
 	
 	private final MainGame game;
     private OrthographicCamera camera;
-    private ShapeRenderer shapeRenderer;
+    private static ShapeRenderer shapeRenderer;
     private static SpriteBatch batch;
     private World world;
     private Box2DDebugRenderer debugRenderer;
@@ -80,11 +80,11 @@ public class EndScene extends ScreenAdapter{
     public EndScene(MainGame game) {
     	this.game = game;
     	EndScene.batch = MainGame.batch;
+    	EndScene.shapeRenderer = MainGame.shapeRenderer;
     }
     public void show() {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, WORLD_WIDTH / PPM, WORLD_HEIGHT / PPM);
-        shapeRenderer = new ShapeRenderer();
 
         //gravity (downward)
         //NOTE: world is not the same as the scene
@@ -337,7 +337,6 @@ public class EndScene extends ScreenAdapter{
         backgroundDusk.dispose();
         stage.dispose();
         dialogueManager.dispose();
-        shapeRenderer.dispose();
         world.dispose();
         
         player = null;

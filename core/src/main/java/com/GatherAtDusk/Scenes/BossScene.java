@@ -33,7 +33,7 @@ import com.badlogic.gdx.utils.Array;
 public class BossScene extends ScreenAdapter{
 	private final MainGame game;
     private OrthographicCamera camera;
-    private ShapeRenderer shapeRenderer;
+    private static ShapeRenderer shapeRenderer;
     private static SpriteBatch batch;
     private World world;
     private Box2DDebugRenderer debugRenderer;
@@ -71,12 +71,11 @@ public class BossScene extends ScreenAdapter{
     public BossScene(MainGame game) {
     	this.game = game;
     	BossScene.batch = MainGame.batch;
+    	BossScene.shapeRenderer = MainGame.shapeRenderer;
     }
     public void show() {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, WORLD_WIDTH / PPM, WORLD_HEIGHT / PPM);
-        shapeRenderer = new ShapeRenderer();
-
         //gravity (downward)
         //NOTE: world is not the same as the scene
         world = new World(new Vector2(HGRAVITY, VGRAVITY), true); //world handles gravity
@@ -361,7 +360,6 @@ public class BossScene extends ScreenAdapter{
         rockTexture.dispose();
         healthUI.dispose();
         dialogueManager.dispose();
-        shapeRenderer.dispose();
         world.dispose();
         
         player = null;

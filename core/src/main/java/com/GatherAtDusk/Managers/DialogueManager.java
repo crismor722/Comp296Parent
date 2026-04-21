@@ -23,11 +23,10 @@ public class DialogueManager {
     private Player player;
     private Stage stage;
     private Label dialogueLabel;
-    private MainGame game; // game is being used to get the game's scenemanager
-    private SceneManager sceneManager;
+    private  final MainGame game; // game is being used to get the game's scenemanager
+    private static SceneManager sceneManager;
     private Array<String> lines = new Array<>();
     private Array<Sound> voiceLines = new Array<>();
-    private Array<Sound> disposeVoiceLines = new Array<>();
     
     private Sound currentSound;
     private Sound oldSound;
@@ -55,7 +54,7 @@ public class DialogueManager {
     
     public DialogueManager(MainGame game,Player player, int dialogueID) { 
     	this.game = game;
-    	this.sceneManager = game.sceneManager;
+    	DialogueManager.sceneManager = MainGame.sceneManager;
         this.player = player;
         this.dialogueID = dialogueID;
         setupUI();

@@ -2,7 +2,7 @@ package com.GatherAtDusk.Managers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 
-public  abstract class SaveManager {
+public abstract class SaveManager {
 
     private static final String SAVE_NAME = "GatherAtDuskSave";
 

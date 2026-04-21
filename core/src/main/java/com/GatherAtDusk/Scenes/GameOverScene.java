@@ -16,7 +16,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class GameOverScene extends ScreenAdapter {
 	private final MainGame game;
-	private final SceneManager sceneManager;
+	private static SceneManager sceneManager;
 
 	private OrthographicCamera camera;
 	private static SpriteBatch batch;
@@ -30,7 +30,7 @@ public class GameOverScene extends ScreenAdapter {
 	
 	public GameOverScene(MainGame game) {
 		this.game = game;
-		this.sceneManager = game.sceneManager; // use the shared SceneManager\
+		GameOverScene.sceneManager = MainGame.sceneManager; // use the shared SceneManager\
 		GameOverScene.batch = MainGame.batch;
 	}
 	

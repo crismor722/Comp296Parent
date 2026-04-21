@@ -15,7 +15,7 @@ import com.GatherAtDusk.Managers.SceneManager;
 public class TitleScreen extends ScreenAdapter {
 
     private final MainGame game;
-    private final SceneManager sceneManager;
+    private static SceneManager sceneManager;
 
     private OrthographicCamera camera;
     private static SpriteBatch batch;
@@ -29,7 +29,7 @@ public class TitleScreen extends ScreenAdapter {
 
     public TitleScreen(MainGame game) {
         this.game = game;
-        this.sceneManager = game.sceneManager; // use the shared SceneManager]
+        TitleScreen.sceneManager = MainGame.sceneManager; // use the shared SceneManager]
         TitleScreen.batch = MainGame.batch;
     }
 

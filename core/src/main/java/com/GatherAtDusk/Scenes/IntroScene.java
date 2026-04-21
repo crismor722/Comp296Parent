@@ -27,7 +27,7 @@ public class IntroScene extends ScreenAdapter {
 	
     private final MainGame game;
     private OrthographicCamera camera;
-    private ShapeRenderer shapeRenderer;
+    private static ShapeRenderer shapeRenderer;
     private static SpriteBatch batch;
     private World world;
     private Box2DDebugRenderer debugRenderer;
@@ -65,13 +65,13 @@ public class IntroScene extends ScreenAdapter {
     public IntroScene(MainGame game) {
         this.game = game;
         IntroScene.batch = MainGame.batch;
+        IntroScene.shapeRenderer = MainGame.shapeRenderer;
     }
 
     @Override
     public void show() {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, WORLD_WIDTH / PPM, WORLD_HEIGHT / PPM);
-        shapeRenderer = new ShapeRenderer();
 
         //gravity (downward)
         //NOTE: world is not the same as the scene
@@ -322,7 +322,7 @@ public class IntroScene extends ScreenAdapter {
         backgroundDay.dispose();
         rockTexture.dispose();
         healthUI.dispose();
-        shapeRenderer.dispose();
+        
         
         if(dialogueManager != null) {
         	dialogueManager.dispose();
