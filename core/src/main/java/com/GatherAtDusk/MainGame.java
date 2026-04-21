@@ -5,7 +5,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class MainGame extends Game {
-	 public SpriteBatch batch;
+	 public static SpriteBatch batch;
 	 public SceneManager sceneManager;
     @Override
     public void create() {

@@ -31,19 +31,19 @@ public class DialogueManager {
     
     private Sound currentSound;
     private Sound oldSound;
-    private Sound line1player;
-    private Sound line2player;
-    private Sound line3player;
-    private Sound line4player;
-    private Sound line5player;
-    private Sound line6player;
+    private static Sound line1player;
+    private static Sound line2player;
+    private static Sound line3player;
+    private static Sound line4player;
+    private static Sound line5player;
+    private static Sound line6player;
     
-    private Sound line1wife;
-    private Sound line2wife;
-    private Sound line3wife;
-    private Sound line4wife;
+    private static Sound line1wife;
+    private static Sound line2wife;
+    private static Sound line3wife;
+    private static Sound line4wife;
     
-    private Sound line1grandfather;
+    private static Sound line1grandfather;
     
     
     private int currentIndex = 0;
@@ -121,7 +121,10 @@ public class DialogueManager {
 		line4wife= Gdx.audio.newSound(Gdx.files.internal("line4wife.wav"));
 		
 		line1grandfather = Gdx.audio.newSound(Gdx.files.internal("line1grandfather.wav"));
-		
+		/*disposeVoiceLines.addAll(line1player, line2player, line3player, line4player, line5player, line6player, 
+				line1wife, line2wife, line3wife, line4wife,
+				line1grandfather);
+		*/
 	}
 
 	private void startDialogue() {

@@ -18,7 +18,7 @@ public class TitleScreen extends ScreenAdapter {
     private final SceneManager sceneManager;
 
     private OrthographicCamera camera;
-    private SpriteBatch batch;
+    private static SpriteBatch batch;
     private BitmapFont font;
     private Texture background;
     private Texture title;
@@ -29,8 +29,8 @@ public class TitleScreen extends ScreenAdapter {
 
     public TitleScreen(MainGame game) {
         this.game = game;
-        this.sceneManager = game.sceneManager; // use the shared SceneManager
-        this.batch = game.batch;
+        this.sceneManager = game.sceneManager; // use the shared SceneManager]
+        TitleScreen.batch = MainGame.batch;
     }
 
     @Override
@@ -98,7 +98,6 @@ public class TitleScreen extends ScreenAdapter {
         stage.dispose();
         background.dispose();
         title.dispose();
-        batch.dispose();
     }
 
 	public void beginShutdown() {

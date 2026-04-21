@@ -19,7 +19,7 @@ public class GameOverScene extends ScreenAdapter {
 	private final SceneManager sceneManager;
 
 	private OrthographicCamera camera;
-	private SpriteBatch batch;
+	private static SpriteBatch batch;
 	private BitmapFont font;
 	private Stage stage;
 	private Texture gameOverText;
@@ -30,7 +30,8 @@ public class GameOverScene extends ScreenAdapter {
 	
 	public GameOverScene(MainGame game) {
 		this.game = game;
-		this.sceneManager = game.sceneManager; // use the shared SceneManager
+		this.sceneManager = game.sceneManager; // use the shared SceneManager\
+		GameOverScene.batch = MainGame.batch;
 	}
 	
 	public void show() {
@@ -40,7 +41,6 @@ public class GameOverScene extends ScreenAdapter {
 
         font = new BitmapFont();
         font.getData().setScale(2f);
-        batch = new SpriteBatch();
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage); 
 
@@ -85,7 +85,6 @@ public class GameOverScene extends ScreenAdapter {
         font.dispose();
         stage.dispose();
         gameOverText.dispose();
-        batch.dispose();
     }
 
 	public void beginShutdown() {
