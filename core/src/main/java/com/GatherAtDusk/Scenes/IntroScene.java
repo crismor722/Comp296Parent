@@ -30,7 +30,7 @@ public class IntroScene extends ScreenAdapter {
     private static ShapeRenderer shapeRenderer;
     private static SpriteBatch batch;
     private World world;
-    private Box2DDebugRenderer debugRenderer;
+    //private Box2DDebugRenderer debugRenderer;
     private Player player;
     private CheckpointBlock checkpoint1;
     private CheckpointBlock checkpoint2;
@@ -50,8 +50,8 @@ public class IntroScene extends ScreenAdapter {
     private static final float GROUND_WIDTH_SIZE =  WORLD_WIDTH;
     private static final float GROUND_HEIGHT_SIZE = GROUND_HEIGHT_POSITION;
     private static final float FRICTION = 0.8f; //friction doesn't really have an effect now, maybe find a way to remove later
-    private float playerStartX = WORLD_WIDTH / 2 ; // center of screen in pixels
-    private float playerStartY = GROUND_HEIGHT_POSITION + 60f; // above ground
+    private float playerStartX; //determined based on checkpoint
+    private static final float START_Y = GROUND_HEIGHT_POSITION + 60f; // above ground
     private static final float PPM = (float) 100; // 100 pixels per meter 
     private static final float WALL_THICKNESS = 10f / PPM;
     private static final float TILE_SIZE = 16f/ PPM;
@@ -61,6 +61,12 @@ public class IntroScene extends ScreenAdapter {
     private Array<CheckpointBlock> checkpointsArray = new Array<>();
     private GameContactListener contactListener;
     private HealthUI healthUI;
+    
+    private static final float PLAYER_X_OFFSET = Player.getPlayerWidth();
+    private static final float PLAYER_Y_OFFSET = 45f;
+    private static final float CHK_OFFSET = 0.001f;
+    private static final float CHK_HEIGHT = 100f;
+    private static final float GRASS_OFFSET = 64f;
     
     public IntroScene(MainGame game) {
         this.game = game;
@@ -76,7 +82,7 @@ public class IntroScene extends ScreenAdapter {
         //gravity (downward)
         //NOTE: world is not the same as the scene
         world = new World(new Vector2(HGRAVITY, VGRAVITY), true); //world handles gravity
-        debugRenderer = new Box2DDebugRenderer();
+        //debugRenderer = new Box2DDebugRenderer();
 
         createGround();
         createBoundaries();
@@ -165,16 +171,16 @@ public class IntroScene extends ScreenAdapter {
     }
     
     private void createCheckpoints(){
-    	checkpoint1 = new CheckpointBlock(world, 100f/ PPM, 100f/ PPM, 10f/ PPM, 10f/ PPM, 0);
-    	checkpoint2 = new CheckpointBlock(world, 200f/ PPM, 100f/ PPM, 10f/ PPM, 10f/ PPM, 1);
-    	checkpoint3 = new CheckpointBlock(world, 600f/ PPM, 100f/ PPM, 10f/ PPM, 10f/ PPM, 2);
+    	checkpoint1 = new CheckpointBlock(world, 100f/ PPM, CHK_HEIGHT/ PPM, 0);
+    	checkpoint2 = new CheckpointBlock(world, 200f/ PPM, CHK_HEIGHT/ PPM, 1);
+    	checkpoint3 = new CheckpointBlock(world, 600f/ PPM, CHK_HEIGHT/ PPM, 2);
     	
     	checkpointsArray.add(checkpoint1);
     	checkpointsArray.add(checkpoint2);
     	checkpointsArray.add(checkpoint3);
 
     	checkpointID = SaveManager.loadCheckpoint();
-    	Vector2 spawn = new Vector2(playerStartX, playerStartY); // default spawn
+    	Vector2 spawn = new Vector2(playerStartX, START_Y); // default spawn
     	
 
     	switch (checkpointID) {
@@ -185,7 +191,7 @@ public class IntroScene extends ScreenAdapter {
             spawn = checkpoint2.getSpawnPositionPixels(PPM);
             break;
         default:
-            spawn.set(playerStartX, playerStartY); // fallback spawn
+            spawn.set(playerStartX, START_Y); // fallback spawn
     }
     	float spawnX = spawn.x;
     	float spawnY = spawn.y;
@@ -227,8 +233,20 @@ public class IntroScene extends ScreenAdapter {
       //making a bit more grass
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled); //fills in color for ground
         shapeRenderer.setColor(Color.FOREST);
-        shapeRenderer.rect(0, 64f/PPM, GROUND_WIDTH_SIZE / PPM, TILE_SIZE/2 ); // Collision block is 2/3 shape of ground color right now
-        shapeRenderer.end();      
+        shapeRenderer.rect(0, GRASS_OFFSET/PPM, GROUND_WIDTH_SIZE / PPM, TILE_SIZE/2 ); // Collision block is 2/3 shape of ground color right now
+        shapeRenderer.end();   
+        
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(1f, 1f, 0f, 1); // yellow checkpoint
+        for(CheckpointBlock checkpoint : checkpointsArray) {
+        	shapeRenderer.rect(
+        		checkpoint.getPosition().x + CHK_OFFSET - CheckpointBlock.getWidth()/2  + CHK_OFFSET / PPM,
+        		checkpoint.getPosition().y + CHK_OFFSET - CheckpointBlock.getHeight()/2  + CHK_OFFSET / PPM,
+        		CheckpointBlock.getWidth()  + CHK_OFFSET/ PPM,
+        		CheckpointBlock.getHeight()  + CHK_OFFSET/ PPM
+        	);
+        }
+        shapeRenderer.end();
         
         batch.begin();
         for(int i = 0; i < TILE_INDEX_X; i++) {
@@ -242,23 +260,18 @@ public class IntroScene extends ScreenAdapter {
         		);
         	}
         }
-        batch.end();
         
-        contactListener.processPendingDestruction(); //need to be called  after world step in order for LibGDX to be happy
-        player.update(delta); //happens before player rendering and coloring
-        batch.begin();
+        
+        player.update(delta); //happens before player rendering and coloring because this determines the animation of the player
         batch.draw(
             player.getFrame(),
-            player.getPosition().x -64f/PPM,
-            player.getPosition().y -40f/PPM, //change here for boss sprire and height pos
-            player.getFrameSize()/ PPM *2,
-            player.getFrameSize() / PPM *2
+            player.getPosition().x -PLAYER_X_OFFSET/PPM,
+            player.getPosition().y -PLAYER_Y_OFFSET/PPM, //change here for boss sprire and height pos
+            Player.getFrameSize()/ PPM *2,
+            Player.getFrameSize() / PPM *2
         );
-
-        batch.end();
         
-        
-        //player color and rendering
+        //player color and rendering keeping this for future notes
         /*shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(1f, 0f, 0f, 1); // red player
         shapeRenderer.rect(
@@ -272,20 +285,6 @@ public class IntroScene extends ScreenAdapter {
         */
         
         //checkpoint color and rendering 
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(1f, 1f, 0f, 1); // yellow checkpoint
-        for(CheckpointBlock checkpoint : checkpointsArray) {
-        	shapeRenderer.rect(
-        		checkpoint.getPosition().x + 0.001f - checkpoint.getWidth()/2  + 0.001f / PPM,
-        		checkpoint.getPosition().y + 0.001f - checkpoint.getHeight()/2  + 0.001f / PPM,
-        		checkpoint.getWidth()  + 0.001f/ PPM,
-        		checkpoint.getHeight()  + 0.001f/ PPM
-        	);
-        }
-        shapeRenderer.end();
-        
-        batch.begin();
-        
         for (PlayerAttackBlock attack : player.getActiveAttacks()) {
         	if(attack.isDestroyed()){ //this if statement gets rid of the left over color when the block deletes
         		player.getActiveAttacks().removeValue(attack, true);
@@ -307,8 +306,7 @@ public class IntroScene extends ScreenAdapter {
         	dialogueManager.update(delta);
         	dialogueManager.render();
         }
-        
-        
+        contactListener.processPendingDestruction(); //need to be called  after world step in order for LibGDX to be happy
         healthUI.playerUpdate();
         healthUI.render(delta);
         //box2d debug

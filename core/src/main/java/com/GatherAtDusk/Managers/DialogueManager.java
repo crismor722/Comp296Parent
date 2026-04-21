@@ -23,26 +23,29 @@ public class DialogueManager {
     private Player player;
     private Stage stage;
     private Label dialogueLabel;
+    private Texture texture;
+    private BitmapFont font;
     private  final MainGame game; // game is being used to get the game's scenemanager
-    private static SceneManager sceneManager;
+    private SceneManager sceneManager;
     private Array<String> lines = new Array<>();
     private Array<Sound> voiceLines = new Array<>();
+    private Array<Sound> disposeVoiceLines = new Array<>();
     
     private Sound currentSound;
     private Sound oldSound;
-    private static Sound line1player;
-    private static Sound line2player;
-    private static Sound line3player;
-    private static Sound line4player;
-    private static Sound line5player;
-    private static Sound line6player;
+    private Sound line1player;
+    private Sound line2player;
+    private Sound line3player;
+    private Sound line4player;
+    private Sound line5player;
+    private Sound line6player;
     
-    private static Sound line1wife;
-    private static Sound line2wife;
-    private static Sound line3wife;
-    private static Sound line4wife;
+    private Sound line1wife;
+    private Sound line2wife;
+    private Sound line3wife;
+    private Sound line4wife;
     
-    private static Sound line1grandfather;
+    private Sound line1grandfather;
     
     
     private int currentIndex = 0;
@@ -54,7 +57,7 @@ public class DialogueManager {
     
     public DialogueManager(MainGame game,Player player, int dialogueID) { 
     	this.game = game;
-    	DialogueManager.sceneManager = MainGame.sceneManager;
+    	this.sceneManager = game.sceneManager;
         this.player = player;
         this.dialogueID = dialogueID;
         setupUI();
@@ -65,7 +68,6 @@ public class DialogueManager {
     private void setupUI() {
     	
         stage = new Stage(new ScreenViewport());
-        setupVoiceLines();
         
         // making background for text
         Pixmap pixmap = new Pixmap(BORDER_WIDTH, BORDER_HEIGHT, Pixmap.Format.RGBA8888); // setting height and width here doesn't do anything i just do it for the border
@@ -76,13 +78,13 @@ public class DialogueManager {
         pixmap.setColor(Color.BLACK);
         pixmap.drawRectangle(0, 0, pixmap.getWidth(), pixmap.getHeight());
 
-        Texture texture = new Texture(pixmap);
+        texture = new Texture(pixmap);
         Drawable whiteDrawable = new TextureRegionDrawable(new TextureRegion(texture));
 
         pixmap.dispose();
         
         //text
-        BitmapFont font = new BitmapFont();
+        font = new BitmapFont();
         Label.LabelStyle style = new Label.LabelStyle(font, Color.DARK_GRAY);
         style.font.getData().setScale(3f);
 
@@ -106,20 +108,40 @@ public class DialogueManager {
         stage.addActor(textBox);
     }
 
-    private void setupVoiceLines() {
-		line1player = Gdx.audio.newSound(Gdx.files.internal("line1player.wav"));
-		line2player = Gdx.audio.newSound(Gdx.files.internal("line2player.wav"));
-		line3player = Gdx.audio.newSound(Gdx.files.internal("line3player.wav"));
-		line4player = Gdx.audio.newSound(Gdx.files.internal("line4player.wav"));
-		line5player = Gdx.audio.newSound(Gdx.files.internal("line5player.wav"));
-		line6player = Gdx.audio.newSound(Gdx.files.internal("line6player.wav"));
+    private void setupVoiceLines(int id) {
+    	if(id ==1) {
+    		line1player = Gdx.audio.newSound(Gdx.files.internal("line1player.wav"));
+    		line2player = Gdx.audio.newSound(Gdx.files.internal("line2player.wav"));
+    		disposeVoiceLines.addAll(line1player, line2player);
+    	}
+    	else if(id ==2) {
+    		line3player = Gdx.audio.newSound(Gdx.files.internal("line3player.wav"));
+    		disposeVoiceLines.add(line3player);
+    	}
 		
-		line1wife = Gdx.audio.newSound(Gdx.files.internal("line1wife.wav"));
-		line2wife = Gdx.audio.newSound(Gdx.files.internal("line2wife.wav"));
-		line3wife = Gdx.audio.newSound(Gdx.files.internal("line3wife.wav"));
-		line4wife= Gdx.audio.newSound(Gdx.files.internal("line4wife.wav"));
+    	else if(id == 3) {
+    		line4player = Gdx.audio.newSound(Gdx.files.internal("line4player.wav"));
+    		line5player = Gdx.audio.newSound(Gdx.files.internal("line5player.wav"));
+    		
+    		
+    		line1wife = Gdx.audio.newSound(Gdx.files.internal("line1wife.wav"));
+    		line2wife = Gdx.audio.newSound(Gdx.files.internal("line2wife.wav"));
+    		line3wife = Gdx.audio.newSound(Gdx.files.internal("line3wife.wav"));
+    		disposeVoiceLines.addAll(line4player, line5player, line1wife, line2wife, line3wife);
+    	}
 		
-		line1grandfather = Gdx.audio.newSound(Gdx.files.internal("line1grandfather.wav"));
+    	else if(id == 4) {
+    		line6player = Gdx.audio.newSound(Gdx.files.internal("line6player.wav"));
+    		line1grandfather = Gdx.audio.newSound(Gdx.files.internal("line1grandfather.wav"));
+    		disposeVoiceLines.addAll(line6player, line1grandfather);
+    	}
+    	else if (id == 5) {
+    		line4wife= Gdx.audio.newSound(Gdx.files.internal("line4wife.wav"));
+    		disposeVoiceLines.add(line4wife);
+    	}
+		
+		
+    	
 		/*disposeVoiceLines.addAll(line1player, line2player, line3player, line4player, line5player, line6player, 
 				line1wife, line2wife, line3wife, line4wife,
 				line1grandfather);
@@ -151,6 +173,7 @@ public class DialogueManager {
         switch(dialogueID) {
 
             case 0:
+            	setupVoiceLines(1);
             	player.setCanMove(false);
                 lines.add("Press enter to read next line"); //0
                 voiceLines.add(null);//0
@@ -163,6 +186,7 @@ public class DialogueManager {
                 break;
 
             case 1:
+            	setupVoiceLines(2);
             	player.setCanMove(false);
                 lines.add("YOU: Hey you! You are going to pay for this!"); // 0 line 3 player
                 voiceLines.add(line3player);//0
@@ -170,6 +194,7 @@ public class DialogueManager {
                 break;
 
             case 2:
+            	setupVoiceLines(3);
             	player.setCanMove(false);
             	lines.add("WIFE: Honey! What are you doing here?"); //0 line 1 wife
             	voiceLines.add(line1wife);// 0
@@ -184,6 +209,7 @@ public class DialogueManager {
                 break;
                 
             case 3:
+            	setupVoiceLines(4);
             	lines.add("YOU: So... No hard feelings?"); // 0 line 6 player
             	voiceLines.add(line6player);//0
             	lines.add("GRANDFATHER: Mhm"); // 1 line 1 grandpa
@@ -191,6 +217,7 @@ public class DialogueManager {
             	break;
             	
             case 4:
+            	setupVoiceLines(5);
             	player.setCanMove(false);
             	lines.add("WIFE: Honey! Nooo! Are you okay???"); // 0 line 4 wife
             	voiceLines.add(line4wife);//0
@@ -267,6 +294,11 @@ public class DialogueManager {
 	}
 
     public void dispose() {
+    	for (Sound s : disposeVoiceLines) {
+            if (s != null) s.dispose();;
+        }
+    	texture.dispose();
+    	font.dispose();
         stage.dispose();
     }
 }

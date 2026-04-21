@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 public class MainGame extends Game {
 	 public static SpriteBatch batch;
 	 public static ShapeRenderer shapeRenderer;
-	 public static SceneManager sceneManager;
+	 public SceneManager sceneManager; //dont do static it can hokd stuff by accident
     @Override
     public void create() {
     	 batch = new SpriteBatch();

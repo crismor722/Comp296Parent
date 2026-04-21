@@ -37,7 +37,7 @@ public class Player {
 	private boolean canMove = true;
 	private float moveSpeed = 3f; //base movespeed
 	
-	private int frameSize = 64;
+	private static final int FRAME_SIZE = 64;
 	private int frameCount;
 	private float frameDuration = 0.1f;
 	private int row;
@@ -110,30 +110,30 @@ public class Player {
 	    row = 2;
 	    frameCount = 2;
 	    frameDuration = 0.2f;
-	    idleAnimation = AnimationHelper.createAnimation(idleSheet, frameSize, frameSize, row, frameCount, frameDuration, false);
+	    idleAnimation = AnimationHelper.createAnimation(idleSheet, FRAME_SIZE, FRAME_SIZE, row, frameCount, frameDuration, false);
 	    
 	    row = 3;
 	    frameCount = 8;
 	    frameDuration = 0.1f;
-	    runRightAnimation = AnimationHelper.createAnimation(runSheet, frameSize, frameSize, row, frameCount, frameDuration, false);
+	    runRightAnimation = AnimationHelper.createAnimation(runSheet, FRAME_SIZE, FRAME_SIZE, row, frameCount, frameDuration, false);
 	    
 	    row = 1; //same frame count and frame duration
-	    runLeftAnimation = AnimationHelper.createAnimation(runSheet, frameSize, frameSize, row, frameCount, frameDuration, false);
+	    runLeftAnimation = AnimationHelper.createAnimation(runSheet, FRAME_SIZE, FRAME_SIZE, row, frameCount, frameDuration, false);
 	    
 	    row = 3;
 	    frameCount = 13;
 	    frameDuration = 0.02f;
-	    attackRightAnimation = AnimationHelper.createAnimation(attackSheet, frameSize, frameSize, row, frameCount, frameDuration, false);
+	    attackRightAnimation = AnimationHelper.createAnimation(attackSheet, FRAME_SIZE, FRAME_SIZE, row, frameCount, frameDuration, false);
 	    
 	    row = 3;
 	    frameCount = 1;
 	    frameDuration = 1f; //doesn't really matter bc it will only be one frame;
-	    sittingAnimation = AnimationHelper.createAnimation(sitSheet, frameSize, frameSize, row, frameCount, frameDuration, false);
+	    sittingAnimation = AnimationHelper.createAnimation(sitSheet, FRAME_SIZE, FRAME_SIZE, row, frameCount, frameDuration, false);
 	    
 	    row = 0;
 	    frameCount = 4;
 	    frameDuration = 0.15f;
-	    hurtAnimation = AnimationHelper.createAnimation(hurtSheet, frameSize, frameSize, row, frameCount, frameDuration, false);
+	    hurtAnimation = AnimationHelper.createAnimation(hurtSheet, FRAME_SIZE, FRAME_SIZE, row, frameCount, frameDuration, false);
 	}
 	
 	public TextureRegion getFrame() {
@@ -242,8 +242,8 @@ public class Player {
 		//boss class checks if player can move so i need to set this just for boss to not attack
 	}
 
-	public int getFrameSize() {
-		return frameSize;
+	public static int getFrameSize() {
+		return FRAME_SIZE;
 	}
 	
 	public void setHealth(int health){

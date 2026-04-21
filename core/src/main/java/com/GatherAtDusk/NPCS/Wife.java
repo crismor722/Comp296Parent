@@ -38,7 +38,7 @@ public class Wife {
 	private Animation<TextureRegion> runAnimation;
 	private Animation<TextureRegion> currentAnimation;
 	
-	private int frameSize = 64;
+	private static final int FRAME_SIZE = 64;
 	private int frameCount;
 	private float frameDuration = 0.1f;
 	private int row;
@@ -95,22 +95,22 @@ public class Wife {
 	    row = 1; //idle left
 	    frameCount = 2;
 	    frameDuration = 0.2f;
-	    idleAnimation = AnimationHelper.createAnimation(idleSheet, frameSize, frameSize, row, frameCount, frameDuration, false);
+	    idleAnimation = AnimationHelper.createAnimation(idleSheet, FRAME_SIZE, FRAME_SIZE, row, frameCount, frameDuration, false);
 	    
 	    row = 1; //walk left
 	    frameCount = 9;
 	    frameDuration = 0.2f;
-	    walkAnimation = AnimationHelper.createAnimation(walkSheet, frameSize, frameSize, row, frameCount, frameDuration, false);
+	    walkAnimation = AnimationHelper.createAnimation(walkSheet, FRAME_SIZE, FRAME_SIZE, row, frameCount, frameDuration, false);
 	    
 	    row = 3; //sit right
 	    frameCount = 1;
 	    frameDuration = 1f;
-	    sitAnimation = AnimationHelper.createAnimation(sitSheet, frameSize, frameSize, row, frameCount, frameDuration, false);
+	    sitAnimation = AnimationHelper.createAnimation(sitSheet, FRAME_SIZE, FRAME_SIZE, row, frameCount, frameDuration, false);
 	    
 	    row = 1; //run left
 	    frameCount = 8;
 	    frameDuration = 0.1f;
-	    runAnimation = AnimationHelper.createAnimation(runSheet, frameSize, frameSize, row, frameCount, frameDuration, false);
+	    runAnimation = AnimationHelper.createAnimation(runSheet, FRAME_SIZE, FRAME_SIZE, row, frameCount, frameDuration, false);
 	}
 	
 	public TextureRegion getFrame() {
@@ -178,8 +178,8 @@ public class Wife {
 		return isWalking;
 	}
 
-	public int getFrameSize() {
-		return frameSize;
+	public static int getFrameSize() {
+		return FRAME_SIZE;
 	}
 	public Vector2 getPosition() {
 	    return wifeBody.getPosition();
@@ -196,6 +196,15 @@ public class Wife {
 		this.isRunning = isRunning;
 	}
 	
+	
+	public static float getWifeWidth() {
+		return WIFE_WIDTH;
+	}
+
+	public static float getWifeHeight() {
+		return WIFE_HEIGHT;
+	}
+
 	public void dispose() {
 		idleSheet.dispose();
 		walkSheet.dispose();

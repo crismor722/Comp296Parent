@@ -28,7 +28,7 @@ public class Child {
 	
 	private Animation<TextureRegion> currentAnimation;
 	
-	private int frameSize = 64;
+	private static final int FRAME_SIZE = 64;
 	private int frameCount;
 	private float frameDuration = 0.1f;
 	private int row;
@@ -69,7 +69,7 @@ public class Child {
 	    row = 1; //sit left
 	    frameCount = 2;
 	    frameDuration = 4f;
-	    sitAnimation = AnimationHelper.createAnimation(sitSheet, frameSize, frameSize, row, frameCount, frameDuration, false);
+	    sitAnimation = AnimationHelper.createAnimation(sitSheet, FRAME_SIZE, FRAME_SIZE, row, frameCount, frameDuration, false);
 	}
 	
 	public TextureRegion getFrame() {
@@ -88,12 +88,21 @@ public class Child {
 		//frame is already set shouldn't need to set it
 	}
 	
-	public int getFrameSize() {
-		return frameSize;
+	public static int getFrameSize() {
+		return FRAME_SIZE;
 	}
 	public Vector2 getPosition() {
 	    return childBody.getPosition();
 	}
+	
+	public static float getChildWidth() {
+		return CHILD_WIDTH;
+	}
+
+	public static float getChildHeight() {
+		return CHILD_HEIGHT;
+	}
+
 	public void dispose() {
 		sitSheet.dispose();
 	}

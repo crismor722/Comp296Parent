@@ -40,11 +40,11 @@ public class Boss {
 	private int attackFrameIndex;
 	private int attackFrame = 4;
 	
-	private int frameSize = 96;
+	private static final int FRAME_SIZE = 96;
 	private int frameCount;
 	private float frameDuration = 0.1f;
-	private float attackInterval1 = 1.75f;
-	private float attackInterval2 = 2.5f;
+	private static float attackInterval1 = 1.75f;
+	private static float attackInterval2 = 2.5f;
 	
 	private Timer.Task attackTask;
 	private Timer.Task secondAttackTask;
@@ -136,11 +136,11 @@ public class Boss {
 	    //hurtSheet = new Texture("BossHurt.png");
 	    
 	    frameCount = 10;
-	    idleAnimation = AnimationHelper.createAnimation(idleSheet, frameSize, frameSize, frameCount, frameDuration, true);
+	    idleAnimation = AnimationHelper.createAnimation(idleSheet, FRAME_SIZE, FRAME_SIZE, frameCount, frameDuration, true);
 	    
 	    frameCount = 6;
 	    frameDuration = 0.08f;
-	    attackAnimation = AnimationHelper.createAnimation(attackSheet, frameSize, frameSize, frameCount, frameDuration, true);
+	    attackAnimation = AnimationHelper.createAnimation(attackSheet, FRAME_SIZE, FRAME_SIZE, frameCount, frameDuration, true);
 	    
 	}
 	
@@ -267,6 +267,10 @@ public class Boss {
 	
 	public void clearCurrentAttack() {
 		currentAttack = null;
+	}
+	
+	public static int getFrameSize() {
+		return FRAME_SIZE;
 	}
 	
 	public void dispose() {

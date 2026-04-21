@@ -15,7 +15,7 @@ import com.GatherAtDusk.Managers.SceneManager;
 public class TitleScreen extends ScreenAdapter {
 
     private final MainGame game;
-    private static SceneManager sceneManager;
+    private SceneManager sceneManager;
 
     private OrthographicCamera camera;
     private static SpriteBatch batch;
@@ -29,7 +29,7 @@ public class TitleScreen extends ScreenAdapter {
 
     public TitleScreen(MainGame game) {
         this.game = game;
-        TitleScreen.sceneManager = MainGame.sceneManager; // use the shared SceneManager]
+        this.sceneManager = game.sceneManager; // use the shared SceneManager]
         TitleScreen.batch = MainGame.batch;
     }
 
@@ -74,9 +74,7 @@ public class TitleScreen extends ScreenAdapter {
         
         batch.begin();
         batch.draw(background, 0, 0, 1024, 600); //this is the width and height of the  actual png
-        batch.end();
 
-        batch.begin();
         batch.draw(title, 225, 300 ,368, 65);
         //font.draw(batch, "Press ENTER to Start", 230, 200);
         batch.end();

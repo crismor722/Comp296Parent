@@ -41,7 +41,7 @@ public class EndScene extends ScreenAdapter{
     private static ShapeRenderer shapeRenderer;
     private static SpriteBatch batch;
     private World world;
-    private Box2DDebugRenderer debugRenderer;
+    //private Box2DDebugRenderer debugRenderer;
     private Player player;
     private Boss boss;
     private Texture grassTexture; //note: top of grassTexture is 37.5% transparent
@@ -66,8 +66,8 @@ public class EndScene extends ScreenAdapter{
     private static final float GROUND_WIDTH_SIZE =  WORLD_WIDTH;
     private static final float GROUND_HEIGHT_SIZE = GROUND_HEIGHT_POSITION;
     private static final float FRICTION = 0.8f; //friction doesn't really have an effect now, maybe find a way to remove later
-    private float playerStartX = WORLD_WIDTH / 2  - 60f; // center of screen in pixels
-    private float playerStartY = GROUND_HEIGHT_POSITION + 60f; // above ground
+    private static final float PLAYER_START_X = WORLD_WIDTH / 2  - 60f; // center of screen in pixels
+    private static final float START_Y = GROUND_HEIGHT_POSITION + 60f; // above ground
     private static final float PPM = (float) 100; // 100 pixels per meter 
     private static final float WALL_THICKNESS = 10f / PPM;
     private static final float TILE_SIZE = 16f/ PPM;
@@ -75,6 +75,20 @@ public class EndScene extends ScreenAdapter{
     private float stateTime;
     private static final int CAMPFIRE_SIZE = 32;
     private static final int CAMPFIRE_FRAMES = 4;
+    
+    private static final float CHILD_SPAWN_OFFSET = 200f;
+    private static final float WIFE_SPAWN_OFFSET = 30f;
+    private static final float PLAYER_X_OFFSET = Player.getPlayerWidth();
+    private static final float PLAYER_Y_OFFSET = 45f;
+    private static final float WIFE_X_OFFSET = Wife.getWifeWidth();
+    private static final float WIFE_Y_OFFSET = 45f;
+    private static final float CHILD_X_OFFSET = Child.getChildWidth();
+    private static final float CHILD_Y_OFFSET = 40f;
+    private static final float BOSS_X_OFFSET = 190f;
+    private static final float BOSS_Y_OFFSET = 95f;
+    private static final float CAMPFIRE_OFFSET = 10f;
+    private static final float DK_OFFSET = 80f;
+    private static final float BOSS_SPAWN = 500f;
     
     
     public EndScene(MainGame game) {
@@ -89,11 +103,11 @@ public class EndScene extends ScreenAdapter{
         //gravity (downward)
         //NOTE: world is not the same as the scene
         world = new World(new Vector2(HGRAVITY, VGRAVITY), true); //world handles gravity
-        debugRenderer = new Box2DDebugRenderer();
+        //debugRenderer = new Box2DDebugRenderer();
 
         createGround();
         createBoundaries();
-        createPlayer(playerStartX, playerStartY);
+        createPlayer(PLAYER_START_X, START_Y);
         createWifeAndChild();
         createBoss(); //boss is needed later
         createExtraStuff();
@@ -104,7 +118,7 @@ public class EndScene extends ScreenAdapter{
     }
     
 	private void createBoss() {
-		boss = new Boss(world, player, 500f, GROUND_HEIGHT_POSITION + 60f);
+		boss = new Boss(world, player, BOSS_SPAWN, START_Y);
 	}
 
 	private void createPlayer(float spawnX, float spawnY) {
@@ -112,10 +126,10 @@ public class EndScene extends ScreenAdapter{
 		player.setSitting(true);
 	}
 	private void createWifeAndChild() {
-		wife = new Wife(world, playerStartX - 30f, playerStartY);
+		wife = new Wife(world, PLAYER_START_X - WIFE_SPAWN_OFFSET, START_Y);
 		wife.setSitting(true);
 		
-		child = new Child(world, playerStartX +200f, playerStartY);
+		child = new Child(world, PLAYER_START_X + CHILD_SPAWN_OFFSET, START_Y);
 	}
 	private void createExtraStuff() {
 		grassTexture = new Texture("Platform Tileset/grasstop.png");
@@ -235,65 +249,48 @@ public class EndScene extends ScreenAdapter{
         		);
         	}
         }
-        batch.end();
         
-        contactListener.processPendingDestruction(); //need to be called  after world step in order for LibGDX to be happy
         player.update(delta);  //happens before player rendering and coloring
         
         //player color and rendering
-        batch.begin();
         batch.draw(
             player.getFrame(),
-            player.getPosition().x -64f/PPM,
-            player.getPosition().y -45f/PPM, //change here for player sprite and height pos
-            player.getFrameSize()/ PPM *2,
-            player.getFrameSize() / PPM *2
+            player.getPosition().x -PLAYER_X_OFFSET/PPM,
+            player.getPosition().y -PLAYER_Y_OFFSET/PPM, //change here for player sprite and height pos
+            Player.getFrameSize()/ PPM *2,
+            Player.getFrameSize() / PPM *2
         );
-
-        batch.end();
-        
-        batch.begin();
 
         batch.draw(
             boss.getFrame(),
-            boss.getPosition().x - 190f/ PPM,
-            boss.getPosition().y - 95f/ PPM, //change here for boss sprite and height pos
-            96f / PPM *4,
-            96f / PPM *4
+            boss.getPosition().x - BOSS_X_OFFSET/ PPM,
+            boss.getPosition().y - BOSS_Y_OFFSET/ PPM, //change here for boss sprite and height pos
+            Boss.getFrameSize() / PPM *4,
+            Boss.getFrameSize() / PPM *4
         );
-        batch.end();
-        
-        batch.begin();
         batch.draw(
          
         		campfireAnimation.getKeyFrame(stateTime, true),
-                (WORLD_WIDTH/2 - (CAMPFIRE_SIZE +10f))/ PPM,
-                (GROUND_HEIGHT_POSITION + 10f) / PPM, //change here for position
+                (WORLD_WIDTH/2 - (CAMPFIRE_SIZE +CAMPFIRE_OFFSET))/ PPM,
+                (GROUND_HEIGHT_POSITION + CAMPFIRE_OFFSET) / PPM, //change here for position
                 (CAMPFIRE_SIZE +0f) / PPM *3,
                 (CAMPFIRE_SIZE +0f) / PPM  *3 
             );
-       batch.end();
-       
-       batch.begin();
        
        batch.draw(
            wife.getFrame(),
-           wife.getPosition().x -64f/PPM,
-           wife.getPosition().y -45f/PPM, 
-           wife.getFrameSize()/ PPM *2,
-           wife.getFrameSize() / PPM *2
+           wife.getPosition().x -WIFE_X_OFFSET/PPM,
+           wife.getPosition().y -WIFE_Y_OFFSET/PPM, 
+           Wife.getFrameSize()/ PPM *2,
+           Wife.getFrameSize() / PPM *2
        );
-
-       batch.end();
-       
-       batch.begin();
        
        batch.draw(
            child.getFrame(),
-           child.getPosition().x -64f/PPM,
-           child.getPosition().y -40f/PPM, 
-           child.getFrameSize()/ PPM *3/2,
-           child.getFrameSize() / PPM *3/2
+           child.getPosition().x -CHILD_X_OFFSET/PPM,
+           child.getPosition().y -CHILD_Y_OFFSET/PPM, 
+           Child.getFrameSize()/ PPM *3/2,
+           Child.getFrameSize() / PPM *3/2
        );
 
        batch.end();
@@ -302,8 +299,8 @@ public class EndScene extends ScreenAdapter{
     	   batch.begin();
     	   batch.draw(
     			   easterEggButton.getFrame(),
-    	           (WORLD_WIDTH/2 - (CAMPFIRE_SIZE +80f))/ PPM,
-                   (GROUND_HEIGHT_POSITION + 80f) / PPM, //change here for position
+    	           (WORLD_WIDTH/2 - (CAMPFIRE_SIZE +DK_OFFSET))/ PPM,
+                   (GROUND_HEIGHT_POSITION + DK_OFFSET) / PPM, //change here for position
                    (CAMPFIRE_SIZE +0f) / PPM *3,
                    (CAMPFIRE_SIZE +0f) / PPM  *3 
     	   );

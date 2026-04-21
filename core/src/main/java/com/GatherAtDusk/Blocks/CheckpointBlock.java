@@ -11,13 +11,12 @@ import com.GatherAtDusk.PlayerStuff.Player;
 public class CheckpointBlock {
 	private Body body;
     public int checkpointID;
-    private float width;
-    private float height;
+    private static final float PPM = 100f;
+    private static final float WIDTH = 10f/ PPM;
+    private static final float HEIGHT = 10f/ PPM;
 
-    public CheckpointBlock(World world, float positionX, float positionY, float width, float height, int id) {
+    public CheckpointBlock(World world, float positionX, float positionY,  int id) {
         this.checkpointID = id;
-        this.width = width;
-        this.height = height;
 
         //static body for checkpoint
         BodyDef bodyDef = new BodyDef();
@@ -26,7 +25,7 @@ public class CheckpointBlock {
         body = world.createBody(bodyDef);
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(width / 2, height / 2);
+        shape.setAsBox(WIDTH / 2, HEIGHT / 2);
         
 
         FixtureDef fixtureDef = new FixtureDef();
@@ -35,12 +34,12 @@ public class CheckpointBlock {
         body.createFixture(fixtureDef).setUserData(CollisionType.CHECKPOINT);
     }
 
-    public float getWidth() {
-		return width;
+    public static float getWidth() {
+		return WIDTH;
 	}
 
-	public float getHeight() {
-		return height;
+	public static float getHeight() {
+		return HEIGHT;
 	}
 
 	public int getIdofCurrentCheckpoint() {

@@ -19,7 +19,7 @@ public class GameContactListener implements ContactListener {
     private DialogueManager dialogueManager;
     private Boss boss;
     private final MainGame game;
-    private static SceneManager sceneManager;
+    private SceneManager sceneManager;
     private boolean shouldCreateWife = false;
     private boolean wifeCreated = false;
     private boolean wifeWin = true;
@@ -29,14 +29,14 @@ public class GameContactListener implements ContactListener {
 
     public GameContactListener(MainGame game, Player player, Array<CheckpointBlock> checkpointBlocks ) {
     	this.game = game;
-    	GameContactListener.sceneManager = MainGame.sceneManager;
+    	this.sceneManager = game.sceneManager;
         this.player = player;
         this.checkpointBlocks = checkpointBlocks;
     }
     
     public GameContactListener(MainGame game, Player player, Boss boss, BossScene bossScene, DialogueManager dialogueManager) {
     	this.game = game;
-    	GameContactListener.sceneManager = MainGame.sceneManager;
+    	this.sceneManager = game.sceneManager;
         this.player = player;
         this.boss = boss;
         this.dialogueManager = dialogueManager;
@@ -44,7 +44,7 @@ public class GameContactListener implements ContactListener {
     
     public GameContactListener(MainGame game, Player player) {
     	this.game = game;
-    	GameContactListener.sceneManager = MainGame.sceneManager;
+    	this.sceneManager = game.sceneManager;
         this.player = player;
     }
     

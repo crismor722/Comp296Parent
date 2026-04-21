@@ -67,7 +67,7 @@ public class BossAttackBlock {
 	
 	private void createBody(float velocity) {
 		BodyDef bd = new BodyDef();
-		float tempVal = blockWidth;
+		float tempVal = blockWidth; //switch block height and width for the attack above
 		blockWidth = blockHeight;
 		blockHeight = tempVal;
 		

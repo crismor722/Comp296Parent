@@ -16,7 +16,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class GameOverScene extends ScreenAdapter {
 	private final MainGame game;
-	private static SceneManager sceneManager;
+	private SceneManager sceneManager;
 
 	private OrthographicCamera camera;
 	private static SpriteBatch batch;
@@ -30,7 +30,7 @@ public class GameOverScene extends ScreenAdapter {
 	
 	public GameOverScene(MainGame game) {
 		this.game = game;
-		GameOverScene.sceneManager = MainGame.sceneManager; // use the shared SceneManager\
+		this.sceneManager = game.sceneManager; // use the shared SceneManager\
 		GameOverScene.batch = MainGame.batch;
 	}
 	
@@ -82,6 +82,7 @@ public class GameOverScene extends ScreenAdapter {
     //ADD DISPOSING WHEN SWITCHING TO SCENE
     @Override
     public void dispose() { //dispose when switching to different scene
+    	lineGameOver.dispose();
         font.dispose();
         stage.dispose();
         gameOverText.dispose();
