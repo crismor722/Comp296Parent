@@ -13,8 +13,8 @@ public class ReturnToTitleButton extends TextButton{
 	private static final int BUTTON_WIDTH = 100; //make sure this is is double the height bc the button png is 32 by 16
 	private static final int BUTTON_HEIGHT = 50;
 	
-	public ReturnToTitleButton(SceneManager sceneManager) {
-		super("", createStyle());
+	public ReturnToTitleButton(SceneManager sceneManager,Texture menuUp, Texture menuDown, BitmapFont font) { //had to add all these arguments because in order to make global i needed static vars and i cant dispose of static vars
+		super("", createStyle(menuUp, menuDown, font));
 
         setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 
@@ -30,16 +30,10 @@ public class ReturnToTitleButton extends TextButton{
         });
 	}
 	
-	private static TextButtonStyle createStyle() {
-
-		Texture menuUp = new Texture("menuButtonUp.png");
-    	Texture menuDown = new Texture("menuButtonDown.png");
+	private static TextButtonStyle createStyle(Texture menuUp, Texture menuDown, BitmapFont font) {
     	
     	TextureRegionDrawable up = new TextureRegionDrawable(new TextureRegion(menuUp));
     	TextureRegionDrawable down = new TextureRegionDrawable(new TextureRegion(menuDown));
-    	
-
-        BitmapFont font = new BitmapFont(); 
 
         TextButtonStyle style = new TextButtonStyle();
         style.up = up;

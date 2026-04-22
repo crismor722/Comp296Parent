@@ -19,7 +19,7 @@ public class GameOverScene extends ScreenAdapter {
 	private SceneManager sceneManager;
 
 	private OrthographicCamera camera;
-	private static SpriteBatch batch;
+	private SpriteBatch batch;
 	private BitmapFont font;
 	private Stage stage;
 	private Texture gameOverText;
@@ -27,11 +27,14 @@ public class GameOverScene extends ScreenAdapter {
 	private static final float CAM_WIDTH = 800;
 	private static final float CAM_HEIGHT = 480;
 	private boolean shuttingDown = false;
+	private Texture startUp;
+    private Texture startDown;
+    private BitmapFont buttonFont;
 	
 	public GameOverScene(MainGame game) {
 		this.game = game;
 		this.sceneManager = game.sceneManager; // use the shared SceneManager\
-		GameOverScene.batch = MainGame.batch;
+		this.batch = MainGame.batch;
 	}
 	
 	public void show() {
@@ -43,9 +46,11 @@ public class GameOverScene extends ScreenAdapter {
         font.getData().setScale(2f);
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage); 
+        
+        createButtonStuff();
 
 
-        ReturnToTitleButton returnTitleButton = new ReturnToTitleButton(sceneManager); //needs to send sceneManger for the button to call title screen
+        ReturnToTitleButton returnTitleButton = new ReturnToTitleButton(sceneManager, startUp, startDown, buttonFont); //needs to send sceneManger for the button to call title screen
 
         returnTitleButton.setPosition(
                 Gdx.graphics.getWidth() / 2f - returnTitleButton.getWidth() / 2f, 
@@ -57,7 +62,14 @@ public class GameOverScene extends ScreenAdapter {
         stage.addActor(returnTitleButton);
     }
 
-    @Override
+    private void createButtonStuff() {
+    	startUp = new Texture("menuButtonUp.png");
+    	startDown = new Texture("menuButtonDown.png");
+    	
+    	buttonFont = new BitmapFont();
+	}
+
+	@Override
     public void render(float delta) {
     	if (shuttingDown) {
     	    Gdx.input.setInputProcessor(null);
@@ -84,6 +96,9 @@ public class GameOverScene extends ScreenAdapter {
     public void dispose() { //dispose when switching to different scene
     	lineGameOver.dispose();
         font.dispose();
+        buttonFont.dispose();
+        startUp.dispose();
+        startDown.dispose();
         stage.dispose();
         gameOverText.dispose();
     }

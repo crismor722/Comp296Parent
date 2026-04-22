@@ -7,7 +7,6 @@ import com.badlogic.gdx.Screen;
 
 public class SceneManager {
     private MainGame game;
-    private TitleScreen titleScreen;
     private Screen oldScreen;
 
     public SceneManager(MainGame game) {
@@ -15,15 +14,17 @@ public class SceneManager {
     }
     
     public void startTitleScreen() {
-    	this.titleScreen = new TitleScreen(game);
-    	game.setScreen(titleScreen);
-    	
+    	setDisposeOldScreen(); //first time, oldScreen is null and is being checked in the  dispose old screen
+    	game.setScreen(new TitleScreen(game));
+    	disposeOldScreen();
     }
 
     public void goToSceneForCheckpoint(int checkpointId) {
         switch(checkpointId) {
             case 0:
+            	setDisposeOldScreen();
                 game.setScreen(new IntroScene(game));
+                disposeOldScreen();
                 break;
             case 1:
             	setDisposeOldScreen();
@@ -89,13 +90,11 @@ public class SceneManager {
     private void disposeOldScreen(){
     	if (oldScreen != null) {
             //oldScreen.dispose();
-    		Gdx.app.postRunnable(() ->{
-    			Gdx.app.postRunnable(() ->{ //try taking 2-3 frames to sit a little bit before disposing
-    				Gdx.app.postRunnable(() -> { 
-    					oldScreen.dispose();// allows me to call dispose for any screen since it is in the screen interface and all the scenes extend screenAdapter which is uses the screen interface
-    				});// this delays the call of disposing after frame is finished otherwise the game crashes
-    			});  
-    		});
+    		Gdx.app.postRunnable(() ->{ //try taking 1-2 frames to sit a little bit before disposing
+    			Gdx.app.postRunnable(() -> { 
+    				oldScreen.dispose();// allows me to call dispose for any screen since it is in the screen interface and all the scenes extend screenAdapter which is uses the screen interface
+    			});// this delays the call of disposing after frame is finished otherwise the game crashes
+    		});  
         }
     }
 }

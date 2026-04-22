@@ -20,7 +20,7 @@ public class GameWinScene extends ScreenAdapter {
 	private SceneManager sceneManager;
 
 	private OrthographicCamera camera;
-	private static SpriteBatch batch;
+	private SpriteBatch batch;
 	private BitmapFont font;
 	private Stage stage;
 	private Texture gameWinText;
@@ -28,12 +28,15 @@ public class GameWinScene extends ScreenAdapter {
 	private static final float CAM_WIDTH = 800;
 	private static final float CAM_HEIGHT = 480;
 	private boolean shuttingDown = false;
+	private Texture startUp;
+    private Texture startDown;
+    private BitmapFont buttonFont;
 	
 		
 	public GameWinScene(MainGame game) {
 		this.game = game;
 		this.sceneManager = game.sceneManager; // use the shared SceneManager
-		GameWinScene.batch = MainGame.batch;	
+		this.batch = MainGame.batch;	
 	}
 		
 	public void show() {
@@ -45,9 +48,10 @@ public class GameWinScene extends ScreenAdapter {
 	    font.getData().setScale(2f);
 	    stage = new Stage(new ScreenViewport());
 	    Gdx.input.setInputProcessor(stage); 
-
-
-	    ReturnToTitleButton returnTitleButton = new ReturnToTitleButton(sceneManager); //needs to send sceneManger for the button to call title screen
+	    
+	    createButtonStuff();
+	    //i need to do this to dispose of it properly
+	    ReturnToTitleButton returnTitleButton = new ReturnToTitleButton(sceneManager, startUp, startDown, buttonFont); //needs to send sceneManger for the button to call title screen
 
 	    returnTitleButton.setPosition(
 	    		Gdx.graphics.getWidth() / 2f - returnTitleButton.getWidth() / 2f, 
@@ -57,6 +61,13 @@ public class GameWinScene extends ScreenAdapter {
 	    lineWin = Gdx.audio.newSound(Gdx.files.internal("lineWin.wav"));
 	    lineWin.play();
 	    stage.addActor(returnTitleButton);
+	}
+
+	private void createButtonStuff() {
+    	startUp = new Texture("menuButtonUp.png");
+    	startDown = new Texture("menuButtonDown.png");
+    	
+    	buttonFont = new BitmapFont();
 	}
 
 	@Override
@@ -86,6 +97,9 @@ public class GameWinScene extends ScreenAdapter {
 	    public void dispose() { //dispose when switching to different scene
 	    	lineWin.dispose();
 	        font.dispose();
+	        buttonFont.dispose();
+	        startUp.dispose();
+	        startDown.dispose();
 	        stage.dispose();
 	        gameWinText.dispose();
 	    }

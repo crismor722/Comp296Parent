@@ -27,8 +27,8 @@ public class IntroScene extends ScreenAdapter {
 	
     private final MainGame game;
     private OrthographicCamera camera;
-    private static ShapeRenderer shapeRenderer;
-    private static SpriteBatch batch;
+    private ShapeRenderer shapeRenderer;
+    private SpriteBatch batch;
     private World world;
     //private Box2DDebugRenderer debugRenderer;
     private Player player;
@@ -70,8 +70,8 @@ public class IntroScene extends ScreenAdapter {
     
     public IntroScene(MainGame game) {
         this.game = game;
-        IntroScene.batch = MainGame.batch;
-        IntroScene.shapeRenderer = MainGame.shapeRenderer;
+        this.batch = MainGame.batch;
+        this.shapeRenderer = MainGame.shapeRenderer;
     }
 
     @Override

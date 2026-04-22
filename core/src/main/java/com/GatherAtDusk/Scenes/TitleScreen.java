@@ -18,7 +18,7 @@ public class TitleScreen extends ScreenAdapter {
     private SceneManager sceneManager;
 
     private OrthographicCamera camera;
-    private static SpriteBatch batch;
+    private SpriteBatch batch; //dont make static
     private BitmapFont font;
     private Texture background;
     private Texture title;
@@ -26,11 +26,15 @@ public class TitleScreen extends ScreenAdapter {
     private static final float CAM_WIDTH = 800;
     private static final float CAM_HEIGHT = 480;
     private boolean shuttingDown;
+    private Texture startUp;
+    private Texture startDown;
+    private BitmapFont buttonFont;
 
     public TitleScreen(MainGame game) {
         this.game = game;
         this.sceneManager = game.sceneManager; // use the shared SceneManager]
-        TitleScreen.batch = MainGame.batch;
+        //MUST DO IT LIKE THIS TO SAVE MEMORY
+        this.batch = MainGame.batch;
     }
 
     @Override
@@ -46,9 +50,10 @@ public class TitleScreen extends ScreenAdapter {
         // add cursor hover effect for nice effects future me please
         stage = new Stage(new ScreenViewport()); //creating a stage is just easier for handling UI elements, maybe change later
         Gdx.input.setInputProcessor(stage); //allows user to click on button or more specifically the stage
+        createButtonStuff();
 
 
-        LoadFileButton loadFileButton = new LoadFileButton(sceneManager); //needs to send sceneManger for the button to call checkpoint
+        LoadFileButton loadFileButton = new LoadFileButton(sceneManager, startUp, startDown, buttonFont); //needs to send sceneManger for the button to call checkpoint
 
         loadFileButton.setPosition(
                 Gdx.graphics.getWidth() / 2f - loadFileButton.getWidth() / 2f, //(center of the screen) - (center of button) = button in center of screen
@@ -59,7 +64,14 @@ public class TitleScreen extends ScreenAdapter {
         stage.addActor(loadFileButton); //need to add button as an actor so the button can do its thing
     }
 
-    @Override
+    private void createButtonStuff() {
+    	startUp = new Texture("startButtonUp.png");
+    	startDown = new Texture("startButtonDown.png");
+    	
+    	buttonFont = new BitmapFont();
+	}
+
+	@Override
     public void render(float delta) {
     	if (shuttingDown) {
     	    Gdx.input.setInputProcessor(null);
@@ -93,6 +105,9 @@ public class TitleScreen extends ScreenAdapter {
     @Override
     public void dispose() { //dispose when switching to different scene
         font.dispose();
+        buttonFont.dispose();
+        startUp.dispose();
+        startDown.dispose();
         stage.dispose();
         background.dispose();
         title.dispose();

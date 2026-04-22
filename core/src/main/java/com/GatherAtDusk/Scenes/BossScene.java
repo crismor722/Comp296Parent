@@ -33,8 +33,8 @@ import com.badlogic.gdx.utils.Array;
 public class BossScene extends ScreenAdapter{
 	private final MainGame game;
     private OrthographicCamera camera;
-    private static ShapeRenderer shapeRenderer;
-    private static SpriteBatch batch;
+    private ShapeRenderer shapeRenderer;
+    private SpriteBatch batch;
     private World world;
     //private Box2DDebugRenderer debugRenderer;
     private Player player;
@@ -79,8 +79,8 @@ public class BossScene extends ScreenAdapter{
     
     public BossScene(MainGame game) {
     	this.game = game;
-    	BossScene.batch = MainGame.batch;
-    	BossScene.shapeRenderer = MainGame.shapeRenderer;
+    	this.batch = MainGame.batch;
+    	this.shapeRenderer = MainGame.shapeRenderer;
     }
     public void show() {
         camera = new OrthographicCamera();

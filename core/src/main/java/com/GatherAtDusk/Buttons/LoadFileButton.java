@@ -19,8 +19,8 @@ public class LoadFileButton extends TextButton {
 	private static final int BUTTON_WIDTH = 100; //make sure this is is double the height bc the button png is 32 by 16
 	private static final int BUTTON_HEIGHT = 50;
 
-    public LoadFileButton(SceneManager sceneManager) { //scene manager needs to be included so button can call goToCheckPoint
-        super("", createStyle());
+    public LoadFileButton(SceneManager sceneManager, Texture startUp, Texture startDown, BitmapFont font) { //scene manager needs to be included so button can call goToCheckPoint
+        super("", createStyle(startUp, startDown, font));
 
         setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 
@@ -41,7 +41,7 @@ public class LoadFileButton extends TextButton {
         });
     }
 
-    private static TextButtonStyle createStyle() {
+    private static TextButtonStyle createStyle(Texture startUp, Texture startDown, BitmapFont font) {
 
         /*Pixmap pixmap = new Pixmap(BUTTON_WIDTH, BUTTON_HEIGHT, Pixmap.Format.RGBA8888); //setting button height and format
         pixmap.setColor(Color.SLATE); //temp color green and testing to see if color works/looks good
@@ -55,13 +55,8 @@ public class LoadFileButton extends TextButton {
 
         TextureRegionDrawable drawable = new TextureRegionDrawable(new TextureRegion(texture));
         */
-    	Texture startUp = new Texture("startButtonUp.png");
-    	Texture startDown = new Texture("startButtonDown.png");
-    	
-    	TextureRegionDrawable up = new TextureRegionDrawable(new TextureRegion(startUp));
-    	TextureRegionDrawable down = new TextureRegionDrawable(new TextureRegion(startDown));
-
-        BitmapFont font = new BitmapFont(); 
+        TextureRegionDrawable up = new TextureRegionDrawable(new TextureRegion(startUp));
+        TextureRegionDrawable down = new TextureRegionDrawable(new TextureRegion(startDown));
 
         TextButtonStyle style = new TextButtonStyle();
         style.up = up; //libgdx is awesome it already will set the style to up and down whenever the button is clicked

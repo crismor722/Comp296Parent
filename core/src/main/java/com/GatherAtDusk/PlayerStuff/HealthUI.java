@@ -18,13 +18,14 @@ public class HealthUI {
 	private float uiXBoss = Gdx.graphics.getWidth() *3/4f;
 	private Player player;
 	private Boss boss;
+	private BitmapFont font;
 	
 	//NOTE: must call healthUI.update; and healthUI.render(delta); in every scene with player
 	
 	public HealthUI(Player player) {
 		this.player = player;
 		
-		BitmapFont font = new BitmapFont();
+		font = new BitmapFont();
 		stage = new Stage( new ScreenViewport());
 		Label.LabelStyle style = new Label.LabelStyle(font, Color.CORAL);
         
@@ -42,7 +43,7 @@ public class HealthUI {
 		
 		
 		stage = new Stage( new ScreenViewport());
-		BitmapFont font = new BitmapFont();
+		font = new BitmapFont();
 		Label.LabelStyle style = new Label.LabelStyle(font, Color.CORAL);
         style.font.getData().setScale(3.5f);
         
@@ -78,6 +79,7 @@ public class HealthUI {
     }
 
     public void dispose() {
+    	font.dispose();
         stage.dispose();
     }
 }

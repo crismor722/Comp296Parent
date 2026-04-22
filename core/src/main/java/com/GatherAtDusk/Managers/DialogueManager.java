@@ -25,7 +25,7 @@ public class DialogueManager {
     private Label dialogueLabel;
     private Texture texture;
     private BitmapFont font;
-    private  final MainGame game; // game is being used to get the game's scenemanager
+    private final MainGame game; // game is being used to get the game's scenemanager
     private SceneManager sceneManager;
     private Array<String> lines = new Array<>();
     private Array<Sound> voiceLines = new Array<>();

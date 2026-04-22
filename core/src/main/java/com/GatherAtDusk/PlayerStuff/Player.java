@@ -16,7 +16,6 @@ import com.badlogic.gdx.utils.Timer;
 
 public class Player {
 	private Body playerBody;
-	private Boss boss;
 	private Boolean isOnGround = false;
 	private static final float PLAYER_WIDTH = 64f;
 	private static final float PLAYER_HEIGHT = 64f;
@@ -72,7 +71,6 @@ public class Player {
 	
 	public Player(World world, float startX, float startY, Boss boss) {
 		this.world = world;
-		this.boss = boss;
 		createBody(world, startX, startY);
 		loadSprites();
 	}

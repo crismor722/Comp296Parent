@@ -18,8 +18,10 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -32,14 +34,15 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class EndScene extends ScreenAdapter{
 	
 	private final MainGame game;
     private OrthographicCamera camera;
-    private static ShapeRenderer shapeRenderer;
-    private static SpriteBatch batch;
+    private ShapeRenderer shapeRenderer;
+    private SpriteBatch batch;
     private World world;
     //private Box2DDebugRenderer debugRenderer;
     private Player player;
@@ -90,11 +93,16 @@ public class EndScene extends ScreenAdapter{
     private static final float DK_OFFSET = 80f;
     private static final float BOSS_SPAWN = 500f;
     
+    private Texture texture;
+    private Texture dkSheet;
+    private BitmapFont buttonFont;
+    private Pixmap pixmap;
+    
     
     public EndScene(MainGame game) {
     	this.game = game;
-    	EndScene.batch = MainGame.batch;
-    	EndScene.shapeRenderer = MainGame.shapeRenderer;
+    	this.batch = MainGame.batch;
+    	this.shapeRenderer = MainGame.shapeRenderer;
     }
     public void show() {
         camera = new OrthographicCamera();
@@ -138,7 +146,9 @@ public class EndScene extends ScreenAdapter{
 		campfireSheet = new Texture("Campfire.png");
 		campfireAnimation = AnimationHelper.createAnimation(campfireSheet, CAMPFIRE_SIZE, CAMPFIRE_SIZE, CAMPFIRE_FRAMES, 0.1f, false);
 		dialogueManager = new DialogueManager(game, player, 3);
-		easterEggButton = new EasterEggButton();
+		createButtonStuff();
+		dkSheet = new Texture("dk1.png");
+		easterEggButton = new EasterEggButton(texture, dkSheet, buttonFont);
 		
 		stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage); 
@@ -150,6 +160,18 @@ public class EndScene extends ScreenAdapter{
 		 stage.addActor(easterEggButton);
 	}
 
+	private void createButtonStuff() {
+		int buttonWidth = 120;
+		int buttonHeight = 120;
+		pixmap = new Pixmap(buttonWidth, buttonHeight, Pixmap.Format.RGBA8888); //setting button height and format
+        pixmap.setColor(Color.CLEAR); //temp color green and testing to see if color works/looks good
+        pixmap.fill();
+
+        texture = new Texture(pixmap); // sending pixmap to texture
+        pixmap.dispose(); //don't need pixmap memory anymore
+        buttonFont = new BitmapFont(); 
+		
+	}
 	private void createGround() { //createGround needs to be in this scene and not in MainGame, MainGame only handles scenes
     	BodyDef bodyDef = new BodyDef(); //need to set definitions of where the ground will be
         bodyDef.type = BodyDef.BodyType.StaticBody;
@@ -328,6 +350,9 @@ public class EndScene extends ScreenAdapter{
         child.dispose();
         boss.dispose();
         
+        texture.dispose();
+        dkSheet.dispose();
+        buttonFont.dispose();
         grassTexture.dispose();
         campfireSheet.dispose();
     	groundTexture.dispose();
