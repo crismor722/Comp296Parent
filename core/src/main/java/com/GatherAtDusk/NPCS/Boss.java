@@ -274,6 +274,7 @@ public class Boss {
 	}
 	
 	public void dispose() {
+		world.destroyBody(bossBody);
 		idleSheet.dispose();
 		attackSheet.dispose();
 		if(timerCalled) {

@@ -11,12 +11,14 @@ import com.GatherAtDusk.PlayerStuff.Player;
 public class CheckpointBlock {
 	private Body body;
     public int checkpointID;
+    private World world;
     private static final float PPM = 100f;
     private static final float WIDTH = 10f/ PPM;
     private static final float HEIGHT = 10f/ PPM;
 
     public CheckpointBlock(World world, float positionX, float positionY,  int id) {
         this.checkpointID = id;
+        this.world = world;
 
         //static body for checkpoint
         BodyDef bodyDef = new BodyDef();
@@ -66,6 +68,9 @@ public class CheckpointBlock {
 
 	public Body getBody() {
 		return body;
+	}
+	public void dispose() {
+		world.destroyBody(body);
 	}
 
 }

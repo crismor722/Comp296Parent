@@ -300,6 +300,7 @@ public class Player {
 	}
 	
 	public void dispose() {
+		world.destroyBody(playerBody);
 		idleSheet.dispose();
 		attackSheet.dispose();
 		runSheet.dispose();

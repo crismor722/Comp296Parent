@@ -104,11 +104,11 @@ public class DialogueManager {
                 Gdx.graphics.getWidth() / 4f,
                 Gdx.graphics.getHeight() / 2f
             );
-        
         stage.addActor(textBox);
     }
 
     private void setupVoiceLines(int id) {
+    	disposeVoiceLines();
     	if(id ==1) {
     		line1player = Gdx.audio.newSound(Gdx.files.internal("line1player.wav"));
     		line2player = Gdx.audio.newSound(Gdx.files.internal("line2player.wav"));
@@ -292,11 +292,16 @@ public class DialogueManager {
     public void setGameOver(boolean gameOver) {
 		this.gameOver = gameOver;
 	}
+    
+    private void disposeVoiceLines() {
+    	for (Sound s : disposeVoiceLines) {
+            if (s != null) s.dispose();
+        }
+        disposeVoiceLines.clear();
+    }
 
     public void dispose() {
-    	for (Sound s : disposeVoiceLines) {
-            if (s != null) s.dispose();;
-        }
+    	disposeVoiceLines();
     	texture.dispose();
     	font.dispose();
         stage.dispose();

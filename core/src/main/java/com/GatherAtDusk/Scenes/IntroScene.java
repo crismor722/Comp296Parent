@@ -320,7 +320,9 @@ public class IntroScene extends ScreenAdapter {
         backgroundDay.dispose();
         rockTexture.dispose();
         healthUI.dispose();
-        
+        checkpoint1.dispose();
+        checkpoint2.dispose();
+        checkpoint3.dispose();
         
         if(dialogueManager != null) {
         	dialogueManager.dispose();

@@ -104,6 +104,7 @@ public class Child {
 	}
 
 	public void dispose() {
+		world.destroyBody(childBody);
 		sitSheet.dispose();
 	}
 }

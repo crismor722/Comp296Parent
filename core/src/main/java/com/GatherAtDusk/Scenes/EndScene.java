@@ -147,7 +147,7 @@ public class EndScene extends ScreenAdapter{
 		campfireAnimation = AnimationHelper.createAnimation(campfireSheet, CAMPFIRE_SIZE, CAMPFIRE_SIZE, CAMPFIRE_FRAMES, 0.1f, false);
 		dialogueManager = new DialogueManager(game, player, 3);
 		createButtonStuff();
-		dkSheet = new Texture("dk1.png");
+		dkSheet = new Texture("dk1.png"); //need to make button stuff here to dispose of everything properly
 		easterEggButton = new EasterEggButton(texture, dkSheet, buttonFont);
 		
 		stage = new Stage(new ScreenViewport());

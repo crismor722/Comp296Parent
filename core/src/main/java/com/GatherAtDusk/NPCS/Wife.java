@@ -206,6 +206,7 @@ public class Wife {
 	}
 
 	public void dispose() {
+		world.destroyBody(wifeBody);
 		idleSheet.dispose();
 		walkSheet.dispose();
 		sitSheet.dispose();
