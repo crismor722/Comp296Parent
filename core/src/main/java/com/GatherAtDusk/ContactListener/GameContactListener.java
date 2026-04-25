@@ -18,7 +18,6 @@ public class GameContactListener implements ContactListener {
     private final Player player;
     private DialogueManager dialogueManager;
     private Boss boss;
-    private final MainGame game;
     private SceneManager sceneManager;
     private boolean shouldCreateWife = false;
     private boolean wifeCreated = false;
@@ -28,14 +27,12 @@ public class GameContactListener implements ContactListener {
     private Array<BossAttackBlock> toDestroyBossBlocks = new Array<>();
 
     public GameContactListener(MainGame game, Player player, Array<CheckpointBlock> checkpointBlocks ) {
-    	this.game = game;
     	this.sceneManager = game.sceneManager;
         this.player = player;
         this.checkpointBlocks = checkpointBlocks;
     }
     
     public GameContactListener(MainGame game, Player player, Boss boss, BossScene bossScene, DialogueManager dialogueManager) {
-    	this.game = game;
     	this.sceneManager = game.sceneManager;
         this.player = player;
         this.boss = boss;
@@ -43,7 +40,6 @@ public class GameContactListener implements ContactListener {
     }
     
     public GameContactListener(MainGame game, Player player) {
-    	this.game = game;
     	this.sceneManager = game.sceneManager;
         this.player = player;
     }
@@ -175,10 +171,10 @@ public class GameContactListener implements ContactListener {
             Wife wife = (Wife) wifeFixture.getBody().getUserData();
             wife.setWalking(false);
             wife.setRunning(false);
-            //sceneManager.isGameOver(); 
+            //sceneManager.isGameOver(); //moved to dialogue manager
         }
         
-        //System.out.println("Fixture A: " + fixtureA.getUserData() + ", Fixture B: " + fixtureB.getUserData());
+        //System.out.println("Fixture A: " + fixtureA.getUserData() + ", Fixture B: " + fixtureB.getUserData()); //collision print checking
     }
 
     @Override
@@ -199,7 +195,7 @@ public class GameContactListener implements ContactListener {
         Object data = fixture.getUserData(); //collsionType is saved in userData of the object
         //IMPORTANT: userData is being set in player class and in introscene for the ground 
         //make it an object so "intanceof" can be used
-        if (data instanceof CollisionType) { //if data object is an instance of collsionType, send the collisionType, if not, then null 
+        if (data instanceof CollisionType) { //if data object is an instance of collsionType, send the collisionType, if not, then null this also helps for bug fixing bc it will print null
             return (CollisionType) data;
         } else {
             return null;
@@ -217,7 +213,7 @@ public class GameContactListener implements ContactListener {
         }
     }
     
-    public void processPendingDestruction() {
+    public void processPendingDestruction() { //called in all scenes with attacking
         for (PlayerAttackBlock block : toDestroyPlayerBlocks) { //array to destroy blocks
         	block.destroy();
         	if (player.getAttackBlock() == block) {

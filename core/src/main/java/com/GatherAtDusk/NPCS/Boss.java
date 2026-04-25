@@ -28,8 +28,7 @@ public class Boss {
 	private BossAttackBlock currentAttack;
 	private Array<BossAttackBlock> activeAttacks = new Array<>();
 	private int health = 100;
-	//private float xPos = 400f / PPM;
-	private float yPos = 480f / PPM;
+	private static final float Y_POS = 480f / PPM;
 	private float velocity = -3f;
 	private float stateTime;
 	private boolean isAttacking;
@@ -41,8 +40,6 @@ public class Boss {
 	private int attackFrame = 4;
 	
 	private static final int FRAME_SIZE = 96;
-	private int frameCount;
-	private float frameDuration = 0.1f;
 	private static float attackInterval1 = 1.75f;
 	private static float attackInterval2 = 2.5f;
 	
@@ -132,15 +129,16 @@ public class Boss {
 
 	    idleSheet = new Texture("BossIdle.png");
 	    attackSheet = new Texture("BossAttack.png");
+	    int frameCount_i = 10;
+	    int frameCount_a = 6;
 	    
+	    float frameDuration_i = 0.1f;
+	    float frameDuration_a = 0.08f;
 	    //hurtSheet = new Texture("BossHurt.png");
 	    
-	    frameCount = 10;
-	    idleAnimation = AnimationHelper.createAnimation(idleSheet, FRAME_SIZE, FRAME_SIZE, frameCount, frameDuration, true);
+	    idleAnimation = AnimationHelper.createAnimation(idleSheet, FRAME_SIZE, FRAME_SIZE, frameCount_i, frameDuration_i, true);
 	    
-	    frameCount = 6;
-	    frameDuration = 0.08f;
-	    attackAnimation = AnimationHelper.createAnimation(attackSheet, FRAME_SIZE, FRAME_SIZE, frameCount, frameDuration, true);
+	    attackAnimation = AnimationHelper.createAnimation(attackSheet, FRAME_SIZE, FRAME_SIZE, frameCount_a, frameDuration_a, true);
 	    
 	}
 	
@@ -167,24 +165,24 @@ public class Boss {
 	}
 
 
-	public void attackFromAbove() { //two methods of attack, first one is normal attack from boss, second attack is from over the players head
+	public void attackFromAbove() { //two types of attack, first one is normal attack from boss, second attack is from over the players head
 		float playerX = player.getPosition().x;
 
-	    blockPos = new Vector2(playerX, yPos);
+	    blockPos = new Vector2(playerX, Y_POS);
 
 	    BossAttackBlock newAttack = new BossAttackBlock(world, blockPos, velocity);
 	    newAttack.setDamage(10);
 	    activeAttacks.add(newAttack);
 	}
 	
-	public void attackFromAbove(int attackAmount) { //two methods of attack, first one is normal attack from boss, second attack is from over the players head
+	public void attackFromAbove(int attackAmount) { //two methods of attackFromAbove, first one is just one, second attack one is any amount, usually 3
 		float xOffset = -10f;
-		float playerX;
+		float playerX;// need player x to spwan on top of player
 		
 	    for( int i = 0; i < attackAmount; i++) {
 	    	
 	    	playerX = player.getPosition().x + (xOffset /PPM);
-	    	blockPos = new Vector2(playerX, yPos);
+	    	blockPos = new Vector2(playerX, Y_POS);
 	    	
 	    	BossAttackBlock newAttack = new BossAttackBlock(world, blockPos, velocity);
 		    activeAttacks.add(newAttack);

@@ -1,8 +1,6 @@
 package com.GatherAtDusk.Scenes;
 
 import com.GatherAtDusk.MainGame;
-import com.GatherAtDusk.Blocks.BossAttackBlock;
-import com.GatherAtDusk.Blocks.PlayerAttackBlock;
 import com.GatherAtDusk.Buttons.EasterEggButton;
 import com.GatherAtDusk.ContactListener.CollisionType;
 import com.GatherAtDusk.ContactListener.GameContactListener;
@@ -11,10 +9,8 @@ import com.GatherAtDusk.Managers.DialogueManager;
 import com.GatherAtDusk.NPCS.Boss;
 import com.GatherAtDusk.NPCS.Child;
 import com.GatherAtDusk.NPCS.Wife;
-import com.GatherAtDusk.PlayerStuff.HealthUI;
 import com.GatherAtDusk.PlayerStuff.Player;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -28,13 +24,11 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class EndScene extends ScreenAdapter{

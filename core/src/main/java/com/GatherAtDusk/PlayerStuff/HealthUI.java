@@ -41,7 +41,6 @@ public class HealthUI {
 		this.player = player;
 		this.boss = boss;
 		
-		
 		stage = new Stage( new ScreenViewport());
 		font = new BitmapFont();
 		Label.LabelStyle style = new Label.LabelStyle(font, Color.CORAL);

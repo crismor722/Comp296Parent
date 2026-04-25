@@ -14,9 +14,7 @@ import com.GatherAtDusk.Managers.SceneManager;
 
 public class TitleScreen extends ScreenAdapter {
 
-    private final MainGame game;
     private SceneManager sceneManager;
-
     private OrthographicCamera camera;
     private SpriteBatch batch; //dont make static
     private BitmapFont font;
@@ -31,8 +29,7 @@ public class TitleScreen extends ScreenAdapter {
     private BitmapFont buttonFont;
 
     public TitleScreen(MainGame game) {
-        this.game = game;
-        this.sceneManager = game.sceneManager; // use the shared SceneManager]
+        this.sceneManager = game.sceneManager; // use the shared SceneManager
         //MUST DO IT LIKE THIS TO SAVE MEMORY
         this.batch = MainGame.batch;
     }
@@ -47,7 +44,6 @@ public class TitleScreen extends ScreenAdapter {
 
         font = new BitmapFont();
         font.getData().setScale(2f); // doubling default font size
-        // add cursor hover effect for nice effects future me please
         stage = new Stage(new ScreenViewport()); //creating a stage is just easier for handling UI elements, maybe change later
         Gdx.input.setInputProcessor(stage); //allows user to click on button or more specifically the stage
         createButtonStuff();
@@ -58,7 +54,6 @@ public class TitleScreen extends ScreenAdapter {
         loadFileButton.setPosition(
                 Gdx.graphics.getWidth() / 2f - loadFileButton.getWidth() / 2f, //(center of the screen) - (center of button) = button in center of screen
                 Gdx.graphics.getHeight() / 2f - loadFileButton.getHeight() / 2f
-                // note: this is also a test for graphics.getWidth and getHeight to make sure it works
         );
 
         stage.addActor(loadFileButton); //need to add button as an actor so the button can do its thing
@@ -77,9 +72,6 @@ public class TitleScreen extends ScreenAdapter {
     	    Gdx.input.setInputProcessor(null);
     	    return;
     	}
-    	//background
-        //Gdx.gl.glClearColor(0.1f, 0.1f, 0.2f, 1); //dark blue
-        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         camera.update();
         batch.setProjectionMatrix(camera.combined);
@@ -88,17 +80,10 @@ public class TitleScreen extends ScreenAdapter {
         batch.draw(background, 0, 0, 1024, 600); //this is the width and height of the  actual png
 
         batch.draw(title, 225, 300 ,368, 65);
-        //font.draw(batch, "Press ENTER to Start", 230, 200);
         batch.end();
         
         stage.act(delta);
         stage.draw();
-
-        // if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            // Ask SceneManager which scene to load based on the last checkpoint
-            //int checkpoint = sceneManager.getLastCheckpoint();
-            //sceneManager.goToSceneForCheckpoint(0); //zero sets it to intro scene
-        //}
     }
     
     //ADD DISPOSING WHEN SWITCHING TO SCENE

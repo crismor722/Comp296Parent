@@ -31,7 +31,7 @@ public class BossAttackBlock {
 		isAbove = false;
 	}
 	 // if velocity is  sent, x vel is 0 and y veloc goes down, else x veloc is set and y is zero
-	public BossAttackBlock(World world, Vector2 blockPos, float velocity){ //second constructor to allows for attacks from sky, need to edit velocity
+	public BossAttackBlock(World world, Vector2 blockPos, float velocity){ //second constructor to allows for attacks from sky
 		this.world = world;
 		this.blockPos = blockPos;
 		this.velocity = velocity;
@@ -65,7 +65,7 @@ public class BossAttackBlock {
 	     shape.dispose();
 	}
 	
-	private void createBody(float velocity) {
+	private void createBody(float velocity) { //if velocity is sent, then the attack is coming from the sky
 		BodyDef bd = new BodyDef();
 		float tempVal = blockWidth; //switch block height and width for the attack above
 		blockWidth = blockHeight;
@@ -129,7 +129,6 @@ public class BossAttackBlock {
 		return bossAttackBody.getPosition();
 	}
 
-	
 	public Body getBody() {
 		return bossAttackBody;
 	}

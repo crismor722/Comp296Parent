@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 
-
+//i made this class to make animations for me, pretty self explanatory just converting texture sheets to texture regions then to animations
 public abstract class AnimationHelper {
 	
 	public static Animation<TextureRegion> createAnimation(Texture sheet, int frameWidth, int frameHeight, int frameCount, float frameDuration, boolean flip){

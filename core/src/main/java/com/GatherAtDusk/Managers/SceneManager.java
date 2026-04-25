@@ -5,6 +5,7 @@ import com.GatherAtDusk.Scenes.*; //imports all scenes
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 
+//this class i made to handle all the scene transitions and disposals
 public class SceneManager {
     private MainGame game;
     private Screen oldScreen;
@@ -14,7 +15,7 @@ public class SceneManager {
     }
     
     public void startTitleScreen() {
-    	setDisposeOldScreen(); //first time, oldScreen is null and is being checked in the  dispose old screen
+    	setDisposeOldScreen(); //when opening the game the first time, oldScreen is null and is being checked in the  dispose old screen so no crash
     	game.setScreen(new TitleScreen(game));
     	disposeOldScreen();
     }
@@ -22,9 +23,9 @@ public class SceneManager {
     public void goToSceneForCheckpoint(int checkpointId) {
         switch(checkpointId) {
             case 0:
-            	setDisposeOldScreen();
-                game.setScreen(new IntroScene(game));
-                disposeOldScreen();
+            	setDisposeOldScreen(); //set current scene as old scene
+                game.setScreen(new IntroScene(game)); // make new scene
+                disposeOldScreen(); //safely dispose of old scene
                 break;
             case 1:
             	setDisposeOldScreen();
@@ -65,7 +66,7 @@ public class SceneManager {
     	oldScreen = game.getScreen();
     	
     	if (oldScreen instanceof IntroScene) {
-    	    ((IntroScene) oldScreen).beginShutdown(); // saftey net
+    	    ((IntroScene) oldScreen).beginShutdown(); // beginShutdown is a safety net that stops rendering before disposal for no crashing
     	}
     	else if (oldScreen instanceof BossScene) {
     	    ((BossScene) oldScreen).beginShutdown();

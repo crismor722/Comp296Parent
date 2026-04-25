@@ -35,7 +35,6 @@ public class LoadFileButton extends TextButton {
             }
             
             public void touchUp(InputEvent event, float x, float y, int pointer, int buttonCode) { //whenev
-                //setColor(Color.WHITE); don't need this since user won't see it
                 sceneManager.goToSceneForCheckpoint(SaveManager.loadCheckpoint()); // goes to scene on touch up otherwise the user wont see the change of color on the click
             }
         });

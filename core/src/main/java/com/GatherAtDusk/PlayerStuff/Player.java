@@ -37,9 +37,6 @@ public class Player {
 	private float moveSpeed = 3f; //base movespeed
 	
 	private static final int FRAME_SIZE = 64;
-	private int frameCount;
-	private float frameDuration = 0.1f;
-	private int row;
 	
 	//textures
 	private Texture idleSheet;
@@ -104,34 +101,33 @@ public class Player {
 	    runSheet = new Texture("mainRun.png");
 	    sitSheet = new Texture("mainSit.png");
 	    hurtSheet = new Texture("mainHurt.png");
+	    int row0 = 0;
+	    int row1 = 1;
+	    int row2 = 2;
+	    int row3 = 3;
 	    
-	    row = 2;
-	    frameCount = 2;
-	    frameDuration = 0.2f;
-	    idleAnimation = AnimationHelper.createAnimation(idleSheet, FRAME_SIZE, FRAME_SIZE, row, frameCount, frameDuration, false);
+	    int frameCount_i = 2;
+	    float frameDuration_i = 0.2f;
+	    idleAnimation = AnimationHelper.createAnimation(idleSheet, FRAME_SIZE, FRAME_SIZE, row2, frameCount_i, frameDuration_i, false);
 	    
-	    row = 3;
-	    frameCount = 8;
-	    frameDuration = 0.1f;
-	    runRightAnimation = AnimationHelper.createAnimation(runSheet, FRAME_SIZE, FRAME_SIZE, row, frameCount, frameDuration, false);
+	    int frameCount_r = 8;
+	    float frameDuration_r = 0.1f;
+	    runRightAnimation = AnimationHelper.createAnimation(runSheet, FRAME_SIZE, FRAME_SIZE, row3, frameCount_r, frameDuration_r, false);
 	    
-	    row = 1; //same frame count and frame duration
-	    runLeftAnimation = AnimationHelper.createAnimation(runSheet, FRAME_SIZE, FRAME_SIZE, row, frameCount, frameDuration, false);
+	    //same frame count and frame duration
+	    runLeftAnimation = AnimationHelper.createAnimation(runSheet, FRAME_SIZE, FRAME_SIZE, row1, frameCount_r, frameDuration_r, false);
 	    
-	    row = 3;
-	    frameCount = 13;
-	    frameDuration = 0.02f;
-	    attackRightAnimation = AnimationHelper.createAnimation(attackSheet, FRAME_SIZE, FRAME_SIZE, row, frameCount, frameDuration, false);
+	    int frameCount_a = 13;
+	    float frameDuration_a = 0.02f;
+	    attackRightAnimation = AnimationHelper.createAnimation(attackSheet, FRAME_SIZE, FRAME_SIZE, row3, frameCount_a, frameDuration_a, false);
 	    
-	    row = 3;
-	    frameCount = 1;
-	    frameDuration = 1f; //doesn't really matter bc it will only be one frame;
-	    sittingAnimation = AnimationHelper.createAnimation(sitSheet, FRAME_SIZE, FRAME_SIZE, row, frameCount, frameDuration, false);
+	    int frameCount_s = 1;
+	    float frameDuration_s = 1f; //doesn't really matter bc it will only be one frame;
+	    sittingAnimation = AnimationHelper.createAnimation(sitSheet, FRAME_SIZE, FRAME_SIZE, row3, frameCount_s, frameDuration_s, false);
 	    
-	    row = 0;
-	    frameCount = 4;
-	    frameDuration = 0.15f;
-	    hurtAnimation = AnimationHelper.createAnimation(hurtSheet, FRAME_SIZE, FRAME_SIZE, row, frameCount, frameDuration, false);
+	    int frameCount_h = 4;
+	    float frameDuration_h = 0.15f;
+	    hurtAnimation = AnimationHelper.createAnimation(hurtSheet, FRAME_SIZE, FRAME_SIZE, row0, frameCount_h, frameDuration_h, false);
 	}
 	
 	public TextureRegion getFrame() {

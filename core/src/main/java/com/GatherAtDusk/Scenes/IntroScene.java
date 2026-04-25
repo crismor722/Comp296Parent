@@ -9,10 +9,7 @@ import com.GatherAtDusk.Managers.SaveManager;
 import com.GatherAtDusk.PlayerStuff.Player;
 import com.GatherAtDusk.PlayerStuff.HealthUI;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -166,8 +163,6 @@ public class IntroScene extends ScreenAdapter {
         rightWallFixture.setUserData(CollisionType.WALL);
         
         rightShape.dispose();
-        
-        
     }
     
     private void createCheckpoints(){
@@ -271,7 +266,7 @@ public class IntroScene extends ScreenAdapter {
             Player.getFrameSize() / PPM *2
         );
         
-        //player color and rendering keeping this for future notes
+        //original player color and rendering keeping this for future notes
         /*shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(1f, 0f, 0f, 1); // red player
         shapeRenderer.rect(

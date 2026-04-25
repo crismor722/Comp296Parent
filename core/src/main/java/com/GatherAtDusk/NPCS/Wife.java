@@ -39,9 +39,6 @@ public class Wife {
 	private Animation<TextureRegion> currentAnimation;
 	
 	private static final int FRAME_SIZE = 64;
-	private int frameCount;
-	private float frameDuration = 0.1f;
-	private int row;
 	
 	private static CollisionType type = CollisionType.WIFE_WIN;
 	private static boolean wifeWin = true;
@@ -92,25 +89,27 @@ public class Wife {
 	    sitSheet = new Texture("wifeSit.png");
 	    runSheet = new Texture ("wifeRun.png");
 	    
-	    row = 1; //idle left
-	    frameCount = 2;
-	    frameDuration = 0.2f;
-	    idleAnimation = AnimationHelper.createAnimation(idleSheet, FRAME_SIZE, FRAME_SIZE, row, frameCount, frameDuration, false);
+	    int row1 = 1; 
+	    int row3 = 3;
+	    //idle left
+	    int frameCount_i = 2;
+	    float frameDuration_i = 0.2f;
+	    idleAnimation = AnimationHelper.createAnimation(idleSheet, FRAME_SIZE, FRAME_SIZE, row1, frameCount_i, frameDuration_i, false);
 	    
-	    row = 1; //walk left
-	    frameCount = 9;
-	    frameDuration = 0.2f;
-	    walkAnimation = AnimationHelper.createAnimation(walkSheet, FRAME_SIZE, FRAME_SIZE, row, frameCount, frameDuration, false);
+	    //walk left
+	    int frameCount_w = 9;
+	    float frameDuration_w = 0.2f;
+	    walkAnimation = AnimationHelper.createAnimation(walkSheet, FRAME_SIZE, FRAME_SIZE, row1, frameCount_w, frameDuration_w, false);
 	    
-	    row = 3; //sit right
-	    frameCount = 1;
-	    frameDuration = 1f;
-	    sitAnimation = AnimationHelper.createAnimation(sitSheet, FRAME_SIZE, FRAME_SIZE, row, frameCount, frameDuration, false);
+	    //sit right
+	    int frameCount_s = 1;
+	    float frameDuration_s = 1f;
+	    sitAnimation = AnimationHelper.createAnimation(sitSheet, FRAME_SIZE, FRAME_SIZE, row3, frameCount_s, frameDuration_s, false);
 	    
-	    row = 1; //run left
-	    frameCount = 8;
-	    frameDuration = 0.1f;
-	    runAnimation = AnimationHelper.createAnimation(runSheet, FRAME_SIZE, FRAME_SIZE, row, frameCount, frameDuration, false);
+	    //run left
+	    int frameCount_r = 8;
+	    float frameDuration_r = 0.1f;
+	    runAnimation = AnimationHelper.createAnimation(runSheet, FRAME_SIZE, FRAME_SIZE, row1, frameCount_r, frameDuration_r, false);
 	}
 	
 	public TextureRegion getFrame() {

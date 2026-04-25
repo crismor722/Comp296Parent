@@ -2,6 +2,7 @@ package com.GatherAtDusk.Managers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 
+//this is my save manager class i made to handle all the saving and retrieving data
 public abstract class SaveManager {
 
     private static final String SAVE_NAME = "GatherAtDuskSave";
@@ -26,7 +27,7 @@ public abstract class SaveManager {
         return loadId;
     }
     
-    protected static void overrideSave() {
+    protected static void overrideSave() { //reset it to zero after game complete so user can do the entire game again
     	Preferences prefs = Gdx.app.getPreferences(SAVE_NAME); //retrieves the saved data
     	int firstCheckpointID = 0;
     	prefs.putInteger("checkpointID", firstCheckpointID);

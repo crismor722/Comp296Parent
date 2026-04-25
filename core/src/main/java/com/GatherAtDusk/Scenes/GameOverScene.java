@@ -15,7 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class GameOverScene extends ScreenAdapter {
-	private final MainGame game;
 	private SceneManager sceneManager;
 
 	private OrthographicCamera camera;
@@ -32,7 +31,6 @@ public class GameOverScene extends ScreenAdapter {
     private BitmapFont buttonFont;
 	
 	public GameOverScene(MainGame game) {
-		this.game = game;
 		this.sceneManager = game.sceneManager; // use the shared SceneManager\
 		this.batch = MainGame.batch;
 	}

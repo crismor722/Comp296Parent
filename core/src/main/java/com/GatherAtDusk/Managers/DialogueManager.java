@@ -25,7 +25,6 @@ public class DialogueManager {
     private Label dialogueLabel;
     private Texture texture;
     private BitmapFont font;
-    private final MainGame game; // game is being used to get the game's scenemanager
     private SceneManager sceneManager;
     private Array<String> lines = new Array<>();
     private Array<Sound> voiceLines = new Array<>();
@@ -56,7 +55,6 @@ public class DialogueManager {
 	private boolean active = false;
     
     public DialogueManager(MainGame game,Player player, int dialogueID) { 
-    	this.game = game;
     	this.sceneManager = game.sceneManager;
         this.player = player;
         this.dialogueID = dialogueID;
@@ -96,9 +94,6 @@ public class DialogueManager {
 
         textBox.add(dialogueLabel).width(BORDER_WIDTH).height(BORDER_HEIGHT).pad(20); //this actually edits width and height
         textBox.pack();   
-
-        //dialogueLabel.setPosition(Gdx.graphics.getWidth() * 1/4f, Gdx.graphics.getHeight() *1/2f); //used to be 1/20
-        //dialogueLabel.setSize(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 7f);
         
         textBox.setPosition( // i like this format better
                 Gdx.graphics.getWidth() / 4f,
@@ -139,13 +134,6 @@ public class DialogueManager {
     		line4wife= Gdx.audio.newSound(Gdx.files.internal("line4wife.wav"));
     		disposeVoiceLines.add(line4wife);
     	}
-		
-		
-    	
-		/*disposeVoiceLines.addAll(line1player, line2player, line3player, line4player, line5player, line6player, 
-				line1wife, line2wife, line3wife, line4wife,
-				line1grandfather);
-		*/
 	}
 
 	private void startDialogue() {
@@ -293,7 +281,7 @@ public class DialogueManager {
 		this.gameOver = gameOver;
 	}
     
-    private void disposeVoiceLines() {
+    private void disposeVoiceLines() { //need to dispose of voice lines, they take up a lot of memory
     	for (Sound s : disposeVoiceLines) {
             if (s != null) s.dispose();
         }
