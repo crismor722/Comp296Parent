@@ -24,15 +24,28 @@ public class GameWinScene extends ScreenAdapter {
 	private BitmapFont font;
 	private Stage stage;
 	private Texture gameWinText;
-	private Sound lineWin;
-	private static final float CAM_WIDTH = 800;
-	private static final float CAM_HEIGHT = 480;
-	private boolean shuttingDown = false;
+	private Texture voiceCredits1;
+	private Texture voiceCredits2;
 	private Texture startUp;
     private Texture startDown;
     private BitmapFont buttonFont;
+    private Sound lineWin;
+	private static final float CAM_WIDTH = 800f;
+	private static final float CAM_HEIGHT = 480f;
+	private static final float VC1WIDTH = 180f;
+	private static final float VC1HEIGHT = 41f;
+	private static final float VC2WIDTH = 252f;
+	private static final float VC2HEIGHT = 122f;
+	private static final float GW_WIDTH = 241f;
+	private static final float GW_HEIGHT = 65f;
+	private static final float CENTER_Y1 = 270f;
+	private static final float CENTER_Y2 = 310f;
+	private static final float CENTER_X_GW =370f;
+	private static final float CENTER_X_VC1 = 310f;
+	private static final float CENTER_X_VC2 = 190f;
+	private boolean shuttingDown = false;
 	
-		
+	
 	public GameWinScene(MainGame game) {
 		this.game = game;
 		this.sceneManager = game.sceneManager; // use the shared SceneManager
@@ -43,6 +56,8 @@ public class GameWinScene extends ScreenAdapter {
 		camera = new OrthographicCamera();
 	    camera.setToOrtho(false, CAM_WIDTH, CAM_HEIGHT);
 	    gameWinText = new Texture("my-Game_Win.png");
+	    voiceCredits1 = new Texture("my-VoiceCredits1.png");
+	    voiceCredits2 = new Texture("my-VoiceCredits2.png");
 
 	    font = new BitmapFont();
 	    font.getData().setScale(2f);
@@ -55,7 +70,7 @@ public class GameWinScene extends ScreenAdapter {
 
 	    returnTitleButton.setPosition(
 	    		Gdx.graphics.getWidth() / 2f - returnTitleButton.getWidth() / 2f, 
-	            Gdx.graphics.getHeight() / 2f - returnTitleButton.getHeight() / 2f
+	            Gdx.graphics.getHeight() / 3f - returnTitleButton.getHeight() / 3f
 	        );
 	    
 	    lineWin = Gdx.audio.newSound(Gdx.files.internal("lineWin.wav"));
@@ -66,7 +81,6 @@ public class GameWinScene extends ScreenAdapter {
 	private void createButtonStuff() {
     	startUp = new Texture("menuButtonUp.png");
     	startDown = new Texture("menuButtonDown.png");
-    	
     	buttonFont = new BitmapFont();
 	}
 
@@ -84,7 +98,9 @@ public class GameWinScene extends ScreenAdapter {
 	    batch.setProjectionMatrix(camera.combined);
 
 	    batch.begin();
-	    batch.draw(gameWinText, 270, 300 ,241, 65);
+	    batch.draw(gameWinText, CENTER_Y1, CENTER_X_GW ,GW_WIDTH, GW_HEIGHT);
+	    batch.draw(voiceCredits1,CENTER_Y2, CENTER_X_VC1, VC1WIDTH, VC1HEIGHT);
+	    batch.draw(voiceCredits2,CENTER_Y1 , CENTER_X_VC2, VC2WIDTH, VC2HEIGHT);
 	    //font.draw(batch, "GAMEWIN", 200, 300);
 	    batch.end();
 	        
@@ -100,8 +116,10 @@ public class GameWinScene extends ScreenAdapter {
 	        buttonFont.dispose();
 	        startUp.dispose();
 	        startDown.dispose();
-	        stage.dispose();
+	        voiceCredits1.dispose();
+	        voiceCredits2.dispose();
 	        gameWinText.dispose();
+	        stage.dispose();
 	    }
 
 		public void beginShutdown() {
