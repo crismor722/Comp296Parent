@@ -144,6 +144,7 @@ public class Wife {
 			setFrame(idleAnimation, true);
 		}
 	}
+	
 	public CollisionType getType() {
 		return type;
 	}
@@ -180,9 +181,11 @@ public class Wife {
 	public static int getFrameSize() {
 		return FRAME_SIZE;
 	}
+	
 	public Vector2 getPosition() {
 	    return wifeBody.getPosition();
 	}
+	
 	public static void setRunningSpeed() {
 		moveSpeed = 1.5f;
 	}
@@ -194,7 +197,6 @@ public class Wife {
 	public void setRunning(boolean isRunning) {
 		this.isRunning = isRunning;
 	}
-	
 	
 	public static float getWifeWidth() {
 		return WIFE_WIDTH;
